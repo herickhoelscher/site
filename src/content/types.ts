@@ -51,13 +51,60 @@ export type Song = {
   artista: string
   nota: string
   spotifyId: string
+  /** Impressa no rótulo da fita, como no design. */
+  duracao: string
+}
+
+/** Uma fita VHS da estante de animes. */
+export type Tape = {
+  /** "TAPE VOL. 01 · HI-FI STEREO" */
+  vol: string
+  nome: string
+  /** O adesivo: REBOBINADA, FAVORITA, OVERDRIVE. */
+  selo: string
+  /** Clima que a fita aplica na seção ao passar o mouse. */
+  mood: 'red' | 'lav' | 'neon'
+}
+
+/** Um cartucho de jogo. */
+export type Cartridge = {
+  genero: string
+  nome: string
+  /** "CART. #0892" */
+  cart: string
 }
 
 export type Manager = {
+  /** "VIP BACKSTAGE" / "GERÊNCIA SUPREMA" */
+  passe: string
+  /** "ID: 001-CANINE" */
+  id: string
+  /** Rótulo da moldura enquanto a foto real não existe. */
+  fotoLabel: string
+  foto: string
+  /** "Poodle Preto · Headphone Red" */
+  especie: string
   nome: string
+  cargoLabel: string
   cargo: string
   frase: string
-  foto: string
+  status: string
+  /** "● APROVAÇÃO 100%" */
+  selo: string
+}
+
+/** Um pin do mural do Pinterest. */
+export type Pin = {
+  /** Linha pequena acima do título, quando existe. */
+  kicker?: string
+  titulo: string
+  sub: string
+  /** Terceira linha, quando o pin tem. */
+  extra?: string
+  /** "PIN #01 // ARCHITECTURE" */
+  pin: string
+  texto: string
+  tom: 'ink' | 'red' | 'paper' | 'brown'
 }
 
 export type Content = {
@@ -111,25 +158,78 @@ export type Content = {
     faixas: Track[]
   }
   flip: {
+    /** Etiqueta pequena acima do título. */
+    tag: string
     titulo: string
     texto: string
     botao: string
+    /** Textos impressos na capa do disco. */
+    capa: { lados: string; nome: string; sub: string; rpm: string; ano: string }
   }
   ladob: {
-    titulo: string
-    sub: string
     voltar: string
     barra: string
-    abertura: string
-    equipe: string
-    virarDeNovo: string
-    conversar: string
+    /** "* o Herick fora do expediente *" */
+    tag: string
+    /** "RELAX // ANALOG // HOBBIES" */
+    kicker: string
+    titulo: string
+    intro: string
+    chips: string[]
+    /** Rótulo central do vinil. */
+    disco: { estereo: string; lado: string; rpm: string }
+    /** O cartão que se apoia no disco. */
+    discoNota: { titulo: string; sub: string }
+    colecao: { titulo: string; sub: string }
+    mixtape: {
+      kicker: string
+      titulo: string
+      tipo: string
+      side: string
+      dolby: string
+      nota: string
+    }
     musicas: Song[]
-    animes: { lista: string[]; nota: string }
-    jogos: { lista: string[]; nota: string }
-    xadrez: { titulo: string; rating: string }
-    mural: string
+    vhs: {
+      kicker: string
+      titulo: string
+      modo: string
+      texto: string
+      nota: string
+      fitas: Tape[]
+    }
+    jogos: {
+      kicker: string
+      titulo: string
+      slot: string
+      texto: string
+      rodape: string
+      nota: string
+      cartuchos: Cartridge[]
+    }
+    xadrez: {
+      kicker: string
+      titulo: string
+      modo: string
+      statusLabel: string
+      rating: string
+      nome: string
+      desc: string
+      notaTitulo: string
+      notaTexto: string
+    }
+    equipe: { kicker: string; titulo: string; sub: string }
     gerentes: Manager[]
+    mural: { titulo: string; tags: string; pins: Pin[] }
+    fim: {
+      kicker: string
+      titulo: string
+      texto: string
+      botao: string
+      conversar: string
+      marca: string
+    }
+    rodape: { marca: string; sub: string; texto: string }
   }
   contato: {
     titulo: string

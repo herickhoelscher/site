@@ -332,68 +332,218 @@ export const pt: Content = {
   },
 
   flip: {
+    tag: 'TRANSIÇÃO DE FAIXA',
     titulo: 'ISSO FOI O LADO A.',
     texto:
       'Quer conhecer o Herick fora do expediente? Música, animes, jogos, xadrez e os verdadeiros gerentes da casa.',
     botao: 'VIRAR O DISCO → LADO B',
+    capa: {
+      lados: 'LADO A / LADO B',
+      nome: 'HERICK',
+      sub: 'UNPLUGGED',
+      rpm: '33 RPM',
+      ano: '2026',
+    },
   },
 
   ladob: {
-    titulo: 'LADO B',
-    sub: 'o que toca quando o código compila',
     voltar: '← VOLTAR PRO LADO A',
     barra: 'HERICK HOELSCHER // LADO B',
-    abertura: 'o Herick fora do expediente',
-    equipe: 'OS VERDADEIROS GERENTES',
-    virarDeNovo: 'VIRAR O DISCO DE NOVO → LADO A',
-    conversar: 'ou bora conversar',
+    tag: '* o Herick fora do expediente *',
+    kicker: 'RELAX // ANALOG // HOBBIES',
+    titulo: 'LADO B',
+    intro:
+      'Sem reuniões, sem dockerfiles quebrando às 18h e sem commit de emergência. Apenas música alta na agulha, animes no talo, xadrez tático e a gerência indiscutível dos dois bichos da casa.',
+    chips: ['VINYL 33⅓ RPM', 'STEREO HI-FI', 'CURADORIA MANUAL'],
+    disco: { estereo: 'ESTÉREO', lado: 'LADO B', rpm: '33 RPM · 2026' },
+    discoNota: {
+      titulo: 'Mike (chefe) no intervalo',
+      sub: 'Dormindo em cima da pilha de LPs',
+    },
+    colecao: {
+      titulo: 'COLEÇÃO ANALÓGICA & RETRÔ',
+      sub: 'fita magnética, cartuchos e fitas rebobinadas',
+    },
+
+    mixtape: {
+      kicker: 'LADO B // CASSETTE TAPE',
+      titulo: 'C-60 · PLAYLIST DA MADRUGADA',
+      tipo: 'TYPE II / CrO2',
+      side: 'SIDE B · 30 MIN',
+      dolby: 'NO DOLBY NR',
+      nota: '"gravações raras & fones altos"',
+    },
     musicas: [
       {
         titulo: 'Comfortably Numb',
         artista: 'Pink Floyd',
         nota: 'o solo do final conserta qualquer dia ruim',
         spotifyId: '',
+        duracao: '06:21',
       },
       {
         titulo: 'I Was Made For Lovin’ You',
         artista: 'KISS',
         nota: 'volume no máximo quando o deploy passa de primeira',
         spotifyId: '',
+        duracao: '04:31',
       },
       {
         titulo: 'Aoi, Koi, Daidaiiro No Hi',
         artista: 'MASS OF THE FERMENTING DREGS',
         nota: 'a prova de que rock japonês é outro nível',
         spotifyId: '',
+        duracao: '03:45',
       },
     ],
-    animes: {
-      lista: ['Attack on Titan', 'Frieren', 'Cyberpunk: Edgerunners'],
-      nota: 'passe o mouse numa fita',
+
+    vhs: {
+      kicker: 'ESTANTE // ANALOG VIDEO',
+      titulo: 'FITAS VHS · ANIMES',
+      modo: 'SP MODE',
+      texto:
+        'Rótulos adesivos gastos pelo tempo. Sem ilustrações oficiais, apenas a estética crua de videolocadora underground e fitas gravadas da TV.',
+      nota: '"Por favor, rebobine antes de devolver!"',
+      fitas: [
+        {
+          vol: 'TAPE VOL. 01 · HI-FI STEREO',
+          nome: 'ATTACK ON TITAN',
+          selo: 'REBOBINADA',
+          mood: 'red',
+        },
+        {
+          vol: 'TAPE VOL. 02 · NTSC CH-03',
+          nome: 'FRIEREN',
+          selo: 'FAVORITA',
+          mood: 'lav',
+        },
+        {
+          vol: 'TAPE VOL. 03 · EP 01-10',
+          nome: 'EDGERUNNERS',
+          selo: 'OVERDRIVE',
+          mood: 'neon',
+        },
+      ],
     },
+
     jogos: {
-      lista: ["Baldur's Gate 3", 'Minecraft', 'League of Legends', 'Brawlhalla'],
-      nota: 'e qualquer coop que tiver vaga',
+      kicker: '16-BIT / CONSOLE CORNER',
+      titulo: 'CARTUCHOS DE JOGO',
+      slot: 'SLOT 01',
+      texto:
+        'Cartuchos cinza com encaixes ranhurados e stickers de identificação. Soprar o conector ainda é boa prática.',
+      rodape: 'SOPRO DE CONTATO: OK',
+      nota: 'press start to continue',
+      cartuchos: [
+        { genero: 'RPG / TACTICS', nome: "BALDUR'S GATE 3", cart: 'CART. #0892' },
+        { genero: 'SANDBOX / BLOCKS', nome: 'MINECRAFT', cart: 'CART. #0014' },
+        { genero: 'MOBA / ARAM ONLY', nome: 'LEAGUE OF LEGENDS', cart: 'CART. #5521' },
+        { genero: 'BRAWLER / ARENA', nome: 'BRAWLHALLA', cart: 'CART. #3319' },
+      ],
     },
+
     xadrez: {
+      kicker: 'TACTICS & GAMBITS',
       titulo: 'CHESS PLAYER',
+      modo: 'RAPID & BLITZ',
+      statusLabel: 'STATUS OFICIAL DE RATING:',
       rating: 'RATING: DEPENDE DA QUANTIDADE DE CAFÉ',
+      nome: 'MISSI THE WITCH',
+      desc: 'Gata Siamesa · Nível GM',
+      notaTitulo: '"blunder tático da Missi"',
+      notaTexto: 'Derrubou o rei adversário no lance 14. Vitória por W.O. felino.',
     },
-    mural: 'o que eu salvo no Pinterest',
+
+    equipe: {
+      kicker: 'BACKSTAGE // AUTORIDADE MÁXIMA',
+      titulo: 'OS VERDADEIROS GERENTES',
+      sub: 'Nada sobe para produção sem o carimbo ou o sono profundo da diretoria executiva de 4 patas.',
+    },
     gerentes: [
       {
-        nome: 'MIKE',
-        cargo: 'Suporte emocional nível 1',
-        frase: 'Nunca fechou um chamado, mas todo mundo sai feliz.',
+        passe: 'VIP BACKSTAGE',
+        id: 'ID: 001-CANINE',
+        fotoLabel: '[ foto do Mike ]',
         foto: '/assets/cracha-mike.jpg',
+        especie: 'Poodle Preto · Headphone Red',
+        nome: 'Mike Hoelscher',
+        cargoLabel: 'CARGO EXECUTIVO',
+        cargo: 'CHEFE DE RELAÇÕES HUMANAS // APROVA TUDO',
+        frase: 'Se você tem petisco ou faz carinho, o código tá aprovado sem review.',
+        status: 'STATUS: SONO REM',
+        selo: '● APROVAÇÃO 100%',
       },
       {
-        nome: 'MISSI',
-        cargo: 'Code Review Sênior',
-        frase: 'Reprovou 100% dos PRs.',
+        passe: 'GERÊNCIA SUPREMA',
+        id: 'ID: 002-FELINE',
+        fotoLabel: '[ foto da Missi ]',
         foto: '/assets/cracha-missi.jpg',
+        especie: 'Siamesa · Chapéu de Bruxa',
+        nome: 'Missi Hoelscher',
+        cargoLabel: 'CARGO EXECUTIVO',
+        cargo: 'DIRETORA DE QA & SEGURANÇA // REPROVA PRS',
+        frase: 'Deita no teclado durante o deploy e derruba os testes unitários por puro capricho.',
+        status: 'STATUS: VIGILÂNCIA MÁXIMA',
+        selo: '● MERGE BLOQUEADO',
       },
     ],
+
+    mural: {
+      titulo: 'MURAL · o que eu salvo no Pinterest',
+      tags: 'ARQUITETURA BRUTALISTA // POSTERS JAPONESES // CAFÉ // HARDWARE & VINTAGE',
+      pins: [
+        {
+          titulo: 'CONCRETO BRUTO',
+          sub: 'BERLIM ORIENTAL · 1974',
+          pin: 'PIN #01 // ARCHITECTURE',
+          texto: 'Formas sólidas, sombras duras e zero enfeite desnecessário.',
+          tom: 'ink',
+        },
+        {
+          kicker: 'OSAKA PRINT EXPO',
+          titulo: '地下室',
+          sub: 'UNDERGROUND',
+          extra: 'SERIGRAFIA 2 CORES · LIMITED RUN',
+          pin: 'PIN #02 // GRAPHIC DESIGN',
+          texto: 'Composições verticais e tipografia em bloco inspiram cada detalhe visual.',
+          tom: 'red',
+        },
+        {
+          kicker: 'CHERRY MX BLUE',
+          titulo: 'CLICK CLACK 1989',
+          sub: 'CABO ESPIRALADO BEGE',
+          pin: 'PIN #03 // HARDWARE',
+          texto: 'Barulho tátil que dá ritmo ao raciocínio lógico.',
+          tom: 'paper',
+        },
+        {
+          kicker: 'HARIO V60 // 30g',
+          titulo: 'CAFÉ FILTRADO',
+          sub: 'TORRA MÉDIA · NOTAS DE CACAU',
+          extra: 'COMBUSTÍVEL PRIMÁRIO DO LADO A E LADO B',
+          pin: 'PIN #04 // RITUAIS',
+          texto: 'O único ritual não negociável antes de qualquer linha ou disco.',
+          tom: 'brown',
+        },
+      ],
+    },
+
+    fim: {
+      kicker: '// FIM DA REPRODUÇÃO //',
+      titulo: 'Pronto para voltar ao código e aos servidores?',
+      texto:
+        'O Lado B fica por aqui. Gire a bolacha de vinil para inspecionar os cases reais, scripts de infraestrutura e projetos no Lado A.',
+      botao: 'VIRAR O DISCO DE NOVO → LADO A',
+      conversar: 'ou bora conversar',
+      marca: '33⅓',
+    },
+
+    rodape: {
+      marca: 'HERICK HOELSCHER',
+      sub: 'LADO B // UNPLUGGED',
+      texto:
+        "Feito à mão com café, ruído analógico, vinil e rock 'n' roll · Toledo / Oeste do Paraná · 2026",
+    },
   },
 
   contato: {

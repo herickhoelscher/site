@@ -325,68 +325,218 @@ export const en: Content = {
   },
 
   flip: {
+    tag: 'TRACK TRANSITION',
     titulo: 'THAT WAS SIDE A.',
     texto:
       'Want to meet Herick after hours? Music, anime, games, chess and the real managers of the house.',
     botao: 'FLIP THE RECORD → SIDE B',
+    capa: {
+      lados: 'SIDE A / SIDE B',
+      nome: 'HERICK',
+      sub: 'UNPLUGGED',
+      rpm: '33 RPM',
+      ano: '2026',
+    },
   },
 
   ladob: {
-    titulo: 'SIDE B',
-    sub: 'what plays when the code compiles',
     voltar: '← BACK TO SIDE A',
     barra: 'HERICK HOELSCHER // SIDE B',
-    abertura: 'Herick after hours',
-    equipe: 'THE REAL MANAGERS',
-    virarDeNovo: 'FLIP IT BACK → SIDE A',
-    conversar: "or let's talk",
+    tag: '* Herick after hours *',
+    kicker: 'RELAX // ANALOG // HOBBIES',
+    titulo: 'SIDE B',
+    intro:
+      'No meetings, no dockerfiles breaking at 6pm, no emergency commits. Just loud music on the needle, anime at full blast, tactical chess and the undisputed management of the two animals of the house.',
+    chips: ['VINYL 33⅓ RPM', 'STEREO HI-FI', 'HAND-PICKED'],
+    disco: { estereo: 'STEREO', lado: 'SIDE B', rpm: '33 RPM · 2026' },
+    discoNota: {
+      titulo: 'Mike (the boss) on his break',
+      sub: 'Asleep on top of the LP pile',
+    },
+    colecao: {
+      titulo: 'ANALOG & RETRO COLLECTION',
+      sub: 'magnetic tape, cartridges and rewound reels',
+    },
+
+    mixtape: {
+      kicker: 'SIDE B // CASSETTE TAPE',
+      titulo: 'C-60 · LATE NIGHT PLAYLIST',
+      tipo: 'TYPE II / CrO2',
+      side: 'SIDE B · 30 MIN',
+      dolby: 'NO DOLBY NR',
+      nota: '"rare recordings & loud headphones"',
+    },
     musicas: [
       {
         titulo: 'Comfortably Numb',
         artista: 'Pink Floyd',
         nota: 'that last solo fixes any bad day',
         spotifyId: '',
+        duracao: '06:21',
       },
       {
         titulo: 'I Was Made For Lovin’ You',
         artista: 'KISS',
         nota: 'max volume when the deploy passes first try',
         spotifyId: '',
+        duracao: '04:31',
       },
       {
         titulo: 'Aoi, Koi, Daidaiiro No Hi',
         artista: 'MASS OF THE FERMENTING DREGS',
         nota: 'proof that Japanese rock is another level',
         spotifyId: '',
+        duracao: '03:45',
       },
     ],
-    animes: {
-      lista: ['Attack on Titan', 'Frieren', 'Cyberpunk: Edgerunners'],
-      nota: 'hover a tape',
+
+    vhs: {
+      kicker: 'SHELF // ANALOG VIDEO',
+      titulo: 'VHS TAPES · ANIME',
+      modo: 'SP MODE',
+      texto:
+        'Sticker labels worn down by time. No official artwork, just the raw look of an underground rental shop and tapes recorded off TV.',
+      nota: '"Please rewind before returning!"',
+      fitas: [
+        {
+          vol: 'TAPE VOL. 01 · HI-FI STEREO',
+          nome: 'ATTACK ON TITAN',
+          selo: 'REWOUND',
+          mood: 'red',
+        },
+        {
+          vol: 'TAPE VOL. 02 · NTSC CH-03',
+          nome: 'FRIEREN',
+          selo: 'FAVOURITE',
+          mood: 'lav',
+        },
+        {
+          vol: 'TAPE VOL. 03 · EP 01-10',
+          nome: 'EDGERUNNERS',
+          selo: 'OVERDRIVE',
+          mood: 'neon',
+        },
+      ],
     },
+
     jogos: {
-      lista: ["Baldur's Gate 3", 'Minecraft', 'League of Legends', 'Brawlhalla'],
-      nota: 'and any co-op with a free slot',
+      kicker: '16-BIT / CONSOLE CORNER',
+      titulo: 'GAME CARTRIDGES',
+      slot: 'SLOT 01',
+      texto:
+        'Grey cartridges with ridged slots and ID stickers. Blowing into the connector is still good practice.',
+      rodape: 'CONTACT BLOW: OK',
+      nota: 'press start to continue',
+      cartuchos: [
+        { genero: 'RPG / TACTICS', nome: "BALDUR'S GATE 3", cart: 'CART. #0892' },
+        { genero: 'SANDBOX / BLOCKS', nome: 'MINECRAFT', cart: 'CART. #0014' },
+        { genero: 'MOBA / ARAM ONLY', nome: 'LEAGUE OF LEGENDS', cart: 'CART. #5521' },
+        { genero: 'BRAWLER / ARENA', nome: 'BRAWLHALLA', cart: 'CART. #3319' },
+      ],
     },
+
     xadrez: {
+      kicker: 'TACTICS & GAMBITS',
       titulo: 'CHESS PLAYER',
+      modo: 'RAPID & BLITZ',
+      statusLabel: 'OFFICIAL RATING STATUS:',
       rating: 'RATING: DEPENDS ON HOW MUCH COFFEE',
+      nome: 'MISSI THE WITCH',
+      desc: 'Siamese cat · GM level',
+      notaTitulo: '"Missi\'s tactical blunder"',
+      notaTexto: 'Knocked the opponent king over on move 14. Win by feline walkover.',
     },
-    mural: 'what I save on Pinterest',
+
+    equipe: {
+      kicker: 'BACKSTAGE // HIGHEST AUTHORITY',
+      titulo: 'THE REAL MANAGERS',
+      sub: 'Nothing ships without the stamp, or the deep sleep, of the four-pawed executive board.',
+    },
     gerentes: [
       {
-        nome: 'MIKE',
-        cargo: 'Emotional support, tier 1',
-        frase: 'Never closed a ticket, but everyone leaves happy.',
+        passe: 'VIP BACKSTAGE',
+        id: 'ID: 001-CANINE',
+        fotoLabel: '[ photo of Mike ]',
         foto: '/assets/cracha-mike.jpg',
+        especie: 'Black Poodle · Red Headphones',
+        nome: 'Mike Hoelscher',
+        cargoLabel: 'EXECUTIVE ROLE',
+        cargo: 'HEAD OF HUMAN RELATIONS // APPROVES EVERYTHING',
+        frase: 'If you have a treat or a scratch, the code is approved without review.',
+        status: 'STATUS: REM SLEEP',
+        selo: '● 100% APPROVAL',
       },
       {
-        nome: 'MISSI',
-        cargo: 'Senior Code Reviewer',
-        frase: 'Rejected 100% of PRs.',
+        passe: 'SUPREME MANAGEMENT',
+        id: 'ID: 002-FELINE',
+        fotoLabel: '[ photo of Missi ]',
         foto: '/assets/cracha-missi.jpg',
+        especie: 'Siamese · Wizard Hat',
+        nome: 'Missi Hoelscher',
+        cargoLabel: 'EXECUTIVE ROLE',
+        cargo: 'DIRECTOR OF QA & SECURITY // REJECTS PRS',
+        frase: 'Lies on the keyboard during the deploy and knocks over the unit tests out of pure spite.',
+        status: 'STATUS: MAXIMUM VIGILANCE',
+        selo: '● MERGE BLOCKED',
       },
     ],
+
+    mural: {
+      titulo: 'BOARD · what I save on Pinterest',
+      tags: 'BRUTALIST ARCHITECTURE // JAPANESE POSTERS // COFFEE // HARDWARE & VINTAGE',
+      pins: [
+        {
+          titulo: 'RAW CONCRETE',
+          sub: 'EAST BERLIN · 1974',
+          pin: 'PIN #01 // ARCHITECTURE',
+          texto: 'Solid shapes, hard shadows and zero unnecessary decoration.',
+          tom: 'ink',
+        },
+        {
+          kicker: 'OSAKA PRINT EXPO',
+          titulo: '地下室',
+          sub: 'UNDERGROUND',
+          extra: '2-COLOUR SCREEN PRINT · LIMITED RUN',
+          pin: 'PIN #02 // GRAPHIC DESIGN',
+          texto: 'Vertical compositions and block type inspire every visual detail.',
+          tom: 'red',
+        },
+        {
+          kicker: 'CHERRY MX BLUE',
+          titulo: 'CLICK CLACK 1989',
+          sub: 'BEIGE COILED CABLE',
+          pin: 'PIN #03 // HARDWARE',
+          texto: 'Tactile noise that gives rhythm to logical thinking.',
+          tom: 'paper',
+        },
+        {
+          kicker: 'HARIO V60 // 30g',
+          titulo: 'FILTER COFFEE',
+          sub: 'MEDIUM ROAST · COCOA NOTES',
+          extra: 'PRIMARY FUEL FOR SIDE A AND SIDE B',
+          pin: 'PIN #04 // RITUALS',
+          texto: 'The one non-negotiable ritual before any line of code or any record.',
+          tom: 'brown',
+        },
+      ],
+    },
+
+    fim: {
+      kicker: '// END OF PLAYBACK //',
+      titulo: 'Ready to go back to the code and the servers?',
+      texto:
+        'Side B ends here. Spin the vinyl to go inspect the real cases, infrastructure scripts and projects on Side A.',
+      botao: 'FLIP IT BACK → SIDE A',
+      conversar: "or let's talk",
+      marca: '33⅓',
+    },
+
+    rodape: {
+      marca: 'HERICK HOELSCHER',
+      sub: 'SIDE B // UNPLUGGED',
+      texto:
+        "Handmade with coffee, analog noise, vinyl and rock 'n' roll · Toledo / Western Paraná, Brazil · 2026",
+    },
   },
 
   contato: {
