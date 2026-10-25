@@ -36,7 +36,7 @@ export default function ProjectPage() {
     <>
       <Helmet>
         <html lang={t.htmlLang} />
-        <title>{issue.titulo}</title>
+        <title>{`${issue.titulo} · Herick Hoelscher`}</title>
         <meta name="description" content={issue.resumoCard} />
       </Helmet>
 

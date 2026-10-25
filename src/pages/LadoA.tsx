@@ -19,7 +19,8 @@ export default function LadoA() {
     <>
       <Helmet>
         <html lang={t.htmlLang} />
-        <title>Herick Hoelscher · {t.hero.tagline}</title>
+        {/* uma expressão só: o helmet ignora o título quando recebe mais de um filho */}
+        <title>{`Herick Hoelscher · ${t.hero.tagline}`}</title>
         <meta name="description" content={t.hero.tagline} />
         <link rel="canonical" href={canonical} />
         <link rel="alternate" hrefLang="pt-BR" href={`${SITE}/`} />
