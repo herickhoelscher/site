@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Issue 001 · Leitor RCO · Herick Hoelscher</title>
+<meta name="description" content="Leitor RCO: app desktop em Python que lê os PDFs do Registro de Classe Online do Paraná e gera planilhas prontas pro Power BI.">
+<link rel="stylesheet" href="style.css">
+<script src="zine.js" defer></script>
+</head>
+<body>
+
+<section class="tex-preta" id="case-topo">
+  <svg class="cable" data-path=".9,.12;.96,.4;.985,.75;.92,1.02" data-path-mobile=".95,.2;.99,.6;.95,1.02"></svg>
+  <div class="case-top">
+    <a href="index.html#issues">← VOLTAR PRAS ISSUES</a>
+    <span class="hide-m">ISSUE 001 / 006</span>
+    <span class="lang" style="border:2px solid var(--paper);border-radius:50%;padding:8px 16px;transform:rotate(-5deg)">PT / EN</span>
+  </div>
+  <span class="doodle" data-doodle="star" data-size="60" data-color="#E8432E" style="left:46%;top:120px"></span>
+  <span class="doodle hide-m" data-doodle="crown" data-size="56" data-color="#A68BE6" style="right:8%;top:110px"></span>
+  <div class="case-hero">
+    <div class="case-hero-grid">
+      <div class="pw" style="transform:rotate(-2deg)">
+        <span class="tape" style="left:-22px;top:-8px;transform:rotate(-32deg)"></span>
+        <span class="tape" style="right:-22px;bottom:-4px;transform:rotate(-30deg)"></span>
+        <div class="stamp" style="right:24px;top:34px">EM PRODUÇÃO</div>
+        <div class="poster" data-torn="5" style="padding:16px">
+          <div class="art-wrap"><img class="art" src="assets/issue-rco.jpg" alt="Funil engolindo folhas de PDF" style="aspect-ratio:4/3"></div>
+        </div>
+        <img class="sticker-img hide-m" src="assets/mike-feliz.png" alt="Mike" style="position:absolute;left:-40px;bottom:-60px;width:150px;transform:rotate(-10deg);z-index:9">
+      </div>
+      <div class="case-title">
+        <div class="num">ISSUE 001 · leitor_pdf_rco</div>
+        <h1>LEITOR RCO</h1>
+        <div class="hook">nenhum PDF sobreviveu</div>
+        <p>App desktop que lê pastas inteiras de PDFs do Registro de Classe Online do Paraná e entrega frequência, conteúdos e alunos em risco numa planilha pronta pro Power BI.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tex-creme case-body">
+  <div class="meta">
+    <div><h4>TIPO</h4><p>App desktop</p></div>
+    <div><h4>STACK</h4><p>Python · pdfplumber · openpyxl · Tkinter</p></div>
+    <div><h4>STATUS</h4><p style="color:var(--red)">Em produção</p></div>
+    <div><h4>CÓDIGO</h4><p><a href="https://github.com/herickhoelscher/leitor_pdf_rco">GitHub ↗</a></p></div>
+  </div>
+
+  <div class="case-cols" style="margin-top:80px">
+    <div>
+      <h2 class="block-title">O PROBLEMA</h2>
+      <div class="torn-wrap" style="transform:rotate(-1deg)">
+        <span class="tape" style="left:40%;top:-14px;transform:rotate(3deg)"></span>
+        <div class="paper-card" data-torn="5" style="background:#F6F2E8">
+          <p>O RCO é o sistema oficial de registro de aulas do Paraná. Cada professor gera um PDF por turma e disciplina.</p>
+          <p>Para acompanhar frequência e conteúdo, a equipe pedagógica precisava <strong>abrir e conferir esses arquivos um por um</strong>.</p>
+        </div>
+      </div>
+      <span class="note" style="position:relative;display:block;margin-top:34px;font-size:30px;color:var(--purple);transform:rotate(-3deg)">dezenas de turmas × várias disciplinas = muito PDF</span>
+    </div>
+    <div>
+      <h2 class="block-title">O QUE EU FIZ</h2>
+      <ol class="steps">
+        <li>Processamento de uma pasta inteira de PDFs de uma vez, ou de arquivos soltos</li>
+        <li>Extração da tabela de frequência, conteúdos, observações, cabeçalho e total oficial de faltas</li>
+        <li>Cálculo da presença e classificação de cada aluno: regular (≥ 80%), em risco ou reprovado (&lt; 75%)</li>
+        <li>Exportação para Excel com 3 abas, CSV pronto pro Excel em português e relatório em texto</li>
+        <li>Modo apresentação que anonimiza alunos, escola e professor</li>
+      </ol>
+      <div class="flow"><span>PASTA DE PDFs</span><i>→</i><span>EXTRAÇÃO</span><i>→</i><span>PRESENÇA %</span><i>→</i><span>EXCEL · CSV · TXT</span></div>
+    </div>
+  </div>
+
+  <div class="prints">
+    <div class="print">PRINT 1<br>tela principal com a barra de progresso</div>
+    <div class="print">PRINT 2<br>relatório na tela com os alunos em atenção</div>
+    <div class="print">PRINT 3<br>planilha exportada<br>(use o modo apresentação para anonimizar)</div>
+  </div>
+
+  <div class="result">
+    <div class="big"><s>HORAS</s> → SEGUNDOS</div>
+    <p>e segue em uso em produção</p>
+    <img class="sticker-img" src="assets/missi-brava.png" alt="Missi" style="position:absolute;left:2%;top:-120px;width:150px;transform:rotate(-8deg)">
+    <span class="note hide-m" style="left:15%;top:-70px;font-size:26px;transform:rotate(-4deg)">← a Missi aprovou. milagre.</span>
+  </div>
+</section>
+
+<section class="tex-preta">
+  <div class="next">
+    <a href="index.html#issues" style="font-size:22px;font-family:var(--f-mono)">← todas as issues</a>
+    <a href="#"><small>PRÓXIMA</small>ISSUE 002 · AGROVISION AI →</a>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Herick Hoelscher // Dev Full-Stack (Lado A)</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Caveat:wght@600;700&amp;family=Permanent+Marker&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            zineBlack: '#141414',
+            zineCream: '#EFE9DA',
+            zineRed: '#E8432E',
+            zinePurple: '#765BA7',
+            zineLavender: '#A68BE6',
+            zinePaper: '#F4EFE6',
+          },
+          fontFamily: {
+            anton: ['Anton', 'sans-serif'],
+            marker: ['"Permanent Marker"', 'cursive'],
+            hand: ['Caveat', 'cursive'],
+            mono: ['"Space Mono"', 'monospace'],
+            sans: ['"Space Grotesk"', 'sans-serif'],
+          },
+          boxShadow: {
+            'brutal': '4px 4px 0px #141414',
+            'brutal-lg': '6px 6px 0px #141414',
+            'brutal-xl': '8px 8px 0px #141414',
+            'brutal-red': '5px 5px 0px #E8432E',
+            'brutal-purple': '5px 5px 0px #765BA7',
+            'brutal-white': '4px 4px 0px #EFE9DA',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles: Halftone, Jagged Edges & Aesthetic Details -->
+<style data-purpose="textures-and-halftone">
+    /* Subtle halftone dot pattern */
+    .bg-halftone-dots {
+      background-image: radial-gradient(#141414 15%, transparent 16%);
+      background-size: 10px 10px;
+    }
+    .bg-halftone-dots-light {
+      background-image: radial-gradient(rgba(239, 233, 218, 0.25) 15%, transparent 16%);
+      background-size: 10px 10px;
+    }
+    .bg-halftone-dots-red {
+      background-image: radial-gradient(#E8432E 20%, transparent 21%);
+      background-size: 12px 12px;
+    }
+    /* Torn paper jagged clip edges */
+    .torn-top {
+      clip-path: polygon(0 0, 4% 14px, 8% 2px, 13% 16px, 18% 4px, 23% 18px, 29% 3px, 34% 15px, 40% 2px, 45% 17px, 51% 3px, 57% 16px, 63% 4px, 69% 19px, 75% 3px, 81% 15px, 87% 2px, 92% 17px, 97% 5px, 100% 0, 100% 100%, 0 100%);
+    }
+    .torn-bottom {
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), 96% 100%, 91% calc(100% - 14px), 86% 100%, 80% calc(100% - 12px), 74% 100%, 68% calc(100% - 16px), 62% 100%, 56% calc(100% - 13px), 50% 100%, 44% calc(100% - 15px), 38% 100%, 32% calc(100% - 12px), 26% 100%, 20% calc(100% - 15px), 14% 100%, 8% calc(100% - 13px), 3% 100%, 0 calc(100% - 15px));
+    }
+    .tape-strip {
+      background: rgba(225, 220, 205, 0.78);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      backdrop-filter: blur(1px);
+    }
+    .ruled-notebook {
+      background-color: #EFE9DA;
+      background-image: repeating-linear-gradient(transparent, transparent 31px, #d5cebc 31px, #d5cebc 32px);
+      line-height: 32px;
+    }
+  </style>
+</head>
+<body class="bg-zineBlack text-zineBlack antialiased selection:bg-zineRed selection:text-white relative overflow-x-hidden">
+<!-- BEGIN: ContinuousEthernetCable -->
+<!-- Visual Ethernet Cable running down the right-hand margin across sections -->
+<div aria-hidden="true" class="pointer-events-none fixed right-6 md:right-14 top-0 bottom-0 w-3 z-40 hidden md:block">
+<div class="h-full w-2 bg-zineBlack border-x border-neutral-700 mx-auto shadow-lg relative">
+<div class="absolute -left-1 top-24 w-4 h-6 bg-neutral-800 border border-neutral-600 rounded-sm"></div>
+<div class="absolute -left-1 top-1/3 w-4 h-6 bg-neutral-800 border border-neutral-600 rounded-sm"></div>
+<div class="absolute -left-1 top-2/3 w-4 h-6 bg-neutral-800 border border-neutral-600 rounded-sm"></div>
+</div>
+</div>
+<!-- END: ContinuousEthernetCable -->
+<!-- BEGIN: MainHeader -->
+<header class="w-full bg-zineBlack text-zineCream border-b-2 border-neutral-800 relative z-30">
+<div class="max-w-[1440px] mx-auto px-6 py-4 flex items-center justify-between">
+<!-- Nav items left -->
+<nav aria-label="Navegação principal">
+<ul class="flex items-center space-x-4 md:space-x-8 font-mono text-xs md:text-sm tracking-wider uppercase text-neutral-300">
+<li><a class="hover:text-zineRed transition-colors" href="#quem">01 QUEM</a></li>
+<li><a class="hover:text-zineRed transition-colors" href="#issues">02 ISSUES</a></li>
+<li><a class="hover:text-zineRed transition-colors" href="#setlist">03 SETLIST</a></li>
+<li><a class="hover:text-zineRed transition-colors" href="#contato">04 CONTATO</a></li>
+</ul>
+</nav>
+<!-- Action buttons right -->
+<div class="flex items-center space-x-3 pr-4 md:pr-14">
+<a class="px-3.5 py-1.5 bg-zinePurple text-white font-mono text-xs md:text-sm font-bold border-2 border-zineBlack shadow-brutal hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-1" href="#lado-b">
+          LADO B ↻
+        </a>
+<div class="px-3 py-1 rounded-full border-2 border-zinc-400 font-mono text-xs tracking-wider text-zinc-300">
+          PT / EN
+        </div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: HeroSection -->
+<section class="relative bg-zineBlack text-zineCream overflow-hidden border-b-4 border-zineBlack pt-6 pb-20" id="hero">
+<!-- Red splatter decorations -->
+<div class="absolute left-6 top-16 w-28 h-28 bg-zineRed rounded-full opacity-90 blur-0 mix-blend-screen pointer-events-none -z-0"></div>
+<div class="absolute left-28 top-28 w-14 h-14 bg-zineRed rounded-full pointer-events-none opacity-80"></div>
+<div class="absolute left-10 top-36 w-8 h-8 bg-zineRed rounded-full pointer-events-none opacity-90"></div>
+<div class="absolute left-4 top-12 w-36 h-36 bg-halftone-dots-red opacity-50 pointer-events-none"></div>
+<div class="max-w-[1440px] mx-auto px-6 relative z-10">
+<!-- Top Tear & Mascot Illustration Container -->
+<div class="flex justify-end items-end relative -mb-4 pr-16 md:pr-32">
+<div class="flex items-end gap-2 bg-zineCream/95 p-2 rounded-t-xl border-2 border-zineBlack border-b-0 shadow-brutal relative z-20 transform -rotate-1">
+<!-- Tape piece -->
+<div class="absolute -top-3 left-4 w-12 h-5 tape-strip rotate-6"></div>
+<!-- Mascot Mike -->
+<div class="flex flex-col items-center">
+<span class="text-3xl" title="Mike - Cão com headphone">🎧🐶</span>
+<span class="font-mono text-[9px] bg-black text-white px-1">MIKE</span>
+</div>
+<!-- Mascot Missi -->
+<div class="flex flex-col items-center">
+<span class="text-3xl" title="Missi - Gata com chapéu de mago">🧙‍♀️🐱</span>
+<span class="font-mono text-[9px] bg-zinePurple text-white px-1">MISSI</span>
+</div>
+</div>
+</div>
+<!-- Main Split Hero Typography (HERICK) -->
+<div class="relative select-none my-2">
+<!-- Top Half (Cream Letters on Dark Ground) -->
+<div class="bg-zineBlack pt-2 pb-1 border-b-4 border-dashed border-zineCream/70 relative overflow-hidden">
+<h1 class="text-[17vw] xl:text-[230px] font-anton tracking-tight text-zineCream uppercase leading-none text-center transform scale-y-110 drop-shadow-lg">
+            HERICK
+          </h1>
+<!-- Hand drawn star left -->
+<span class="absolute bottom-3 left-8 text-zineRed text-3xl font-bold">★</span>
+</div>
+<!-- Overlaid Center Duct Tape Label -->
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 rotate-[-2deg]">
+<div class="bg-zineRed text-zineBlack px-6 py-2 border-2 border-zineBlack shadow-brutal font-anton tracking-wider text-xl md:text-3xl uppercase whitespace-nowrap">
+            *HERICK HOELSCHER
+          </div>
+</div>
+<!-- Bottom Half (Inverted Cream Paper Section) -->
+<div class="bg-zineCream text-zineBlack pt-4 pb-12 torn-bottom relative -mt-1 shadow-inner">
+<!-- Halftone effect overlay on right corner -->
+<div class="absolute right-12 bottom-6 w-48 h-32 bg-halftone-dots opacity-40 pointer-events-none"></div>
+<h2 class="text-[17vw] xl:text-[230px] font-anton tracking-tight text-zineBlack uppercase leading-none text-center transform scale-y-110 opacity-95">
+            HERICK
+          </h2>
+<div class="absolute bottom-2 left-6 md:left-12 flex items-center gap-2">
+<span class="text-zineRed text-2xl font-bold">★</span>
+<span class="text-zineRed text-lg font-bold">★</span>
+</div>
+</div>
+</div>
+<!-- Hero Bottom Badges & Context Links -->
+<div class="grid grid-cols-1 md:grid-cols-3 items-center gap-6 pt-6 text-zineCream">
+<!-- Handwritten remark left -->
+<div class="flex items-center gap-2 font-hand text-2xl md:text-3xl text-zineCream rotate-[-3deg]">
+<span>dev full-stack que saiu da sala do servidor</span>
+<span class="text-zineRed text-3xl font-bold">↘</span>
+</div>
+<!-- Center scroll prompt -->
+<div class="text-center font-mono text-xs uppercase tracking-widest text-neutral-400 flex flex-col items-center justify-center">
+<span>ROLE</span>
+<span class="text-base animate-bounce">↓</span>
+</div>
+<!-- External links right -->
+<div class="flex md:justify-end items-center gap-6 font-mono text-xs md:text-sm text-neutral-300 pr-14">
+<a class="underline underline-offset-4 decoration-2 decoration-zineRed hover:text-white" href="#contato">Email</a>
+<a class="underline underline-offset-4 decoration-2 decoration-zinePurple hover:text-white" href="https://github.com" rel="noopener noreferrer" target="_blank">GitHub</a>
+<a class="underline underline-offset-4 decoration-2 hover:text-white" href="https://linkedin.com" rel="noopener noreferrer" target="_blank">LinkedIn</a>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: QuemSection -->
+<section class="bg-zineRed text-zineBlack relative py-20 px-6 border-b-4 border-zineBlack overflow-hidden" id="quem">
+<!-- Background scribbles and zine noise -->
+<div class="absolute inset-0 bg-halftone-dots opacity-10 pointer-events-none"></div>
+<div class="absolute top-8 left-12 text-5xl font-bold opacity-30 select-none font-anton text-zineBlack">01 / ORIGEM</div>
+<!-- Little hand doodle crown top right -->
+<div class="absolute top-10 right-28 text-zineBlack text-4xl font-bold rotate-12 select-none">👑</div>
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+<!-- Left Column: Portrait Cutout + Mascot Stickers + Tech Pills -->
+<div class="lg:col-span-5 relative flex justify-center items-center">
+<!-- Tech Stickers floating around -->
+<div class="absolute -left-2 top-10 z-20 px-3 py-1 rounded-full bg-zineBlack text-zineCream font-mono text-xs font-bold border-2 border-white shadow-brutal rotate-[-8deg]">
+          REACT
+        </div>
+<div class="absolute left-10 -top-6 z-20 px-4 py-1.5 rounded-full bg-zinePurple text-white font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal rotate-[5deg]">
+          NODE
+        </div>
+<div class="absolute -left-4 top-36 z-20 px-3 py-1 rounded-full bg-zineCream text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal rotate-[-12deg]">
+          NEXT.JS
+        </div>
+<div class="absolute -left-2 top-60 z-20 px-3 py-2 rounded-full bg-zinePurple text-white font-mono text-[11px] font-bold border-2 border-zineBlack shadow-brutal rotate-[6deg]">
+          TYPESCRIPT
+        </div>
+<div class="absolute right-0 top-36 z-20 px-3.5 py-1.5 rounded-full bg-zineLavender text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal rotate-[12deg]">
+          PYTHON
+        </div>
+<div class="absolute right-4 top-56 z-20 px-3 py-1 rounded-full bg-zinePurple text-white font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal rotate-[-6deg]">
+          N8N
+        </div>
+<div class="absolute right-12 bottom-0 z-20 px-3 py-1 rounded-full bg-zineCream text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal rotate-[10deg]">
+          FLUTTER
+        </div>
+<div class="absolute left-24 -bottom-4 z-20 px-4 py-1 rounded-full bg-zineBlack text-white font-mono text-xs font-bold border-2 border-white shadow-brutal">
+          POSTGRES
+        </div>
+<!-- The Photo Cutout Frame -->
+<div class="relative bg-zineCream p-4 border-4 border-zineBlack shadow-brutal-xl transform rotate-[-2deg] max-w-sm w-full">
+<!-- Halftone screened simulated portrait -->
+<div class="relative aspect-[4/5] bg-neutral-900 border-2 border-zineBlack overflow-hidden flex flex-col justify-end items-center">
+<div class="absolute inset-0 bg-halftone-dots-light opacity-30"></div>
+<!-- Monochrome character representation -->
+<div class="w-full h-full flex flex-col justify-center items-center text-center p-4">
+<span class="text-8xl mb-2 filter grayscale contrast-200">🧑🏻‍💻</span>
+<span class="font-anton text-2xl tracking-wider text-zineCream uppercase">HERICK</span>
+<span class="font-mono text-[10px] text-zinc-400">DEV FULL-STACK • EST. 14 ANOS</span>
+</div>
+<!-- Screenprint halftone simulation bar -->
+<div class="w-full bg-zineBlack text-zineCream font-mono text-[10px] text-center py-1 uppercase tracking-widest">
+              HALFWAY BETWEEN LINUX &amp; CODE
+            </div>
+</div>
+<!-- Pet sticker Missi attached to photo -->
+<div class="absolute -top-7 -right-6 bg-zinc-100 border-2 border-zineBlack p-2 shadow-brutal rotate-[14deg] z-30">
+<div class="text-center font-hand text-xs font-bold leading-tight mb-1">essa é a Missi.<br/>ela reprova PRs. ↓</div>
+<div class="text-3xl text-center">🧙‍♀️🐱</div>
+</div>
+<!-- Pet sticker Mike attached to bottom photo -->
+<div class="absolute -bottom-6 -left-6 bg-zinc-100 border-2 border-zineBlack p-2 shadow-brutal rotate-[-10deg] z-30">
+<div class="text-3xl text-center">🎧🐶</div>
+<div class="text-center font-hand text-xs font-bold leading-tight mt-1">↑ o Mike aprova tudo</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Ransom Note Title + Paper Sheet Bio -->
+<div class="lg:col-span-7">
+<!-- Annotation -->
+<div class="font-hand text-2xl text-zineCream font-bold mb-2 flex items-center gap-2">
+<span>comecei aos 14</span>
+<span class="text-xl">↓</span>
+<span class="ml-4 text-3xl">★</span>
+</div>
+<!-- Ransom Note Title: QUEM É ESSE CARA? -->
+<h2 aria-label="Quem é esse cara?" class="flex flex-wrap gap-2 items-center mb-8 select-none">
+<span class="bg-zineCream text-zineBlack font-anton text-4xl md:text-6xl px-3 py-1 border-3 border-zineBlack shadow-brutal rotate-[-2deg]">QUEM</span>
+<span class="bg-white text-zineRed font-anton text-4xl md:text-6xl px-3 py-1 border-2 border-zineBlack shadow-brutal rotate-[3deg]">É</span>
+<span class="bg-zinePurple text-white font-anton text-4xl md:text-6xl px-4 py-1 border-2 border-zineBlack shadow-brutal rotate-[-1deg]">ESSE</span>
+<span class="bg-zineBlack text-zineCream font-anton text-4xl md:text-6xl px-4 py-1 border-2 border-white shadow-brutal rotate-[2deg]">CARA?</span>
+</h2>
+<!-- Taped Paper Sheet with Bio Text -->
+<article class="relative bg-zineCream p-6 md:p-10 border-3 border-zineBlack shadow-brutal-xl font-sans text-neutral-900 leading-relaxed text-base md:text-lg">
+<!-- Tape pieces -->
+<div class="absolute -top-4 left-1/4 w-24 h-7 tape-strip rotate-[-3deg] border border-stone-300"></div>
+<div class="absolute -bottom-4 right-1/4 w-24 h-7 tape-strip rotate-[2deg] border border-stone-300"></div>
+<p class="mb-4">
+            Comecei a trabalhar com <strong>14 anos</strong>, carimbando papel e montando planilha. Passei pelo balcão, caí no suporte de TI e fui parar na sala do servidor: rede, firewall, Microsoft 365 e muito script pra ninguém precisar repetir trabalho manual.
+          </p>
+<p class="mb-4">
+            Foi ali que eu descobri do que gosto de verdade: 
+            <mark class="bg-red-200 text-zineRed font-semibold px-1 py-0.5 border-b-2 border-zineRed">
+              pegar um processo chato e transformar em código
+            </mark>. 
+            Hoje faço isso em sites, lojas, sistemas e automações, de landing page a agente de IA.
+          </p>
+<p class="mb-6">
+            Formado em <strong>Análise e Desenvolvimento de Sistemas</strong> e fazendo pós em <strong>IA, Automação e IoT</strong>. Moro no oeste do Paraná com o Mike e a Missi, que revisam meu código com muito rigor.
+          </p>
+<div class="pt-4 border-t-2 border-dashed border-stone-400 font-mono text-xs md:text-sm text-stone-700 flex flex-wrap items-center gap-2">
+<span class="font-bold text-zineBlack">e um pé na infra:</span>
+<span>Linux</span>
+<span>•</span>
+<span>Docker</span>
+<span>•</span>
+<span>PowerShell</span>
+<span>•</span>
+<span>Intune</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- END: QuemSection -->
+<!-- BEGIN: IssuesSection -->
+<section class="bg-zineCream text-zineBlack py-24 px-6 border-b-4 border-zineBlack relative" id="issues">
+<div class="max-w-[1440px] mx-auto">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b-4 border-zineBlack pb-6">
+<div>
+<span class="inline-block px-3 py-1 bg-zineRed text-white font-mono text-xs uppercase font-bold border-2 border-zineBlack shadow-brutal mb-2">
+            PROJETOS SELECIONADOS
+          </span>
+<h2 class="text-5xl md:text-7xl font-anton uppercase tracking-tight text-zineBlack">
+            ISSUES // CASOS REAIS
+          </h2>
+</div>
+<p class="font-hand text-2xl md:text-3xl text-neutral-800 rotate-[-1deg] mt-4 md:mt-0">
+          código testado no mundo real, sem conversa fiada ⚡
+        </p>
+</div>
+<!-- Asymmetrical 3-Row Grid -->
+<div class="space-y-8">
+<!-- ROW 1: 60% Card 001 + 40% Card 002 -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Card 001 (60% width) -->
+<article class="lg:col-span-7 bg-white p-6 md:p-8 border-3 border-zineBlack shadow-brutal-lg flex flex-col justify-between relative group hover:-translate-y-1 transition-transform">
+<div class="absolute -top-3.5 right-6 px-3 py-0.5 bg-green-400 text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack uppercase shadow-brutal">
+              EM PRODUÇÃO
+            </div>
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<span class="font-mono text-sm font-bold text-neutral-500">#001</span>
+<span class="font-hand text-2xl text-zineRed font-bold rotate-[-2deg]">"nenhum PDF sobreviveu"</span>
+</div>
+<h3 class="text-3xl md:text-4xl font-anton uppercase mb-4 text-zineBlack">LEITOR RCO</h3>
+<!-- Wireframe image placeholder -->
+<div class="aspect-video w-full bg-stone-100 border-2 border-dashed border-stone-400 flex flex-col items-center justify-center mb-6 text-stone-500">
+<svg class="w-10 h-10 mb-2 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="font-mono text-xs font-bold uppercase tracking-wider">[ print do projeto ]</span>
+</div>
+<p class="font-sans text-neutral-700 leading-relaxed mb-6">
+                App desktop que lê pastas inteiras de PDFs do Registro de Classe Online do Paraná e entrega frequência, conteúdos e alunos em risco numa planilha pronta pro Power BI.
+              </p>
+</div>
+<div class="pt-4 border-t-2 border-stone-200 flex flex-wrap items-center justify-between gap-4">
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">Python</span>
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">pdfplumber</span>
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">openpyxl</span>
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">Tkinter</span>
+</div>
+<button class="px-4 py-2 bg-zineBlack text-white font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal hover:bg-zineRed transition-colors">
+                VER MAIS →
+              </button>
+</div>
+</article>
+<!-- Card 002 (40% width) -->
+<article class="lg:col-span-5 bg-white p-6 md:p-8 border-3 border-zineBlack shadow-brutal-lg flex flex-col justify-between relative group hover:-translate-y-1 transition-transform">
+<div class="absolute -top-3.5 right-6 px-3 py-0.5 bg-zinePurple text-white font-mono text-xs font-bold border-2 border-zineBlack uppercase shadow-brutal">
+              LAB DE IA
+            </div>
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<span class="font-mono text-sm font-bold text-neutral-500">#002</span>
+<span class="font-hand text-xl text-zinePurple font-bold">"uma câmera que responde"</span>
+</div>
+<h3 class="text-3xl md:text-4xl font-anton uppercase mb-4 text-zineBlack">AGROVISION AI</h3>
+<!-- Wireframe image placeholder -->
+<div class="aspect-video w-full bg-stone-100 border-2 border-dashed border-stone-400 flex flex-col items-center justify-center mb-6 text-stone-500">
+<svg class="w-10 h-10 mb-2 opacity-50" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="font-mono text-xs font-bold uppercase tracking-wider">[ print do projeto ]</span>
+</div>
+<p class="font-sans text-neutral-700 leading-relaxed mb-6">
+                Visão computacional em tempo real com YOLO e um agente de IA que explica o que a câmera viu. Roda com Claude ou Ollama.
+              </p>
+</div>
+<div class="pt-4 border-t-2 border-stone-200 flex flex-wrap items-center justify-between gap-4">
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">Python</span>
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">FastAPI</span>
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">YOLO</span>
+<span class="px-2 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">Claude API</span>
+</div>
+<button class="px-4 py-2 bg-zineBlack text-white font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal hover:bg-zinePurple transition-colors">
+                VER MAIS →
+              </button>
+</div>
+</article>
+</div>
+<!-- ROW 2: 3 Cards Grid (003, 004, 005) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 003 -->
+<article class="bg-white p-6 border-3 border-zineBlack shadow-brutal-lg flex flex-col justify-between relative group hover:-translate-y-1 transition-transform">
+<div class="absolute -top-3.5 right-6 px-3 py-0.5 bg-yellow-300 text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack uppercase shadow-brutal">
+              CLIENTE
+            </div>
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<span class="font-mono text-sm font-bold text-neutral-500">#003</span>
+<span class="font-hand text-lg text-neutral-700 font-bold">"revista digital"</span>
+</div>
+<h3 class="text-2xl font-anton uppercase mb-3">PORTAL MULTICONTEÚDO</h3>
+<div class="aspect-video w-full bg-stone-100 border-2 border-dashed border-stone-400 flex flex-col items-center justify-center mb-4 text-stone-500">
+<span class="font-mono text-xs font-bold uppercase tracking-wider">[ print do projeto ]</span>
+</div>
+<p class="font-sans text-sm text-neutral-700 leading-relaxed mb-6">
+                Matérias, Eventos, Imóveis e Vídeos, com Modo Revista de virada de página e painel administrativo.
+              </p>
+</div>
+<div class="pt-4 border-t-2 border-stone-200">
+<div class="flex flex-wrap gap-1.5 mb-4">
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Next.js 16</span>
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">PostgreSQL</span>
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Prisma</span>
+</div>
+<button class="w-full py-2 bg-zineBlack text-white font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal hover:bg-neutral-800 transition-colors">
+                VER MAIS →
+              </button>
+</div>
+</article>
+<!-- Card 004 -->
+<article class="bg-white p-6 border-3 border-zineBlack shadow-brutal-lg flex flex-col justify-between relative group hover:-translate-y-1 transition-transform">
+<div class="absolute -top-3.5 right-6 px-3 py-0.5 bg-blue-300 text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack uppercase shadow-brutal">
+              EM ANDAMENTO
+            </div>
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<span class="font-mono text-sm font-bold text-neutral-500">#004</span>
+<span class="font-hand text-lg text-neutral-700 font-bold">"migrar sem perder SEO"</span>
+</div>
+<h3 class="text-2xl font-anton uppercase mb-3">MAQCENTER</h3>
+<div class="aspect-video w-full bg-stone-100 border-2 border-dashed border-stone-400 flex flex-col items-center justify-center mb-4 text-stone-500">
+<span class="font-mono text-xs font-bold uppercase tracking-wider">[ print do projeto ]</span>
+</div>
+<p class="font-sans text-sm text-neutral-700 leading-relaxed mb-6">
+                Crawler em Python audita o site antigo, gera os redirecionamentos 301 e o novo site nasce em Next.js com loja e painel.
+              </p>
+</div>
+<div class="pt-4 border-t-2 border-stone-200">
+<div class="flex flex-wrap gap-1.5 mb-4">
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Python</span>
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Next.js 16</span>
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Turso</span>
+</div>
+<button class="w-full py-2 bg-zineBlack text-white font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal hover:bg-neutral-800 transition-colors">
+                VER MAIS →
+              </button>
+</div>
+</article>
+<!-- Card 005 -->
+<article class="bg-white p-6 border-3 border-zineBlack shadow-brutal-lg flex flex-col justify-between relative group hover:-translate-y-1 transition-transform">
+<div class="absolute -top-3.5 right-6 px-3 py-0.5 bg-purple-300 text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack uppercase shadow-brutal">
+              PROJETO PRÓPRIO
+            </div>
+<div>
+<div class="flex items-baseline justify-between mb-2">
+<span class="font-mono text-sm font-bold text-neutral-500">#005</span>
+<span class="font-hand text-lg text-neutral-700 font-bold">"do carrinho ao boleto"</span>
+</div>
+<h3 class="text-2xl font-anton uppercase mb-3">E-COMMERCE BR</h3>
+<div class="aspect-video w-full bg-stone-100 border-2 border-dashed border-stone-400 flex flex-col items-center justify-center mb-4 text-stone-500">
+<span class="font-mono text-xs font-bold uppercase tracking-wider">[ print do projeto ]</span>
+</div>
+<p class="font-sans text-sm text-neutral-700 leading-relaxed mb-6">
+                Frete real, Pix, cartão e boleto confirmados por webhook, controle de estoque, login com Google e painel.
+              </p>
+</div>
+<div class="pt-4 border-t-2 border-stone-200">
+<div class="flex flex-wrap gap-1.5 mb-4">
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Next.js 16</span>
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Prisma</span>
+<span class="px-2 py-0.5 bg-stone-100 border border-zineBlack font-mono text-[11px]">Playwright</span>
+</div>
+<button class="w-full py-2 bg-zineBlack text-white font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal hover:bg-neutral-800 transition-colors">
+                VER MAIS →
+              </button>
+</div>
+</article>
+</div>
+<!-- ROW 3: Full-width Wide Card 006 -->
+<article class="bg-white p-6 md:p-8 border-3 border-zineBlack shadow-brutal-lg relative group hover:-translate-y-1 transition-transform">
+<div class="absolute -top-3.5 right-8 px-3 py-0.5 bg-pink-300 text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack uppercase shadow-brutal">
+            CLIENTES
+          </div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-8">
+<div class="flex items-baseline gap-4 mb-2">
+<span class="font-mono text-sm font-bold text-neutral-500">#006</span>
+<span class="font-hand text-2xl text-zineRed font-bold">"cinco clientes, cinco sites"</span>
+</div>
+<h3 class="text-3xl md:text-4xl font-anton uppercase mb-3">SITES DE CLIENTES</h3>
+<p class="font-sans text-neutral-700 text-base md:text-lg mb-6 leading-relaxed">
+                Landing pages e lojas sob medida para clínicas, consultorias e um ateliê artesanal. Foco em performance bruta, SEO agressivo e carregamento instantâneo.
+              </p>
+<div class="flex flex-wrap gap-2">
+<span class="px-2.5 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">HTML</span>
+<span class="px-2.5 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">CSS</span>
+<span class="px-2.5 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">JavaScript</span>
+<span class="px-2.5 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">Tailwind</span>
+<span class="px-2.5 py-1 bg-stone-100 border border-zineBlack font-mono text-xs">Cloudflare Workers</span>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col items-center justify-center">
+<div class="w-full aspect-video bg-stone-100 border-2 border-dashed border-stone-400 flex flex-col items-center justify-center mb-4 text-stone-500">
+<span class="font-mono text-xs font-bold uppercase tracking-wider">[ print do projeto ]</span>
+</div>
+<button class="w-full py-3 bg-zineBlack text-white font-mono text-sm font-bold border-2 border-zineBlack shadow-brutal hover:bg-zineRed transition-colors">
+                VER MAIS →
+              </button>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- END: IssuesSection -->
+<!-- BEGIN: SetlistSection -->
+<section class="bg-zineBlack text-zineCream py-24 px-6 relative border-b-4 border-zineBlack overflow-hidden" id="setlist">
+<!-- Stage lighting spotlight effect -->
+<div class="absolute top-0 left-1/4 w-96 h-96 bg-zinc-800/40 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+<!-- Left Column: The Concert Setlist Notebook Paper -->
+<div class="lg:col-span-8">
+<div class="relative ruled-notebook text-zineBlack p-8 md:p-12 border-4 border-zinc-900 shadow-brutal-xl transform rotate-[-1deg]">
+<!-- Realistic Masking Tape on paper corners -->
+<div class="absolute -top-4 left-6 w-28 h-8 tape-strip rotate-[-8deg] border border-stone-300"></div>
+<div class="absolute -top-4 right-10 w-28 h-8 tape-strip rotate-[5deg] border border-stone-300"></div>
+<div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-32 h-8 tape-strip rotate-[1deg] border border-stone-300"></div>
+<!-- Header -->
+<div class="mb-6">
+<h2 class="text-6xl md:text-7xl font-marker tracking-wide text-zinc-900 uppercase leading-none">
+              SETLIST
+            </h2>
+<p class="font-hand text-2xl text-zineRed font-bold -mt-1">
+              a turnê até aqui
+            </p>
+</div>
+<!-- Tracks -->
+<div class="space-y-4 font-marker text-base md:text-lg">
+<!-- Track 01 -->
+<div class="flex items-baseline justify-between border-b border-dashed border-stone-400 pb-1 text-zinePurple">
+<span class="tracking-wide">01 CARIMBO E PLANILHA</span>
+<span class="font-mono text-xs tracking-widest text-stone-600 uppercase">ADMINISTRATIVO</span>
+</div>
+<!-- Track 02 -->
+<div class="flex items-baseline justify-between border-b border-dashed border-stone-400 pb-1 text-zinePurple">
+<span class="tracking-wide">02 ATRÁS DO BALCÃO</span>
+<span class="font-mono text-xs tracking-widest text-stone-600 uppercase">VAREJO</span>
+</div>
+<!-- Track 03 -->
+<div class="flex items-baseline justify-between border-b border-dashed border-stone-400 pb-1 text-zinePurple">
+<span class="tracking-wide">03 JÁ TENTOU REINICIAR?</span>
+<span class="font-mono text-xs tracking-widest text-stone-600 uppercase">SUPORTE • BIOPARK</span>
+</div>
+<!-- Track 04 (Highlighted track) -->
+<div class="bg-red-50/80 p-3 border-2 border-zineRed rounded-sm shadow-sm">
+<div class="flex items-baseline justify-between text-zineRed font-bold mb-1">
+<span class="text-lg md:text-xl tracking-wide">04 SALA DO SERVIDOR</span>
+<span class="font-mono text-xs tracking-widest text-red-800 uppercase">INFRA • BIOPARK</span>
+</div>
+<p class="font-sans text-xs md:text-sm text-neutral-800 leading-relaxed font-normal">
+                Auxiliar de TI no Biopark: switches, firewall, Intune e Autopilot. E o começo do código de verdade: o Leitor RCO, scripts de remediação em PowerShell, deploy de softwares nos laboratórios, onboarding de alunos via CSV e runbooks.
+              </p>
+</div>
+<!-- Track 05 -->
+<div class="flex items-baseline justify-between border-b border-dashed border-stone-400 pb-1 text-zinePurple">
+<span class="tracking-wide">05 HELLO WORLD (REMIX)</span>
+<span class="font-mono text-xs tracking-widest text-stone-600 uppercase">FREELA • FAROL.DEV</span>
+</div>
+<!-- Track 06 -->
+<div class="flex items-baseline justify-between border-b border-dashed border-stone-400 pb-1 text-zinePurple">
+<span class="tracking-wide">06 FORMATURA</span>
+<span class="font-mono text-xs tracking-widest text-stone-600 uppercase">ADS + PÓS</span>
+</div>
+<!-- Track 07 -->
+<div class="flex items-baseline justify-between border-b border-dashed border-stone-400 pb-1 text-zinc-400">
+<span class="tracking-wide">07 BIS: ???</span>
+<span class="font-mono text-xs tracking-widest text-stone-400 uppercase">EM BREVE</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Guitar Amp + Mascots + Guitar Pick -->
+<div class="lg:col-span-4 flex flex-col items-center">
+<!-- Interactive note -->
+<div class="font-hand text-3xl text-zineCream font-bold mb-6 flex items-center gap-3">
+<span>← clique numa faixa</span>
+<span class="text-2xl text-zineRed font-marker">///</span>
+</div>
+<!-- Mascot + Guitar Pick Container -->
+<div class="relative flex flex-col items-center">
+<!-- Red Guitar Pick Sticker -->
+<div class="absolute -top-8 -left-6 w-12 h-14 bg-zineRed rounded-b-full rounded-t-lg border-2 border-zineBlack shadow-brutal flex items-center justify-center font-bold text-white text-xs rotate-[-15deg] z-20">
+            HH
+          </div>
+<!-- Mascots grouped atop the vintage amp -->
+<div class="flex items-end justify-center gap-4 mb-2 z-10">
+<!-- Mike the dog with headphones -->
+<div class="text-center">
+<span class="text-6xl drop-shadow-lg">🐶</span>
+</div>
+<!-- Missi the grumpy cat with witch hat -->
+<div class="text-center">
+<span class="text-6xl drop-shadow-lg">🐱</span>
+</div>
+</div>
+<!-- Vintage HH Guitar Amp Mockup -->
+<div class="w-64 bg-neutral-900 border-4 border-neutral-700 rounded-lg p-3 shadow-2xl relative">
+<!-- Control bar -->
+<div class="bg-neutral-800 rounded px-2 py-1 flex items-center justify-between mb-2 border border-neutral-700">
+<div class="flex gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-stone-300 border border-black inline-block"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-stone-300 border border-black inline-block"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-stone-300 border border-black inline-block"></span>
+</div>
+<span class="font-anton text-xs text-zineRed tracking-wider">HH</span>
+</div>
+<!-- Speaker Grill cloth pattern -->
+<div class="w-full h-36 bg-neutral-950 border-2 border-neutral-800 rounded bg-halftone-dots-light opacity-90 flex items-center justify-center">
+<div class="w-16 h-16 rounded-full border border-neutral-700 flex items-center justify-center text-neutral-600 font-mono text-[10px]">
+                HERICK
+              </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SetlistSection -->
+<!-- BEGIN: VirarODiscoSection -->
+<section class="bg-zinePurple text-zineCream py-20 px-6 border-b-4 border-zineBlack relative overflow-hidden" id="lado-b">
+<div class="absolute -top-12 -left-12 w-48 h-48 bg-zineLavender opacity-20 rounded-full blur-2xl"></div>
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+<!-- Vinyl Record Illustration & Sleeve -->
+<div class="lg:col-span-5 flex justify-center items-center">
+<div class="relative flex items-center">
+<!-- Album Sleeve Square -->
+<div class="w-56 h-56 md:w-64 md:h-64 bg-zineBlack border-4 border-zineBlack shadow-brutal-xl p-4 flex flex-col justify-between relative z-10 rotate-[-4deg]">
+<span class="font-mono text-xs text-zineRed font-bold">LADO A / LADO B</span>
+<div class="text-center font-anton text-3xl text-zinc-100 tracking-wider">
+              HERICK<br/><span class="text-zineLavender text-xl font-sans">UNPLUGGED</span>
+</div>
+<div class="flex justify-between items-center text-xs font-mono text-neutral-400">
+<span>33 RPM</span>
+<span>2025</span>
+</div>
+</div>
+<!-- Vinyl Record Disc sliding out -->
+<div class="w-52 h-52 md:w-60 md:h-60 rounded-full bg-neutral-950 border-4 border-neutral-800 shadow-2xl flex items-center justify-center -ml-28 md:-ml-32 relative z-0 animate-spin" style="animation-duration: 16s;">
+<!-- Grooves -->
+<div class="w-44 h-44 rounded-full border border-neutral-800 flex items-center justify-center">
+<div class="w-36 h-36 rounded-full border border-neutral-800 flex items-center justify-center">
+<!-- Center Red Label -->
+<div class="w-20 h-20 rounded-full bg-zineRed border-2 border-white flex flex-col items-center justify-center text-center">
+<span class="font-anton text-[10px] text-white tracking-widest">SIDE B</span>
+<div class="w-3 h-3 rounded-full bg-zineCream border border-black mt-0.5"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Call to Flip the Record -->
+<div class="lg:col-span-7">
+<span class="inline-block px-3 py-1 bg-zineCream text-zineBlack font-mono text-xs font-bold border-2 border-zineBlack shadow-brutal mb-4">
+          TRANSIÇÃO DE FAIXA
+        </span>
+<h2 class="text-5xl md:text-7xl font-anton uppercase tracking-tight text-white mb-4">
+          ISSO FOI O LADO A.
+        </h2>
+<p class="font-sans text-xl md:text-2xl text-purple-100 max-w-xl mb-8 leading-relaxed">
+          Quer conhecer o Herick fora do expediente? Música, animes, jogos, xadrez e os verdadeiros gerentes da casa.
+        </p>
+<!-- Big Brutalist Flip Button -->
+<div>
+<a class="inline-flex items-center gap-3 px-8 py-4 bg-zineCream text-zineBlack font-anton text-2xl md:text-3xl uppercase tracking-wider border-3 border-zineBlack shadow-brutal-xl hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all" href="#contato">
+            VIRAR O DISCO → LADO B
+          </a>
+</div>
+</div>
+</div>
+</section>
+<!-- END: VirarODiscoSection -->
+<!-- BEGIN: ContatoSection -->
+<section class="bg-zineCream text-zineBlack py-24 px-6 relative border-b-4 border-zineBlack" id="contato">
+<div class="max-w-[1440px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Left: Gig Ticket Pass -->
+<div class="lg:col-span-8">
+<div class="bg-white border-4 border-zineBlack shadow-brutal-xl p-8 relative">
+<!-- Ticket notch cutouts -->
+<div class="hidden md:block absolute -left-5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-zineCream border-r-4 border-zineBlack"></div>
+<div class="hidden md:block absolute -right-5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-zineCream border-l-4 border-zineBlack"></div>
+<div class="flex flex-wrap items-center justify-between border-b-3 border-dashed border-zineBlack pb-4 mb-6">
+<div>
+<span class="font-mono text-xs font-bold text-neutral-500 uppercase tracking-widest">INGRESSO VIP // BACKSTAGE</span>
+<h2 class="text-4xl md:text-6xl font-anton uppercase tracking-tight">BORA CONVERSAR</h2>
+</div>
+<div class="font-marker text-2xl text-zineRed rotate-[-3deg]">
+                ACESSO LIVRE
+              </div>
+</div>
+<!-- Contact Channels Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 font-sans">
+<!-- Email Box with Copy Button -->
+<div class="p-4 bg-stone-50 border-2 border-zineBlack">
+<span class="font-mono text-xs uppercase font-bold text-neutral-500 block mb-1">EMAIL DIRETO</span>
+<div class="flex items-center justify-between gap-2">
+<span class="font-mono text-sm md:text-base font-bold text-zineBlack break-all" id="email-text">herickhoelscher@gmail.com</span>
+<button class="px-2.5 py-1 bg-zineBlack text-white font-mono text-xs font-bold hover:bg-zineRed transition-colors" id="copy-btn">
+                    COPIAR
+                  </button>
+</div>
+</div>
+<!-- GitHub -->
+<div class="p-4 bg-stone-50 border-2 border-zineBlack flex flex-col justify-between">
+<span class="font-mono text-xs uppercase font-bold text-neutral-500 block mb-1">GITHUB</span>
+<a class="font-mono text-sm md:text-base font-bold text-zinePurple hover:underline" href="https://github.com/herickhoelscher" rel="noopener noreferrer" target="_blank">
+                  @herickhoelscher →
+                </a>
+</div>
+<!-- LinkedIn -->
+<div class="p-4 bg-stone-50 border-2 border-zineBlack flex flex-col justify-between">
+<span class="font-mono text-xs uppercase font-bold text-neutral-500 block mb-1">LINKEDIN</span>
+<a class="font-mono text-sm md:text-base font-bold text-zineBlack hover:text-zineRed hover:underline" href="https://linkedin.com" rel="noopener noreferrer" target="_blank">
+                  in/herickhoelscher →
+                </a>
+</div>
+<!-- Location -->
+<div class="p-4 bg-stone-50 border-2 border-zineBlack">
+<span class="font-mono text-xs uppercase font-bold text-neutral-500 block mb-1">LOCALIZAÇÃO</span>
+<span class="font-mono text-sm md:text-base font-bold text-neutral-800">Toledo / Oeste do Paraná</span>
+</div>
+</div>
+<!-- Fake barcode footer -->
+<div class="pt-4 border-t-2 border-stone-300 flex items-center justify-between">
+<div class="font-mono text-[9px] tracking-widest text-neutral-400">
+                ||| | ||||| || ||| |||| || | |||| ||| ||||| | ||
+              </div>
+<span class="font-mono text-xs text-neutral-500">HERICK-2025-DEV</span>
+</div>
+</div>
+</div>
+<!-- Right: Suspended Sneakers hanging from the Ethernet Cable -->
+<div class="lg:col-span-4 flex flex-col items-center justify-center relative">
+<!-- Cable ending with hanging shoes illustration -->
+<div class="flex flex-col items-center">
+<!-- Cable coming from above -->
+<div class="w-2.5 h-16 bg-neutral-900 border-x border-neutral-700"></div>
+<!-- Tied RJ45 connector head knot -->
+<div class="w-6 h-6 bg-neutral-800 border-2 border-zineBlack rounded-sm flex items-center justify-center text-[10px] text-white font-mono">
+              RJ
+            </div>
+<!-- Hanging shoelaces -->
+<div class="w-16 h-8 border-b-2 border-dashed border-zineBlack mt-1"></div>
+<!-- Sneakers graphic (punk canvas high-tops) -->
+<div class="flex gap-2 items-start mt-2">
+<div class="p-3 bg-zineRed text-white border-2 border-zineBlack shadow-brutal rotate-[-12deg] text-center">
+<span class="text-3xl block">👟</span>
+<span class="font-mono text-[9px] font-bold">CONVERSE</span>
+</div>
+<div class="p-3 bg-zineBlack text-white border-2 border-white shadow-brutal rotate-[8deg] text-center">
+<span class="text-3xl block">👟</span>
+<span class="font-mono text-[9px] font-bold">PUNK</span>
+</div>
+</div>
+<span class="font-hand text-xl text-neutral-700 mt-4 text-center">
+              cabo desconectado.<br/>fim do expediente Lado A.
+            </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: ContatoSection -->
+<!-- BEGIN: MainFooter -->
+<footer class="bg-zineBlack text-zineCream py-12 px-6 border-t-4 border-zineBlack">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6 font-mono text-xs md:text-sm">
+<!-- Footer nav -->
+<nav aria-label="Navegação secundária">
+<ul class="flex flex-wrap items-center gap-4 md:gap-6 uppercase tracking-wider text-neutral-400">
+<li><a class="hover:text-zineRed transition-colors" href="#quem">01 QUEM</a></li>
+<li><a class="hover:text-zineRed transition-colors" href="#issues">02 ISSUES</a></li>
+<li><a class="hover:text-zineRed transition-colors" href="#setlist">03 SETLIST</a></li>
+<li><a class="hover:text-zineRed transition-colors" href="#contato">04 CONTATO</a></li>
+<li><a class="text-zineLavender hover:underline" href="#lado-b">LADO B ↻</a></li>
+</ul>
+</nav>
+<!-- Signature text -->
+<div class="text-neutral-400 text-center md:text-right font-sans text-xs">
+        Herick Hoelscher © 2025 • Feito à mão com café, código e rock'n'roll.
+      </div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="clipboard-interaction">
+    // Quick copy script for email contact
+    const copyBtn = document.getElementById('copy-btn');
+    const emailText = document.getElementById('email-text');
+
+    if (copyBtn && emailText) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(emailText.textContent.trim()).then(() => {
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = 'COPIADO!';
+          copyBtn.classList.add('bg-green-600');
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('bg-green-600');
+          }, 2000);
+        });
+      });
+    }
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>

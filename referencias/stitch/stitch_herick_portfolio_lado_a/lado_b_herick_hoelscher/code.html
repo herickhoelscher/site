@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LADO B - Herick Hoelscher</title>
+<!-- Google Fonts: Anton, Space Mono, Space Grotesk, Permanent Marker -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Permanent+Marker&amp;family=Space+Grotesk:wght@400;500;700&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            zine: {
+              purple: '#5D438A',
+              purpleDeep: '#48316D',
+              purpleLight: '#765BA7',
+              lavender: '#A68BE6',
+              cream: '#EFE9DA',
+              black: '#141414',
+              red: '#E8432E',
+              yellow: '#F9D423',
+              tape: '#e2d5bd',
+            }
+          },
+          fontFamily: {
+            anton: ['Anton', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace'],
+            grotesk: ['"Space Grotesk"', 'sans-serif'],
+            marker: ['"Permanent Marker"', 'cursive'],
+          },
+          boxShadow: {
+            'brutal-sm': '2px 2px 0 #141414',
+            'brutal': '4px 4px 0 #141414',
+            'brutal-lg': '6px 6px 0 #141414',
+            'brutal-red': '4px 4px 0 #E8432E',
+            'brutal-tape': '1px 2px 4px rgba(0,0,0,0.15)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Brutalist Zine Styles -->
+<style data-purpose="zine-textures-and-accents">
+    /* Fundo com granulado analógico */
+    body {
+      background-color: #5D438A;
+      background-image: 
+        radial-gradient(rgba(20, 20, 20, 0.15) 1px, transparent 0),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+      background-size: 8px 8px, 100% 100%;
+      color: #141414;
+      overflow-x: hidden;
+    }
+
+    /* Padrão Halftone */
+    .pattern-halftone {
+      background-image: radial-gradient(#141414 18%, transparent 19%);
+      background-size: 8px 8px;
+      opacity: 0.12;
+    }
+
+    /* Efeito de Fita Adesiva Crepe */
+    .tape-strip {
+      background-color: rgba(235, 224, 201, 0.92);
+      border-left: 2px dashed rgba(180, 160, 130, 0.6);
+      border-right: 2px dashed rgba(180, 160, 130, 0.6);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(1px);
+    }
+
+    /* Tachinha Vermelha com Sombra Dura */
+    .pushpin-red {
+      width: 14px;
+      height: 14px;
+      background-color: #E8432E;
+      border: 2px solid #141414;
+      border-radius: 50%;
+      box-shadow: 2px 2px 0 #141414;
+      position: relative;
+    }
+    .pushpin-red::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 4px;
+      height: 4px;
+      background: #FFF;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+
+    /* Ranhuras de Disco de Vinil */
+    .vinyl-grooves {
+      background: radial-gradient(circle, 
+        #1c1c1c 20%, 
+        #292929 21%, 
+        #171717 35%, 
+        #242424 36%, 
+        #141414 48%, 
+        #222222 49%, 
+        #121212 60%, 
+        #2b2b2b 61%, 
+        #111111 75%, 
+        #1f1f1f 76%, 
+        #0d0d0d 100%
+      );
+      box-shadow: 
+        inset 0 0 40px rgba(0,0,0,0.8),
+        8px 8px 0px #141414;
+    }
+
+    /* Efeito de papel envelhecido / bloco rascunho */
+    .zine-paper {
+      background-color: #EFE9DA;
+      border: 3px solid #141414;
+      box-shadow: 6px 6px 0 #141414;
+    }
+
+    /* Grid do mural cortiça */
+    .pinboard-bg {
+      background-color: #d6ccb8;
+      background-image: radial-gradient(#9e8e75 1px, transparent 0);
+      background-size: 12px 12px;
+    }
+  </style>
+<!-- END: Custom Brutalist Zine Styles -->
+</head>
+<body class="font-grotesk antialiased relative selection:bg-zine-red selection:text-white">
+<!-- BEGIN: Ethernet Cable Graphic -->
+<!-- Cabo ethernet descendo pela lateral direita sem interferir no conteúdo -->
+<div class="fixed right-6 top-0 bottom-0 w-8 z-30 pointer-events-none hidden xl:flex flex-col items-center" data-purpose="ethernet-cable-right">
+<!-- Cabo preto linear -->
+<div class="w-2.5 h-full bg-zine-black border-l border-r border-zinc-700 relative">
+<div class="absolute inset-y-0 left-0.5 w-0.5 bg-zinc-600 opacity-60"></div>
+</div>
+<!-- Conector RJ45 estilizado no fundo fixo -->
+<div class="absolute bottom-4 flex flex-col items-center">
+<div class="w-6 h-10 bg-zine-black border-2 border-zinc-500 rounded-sm flex flex-col items-center p-1">
+<div class="w-3 h-1 bg-zine-yellow mb-1"></div>
+<div class="w-4 h-5 bg-zinc-800 border border-zinc-600 rounded-[2px] flex items-center justify-center">
+<span class="text-[7px] text-zinc-400 font-mono">RJ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- END: Ethernet Cable Graphic -->
+<!-- BEGIN: TopHeader -->
+<header class="w-full bg-zine-black text-zine-cream border-b-4 border-zine-black sticky top-0 z-40">
+<div class="max-w-[1440px] mx-auto px-6 h-14 flex items-center justify-between">
+<!-- Link Retorno Brutalista Lado A -->
+<a class="inline-flex items-center gap-2 bg-zine-red text-zine-cream px-3.5 py-1.5 text-xs md:text-sm font-mono font-bold uppercase tracking-wider border-2 border-zine-cream shadow-brutal-sm hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-150" href="#lado-a">
+<span>←</span>
+<span>VOLTAR PRO LADO A</span>
+</a>
+<!-- Título Central de Faixa -->
+<div class="text-center">
+<h1 class="font-mono text-xs md:text-sm tracking-[0.28em] uppercase text-zinc-300 font-bold flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-zine-red animate-pulse"></span>
+          HERICK HOELSCHER // LADO B
+        </h1>
+</div>
+<!-- Seletor de Idioma -->
+<div class="flex items-center gap-2">
+<button class="border-2 border-zine-cream text-zine-cream px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider hover:bg-zine-cream hover:text-zine-black transition-colors" type="button">
+          PT / EN
+        </button>
+</div>
+</div>
+</header>
+<!-- END: TopHeader -->
+<!-- BEGIN: Hero Section -->
+<main class="max-w-[1440px] mx-auto px-6 pt-10 pb-20 relative">
+<section class="relative mb-24" data-purpose="hero-lado-b">
+<!-- Halftone Background Layer -->
+<div class="absolute inset-0 pattern-halftone pointer-events-none rounded-3xl"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-zine-purpleDeep border-4 border-zine-black p-8 md:p-12 rounded-xl shadow-brutal-lg">
+<!-- Bloco de Texto Hero (Esquerda) -->
+<div class="lg:col-span-6 space-y-6">
+<!-- Tag de Fita Crepe -->
+<div class="inline-block relative">
+<div class="tape-strip px-4 py-1.5 transform -rotate-2">
+<span class="font-marker text-zine-red text-sm tracking-wide">
+                * o Herick fora do expediente *
+              </span>
+</div>
+</div>
+<!-- Título Monumental -->
+<div class="space-y-1">
+<span class="block font-mono text-zine-lavender text-sm tracking-[0.35em] font-bold">RELAX // ANALOG // HOBBIES</span>
+<h2 class="font-anton text-7xl md:text-9xl tracking-tight text-zine-cream leading-[0.88] drop-shadow-[4px_4px_0_#141414]">
+              LADO B
+            </h2>
+</div>
+<p class="font-grotesk text-zine-cream/90 text-lg md:text-xl max-w-lg leading-relaxed">
+            Sem reuniões, sem dockerfiles quebrando às 18h e sem commit de emergência. Apenas música alta na agulha, animes no talo, xadrez tático e a gerência indiscutível dos dois bichos da casa.
+          </p>
+<!-- Badges de Status -->
+<div class="flex flex-wrap items-center gap-3 pt-2 font-mono text-xs">
+<span class="bg-zine-black text-zine-cream px-3 py-1.5 border border-zinc-700 shadow-brutal-sm">
+              VINYL 33⅓ RPM
+            </span>
+<span class="bg-zine-yellow text-zine-black font-bold px-3 py-1.5 border border-zine-black shadow-brutal-sm">
+              STEREO HI-FI
+            </span>
+<span class="bg-zine-lavender text-zine-black font-bold px-3 py-1.5 border border-zine-black shadow-brutal-sm">
+              CURADORIA MANUAL
+            </span>
+</div>
+</div>
+<!-- Bloco Visual: Vinil Gigante + Mike Dormindo (Direita) -->
+<div class="lg:col-span-6 flex justify-center items-center relative">
+<div class="relative w-[340px] h-[340px] md:w-[420px] md:h-[420px]">
+<!-- Disco de Vinil -->
+<div class="w-full h-full rounded-full vinyl-grooves relative flex items-center justify-center border-4 border-zine-black animate-[spin_30s_linear_infinite]">
+<!-- Rótulo Central -->
+<div class="w-36 h-36 md:w-44 md:h-44 rounded-full bg-zine-cream border-4 border-zine-black flex flex-col items-center justify-center text-center p-3 relative shadow-inner">
+<div class="w-6 h-6 rounded-full bg-zine-black border-2 border-zinc-400 absolute"></div>
+<span class="font-anton text-xs md:text-sm tracking-widest text-zine-red uppercase mt-8">
+                  ESTÉREO
+                </span>
+<span class="font-anton text-2xl md:text-3xl text-zine-black tracking-tight leading-none">
+                  LADO B
+                </span>
+<span class="font-mono text-[9px] text-zinc-600 mt-1 uppercase font-bold">
+                  33 RPM · 2025
+                </span>
+</div>
+</div>
+<!-- Capas de Vinil Empilhadas com Mike Dormindo -->
+<div class="absolute -bottom-6 -left-4 md:-bottom-8 md:-left-8 bg-zine-cream border-3 border-zine-black p-3 rounded shadow-brutal w-60 md:w-72 transform -rotate-3 z-20">
+<div class="tape-strip absolute -top-3 left-10 w-24 h-5 transform rotate-2"></div>
+<!-- Mike (Poodle Preto com Headphone Vermelho) -->
+<div class="bg-zine-purpleDeep border-2 border-zine-black p-3 text-center text-zinc-100 rounded">
+<div class="relative inline-block mx-auto mb-1">
+<!-- Ilustração vetorial minimalista zine do Mike enroladinho dormindo -->
+<svg class="w-24 h-16 mx-auto text-zinc-900" fill="none" viewbox="0 0 100 70" xmlns="http://www.w3.org/2000/svg">
+<!-- Corpo encolhido estilo poodle felpudo -->
+<ellipse cx="50" cy="45" fill="#141414" rx="38" ry="22" stroke="#000" stroke-width="2"></ellipse>
+<circle cx="30" cy="35" fill="#141414" r="16" stroke="#000" stroke-width="2"></circle>
+<ellipse cx="22" cy="42" fill="#202020" rx="7" ry="12"></ellipse>
+<ellipse cx="38" cy="42" fill="#202020" rx="6" ry="10"></ellipse>
+<!-- Olhinhos fechados dormindo zzz -->
+<path d="M26 36C28 38 31 38 33 36" stroke="#EFE9DA" stroke-linecap="round" stroke-width="2"></path>
+<circle cx="29" cy="40" fill="#E8432E" r="2"></circle>
+<!-- Headphone Vermelho -->
+<path d="M15 35C15 20 45 20 45 35" stroke="#E8432E" stroke-linecap="round" stroke-width="4"></path>
+<rect fill="#E8432E" height="12" rx="3" stroke="#141414" stroke-width="1.5" width="7" x="11" y="32"></rect>
+<rect fill="#E8432E" height="12" rx="3" stroke="#141414" stroke-width="1.5" width="7" x="42" y="32"></rect>
+<!-- Focinho zzz -->
+<text fill="#EFE9DA" font-family="monospace" font-size="10" font-weight="bold" x="68" y="25">Zzz</text>
+</svg>
+</div>
+<div class="font-marker text-xs text-zine-cream">Mike (chefe) no intervalo</div>
+<div class="font-mono text-[9px] text-zinc-300">Dormindo em cima da pilha de LPs</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Hero Section -->
+<!-- BEGIN: Retro Collections -->
+<section class="mb-24 space-y-16" data-purpose="retro-collections">
+<!-- Cabeçalho da Seção de Coleções -->
+<div class="flex items-center gap-4 border-b-4 border-zine-black pb-4">
+<span class="bg-zine-red text-zine-cream font-anton text-2xl px-3 py-1 border-2 border-zine-black shadow-brutal-sm uppercase">
+          COLEÇÃO ANALÓGICA &amp; RETRÔ
+        </span>
+<span class="font-marker text-zine-cream text-lg hidden sm:inline-block">
+          fita magnética, cartuchos e fitas rebobinadas
+        </span>
+</div>
+<!-- Grid com os 4 Blocos Retrô -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+<!-- BLOCO 1: FITA CASSETTE C-60 (Playlist de Madrugada) -->
+<article class="zine-paper p-6 relative" data-purpose="cassette-c60">
+<!-- Fita adesiva no topo -->
+<div class="tape-strip absolute -top-3.5 left-1/3 w-36 h-6 transform -rotate-1"></div>
+<div class="flex items-center justify-between border-b-2 border-zine-black pb-3 mb-4">
+<div>
+<span class="font-mono text-[10px] text-zinc-600 block uppercase font-bold">LADO B // CASSETTE TAPE</span>
+<h3 class="font-anton text-2xl text-zine-black tracking-wide">C-60 · PLAYLIST DA MADRUGADA</h3>
+</div>
+<span class="bg-zine-black text-zine-cream font-mono text-xs px-2 py-1 font-bold">TYPE II / CrO2</span>
+</div>
+<!-- Corpo da Fita Cassette Retrô Desenvolvida em SVG/CSS -->
+<div class="bg-zinc-800 border-4 border-zine-black rounded-lg p-4 shadow-brutal mb-5 relative overflow-hidden">
+<!-- Parafusos dos cantos da fita -->
+<div class="absolute top-2 left-2 w-2 h-2 rounded-full bg-zinc-400 border border-zinc-900"></div>
+<div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-zinc-400 border border-zinc-900"></div>
+<div class="absolute bottom-2 left-2 w-2 h-2 rounded-full bg-zinc-400 border border-zinc-900"></div>
+<div class="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-zinc-400 border border-zinc-900"></div>
+<!-- Etiqueta adesiva central da fita -->
+<div class="bg-zine-cream border-2 border-zine-black rounded p-3 text-center">
+<div class="border-b border-dashed border-zinc-400 pb-1 mb-2 flex justify-between items-center text-[10px] font-mono font-bold">
+<span class="text-zine-red">SIDE B · 30 MIN</span>
+<span>NO DOLBY NR</span>
+</div>
+<!-- Carretéis e Janela de Fita Magnética -->
+<div class="bg-zinc-900 border-2 border-zinc-600 rounded-full py-2 px-4 flex items-center justify-around my-2">
+<!-- Carretel Esquerdo -->
+<div class="w-8 h-8 rounded-full border-2 border-dashed border-zinc-400 flex items-center justify-center animate-[spin_10s_linear_infinite]">
+<div class="w-2.5 h-2.5 bg-zinc-200 rounded-full"></div>
+</div>
+<!-- Visor com Fita Magnética -->
+<div class="w-20 h-4 bg-amber-950/80 border border-zinc-600 rounded flex items-center justify-center">
+<div class="w-12 h-1 bg-amber-800 rounded"></div>
+</div>
+<!-- Carretel Direito -->
+<div class="w-8 h-8 rounded-full border-2 border-dashed border-zinc-400 flex items-center justify-center animate-[spin_10s_linear_infinite]">
+<div class="w-2.5 h-2.5 bg-zinc-200 rounded-full"></div>
+</div>
+</div>
+<div class="font-marker text-xs text-zine-black pt-1">
+                "gravações raras &amp; fones altos"
+              </div>
+</div>
+</div>
+<!-- Faixas da Fita datilografadas -->
+<ul class="space-y-2.5 font-mono text-xs">
+<li class="p-2.5 bg-white border-2 border-zine-black flex items-center justify-between shadow-brutal-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 bg-zine-black text-white rounded flex items-center justify-center text-[10px] font-bold">▶ 1</span>
+<span class="font-bold text-zinc-900">Comfortably Numb</span>
+<span class="text-zinc-500">· Pink Floyd</span>
+</div>
+<span class="text-zinc-400 text-[10px]">06:21</span>
+</li>
+<li class="p-2.5 bg-white border-2 border-zine-black flex items-center justify-between shadow-brutal-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 bg-zine-black text-white rounded flex items-center justify-center text-[10px] font-bold">▶ 2</span>
+<span class="font-bold text-zinc-900">I Was Made For Lovin' You</span>
+<span class="text-zinc-500">· KISS</span>
+</div>
+<span class="text-zinc-400 text-[10px]">04:31</span>
+</li>
+<li class="p-2.5 bg-white border-2 border-zine-black flex items-center justify-between shadow-brutal-sm">
+<div class="flex items-center gap-2">
+<span class="w-5 h-5 bg-zine-black text-white rounded flex items-center justify-center text-[10px] font-bold">▶ 3</span>
+<span class="font-bold text-zinc-900">Aoi, Koi, Daidaiiro No Hi</span>
+<span class="text-zinc-500">· MASS OF THE FERMENTING DREGS</span>
+</div>
+<span class="text-zinc-400 text-[10px]">03:45</span>
+</li>
+</ul>
+</article>
+<!-- BLOCO 2: FITAS VHS (Animes) -->
+<article class="zine-paper p-6 relative" data-purpose="vhs-tapes">
+<!-- Tachinha no canto -->
+<div class="pushpin-red absolute top-3 right-4"></div>
+<div class="flex items-center justify-between border-b-2 border-zine-black pb-3 mb-4">
+<div>
+<span class="font-mono text-[10px] text-zinc-600 block uppercase font-bold">ESTANTE // ANALOG VIDEO</span>
+<h3 class="font-anton text-2xl text-zine-black tracking-wide">FITAS VHS · ANIMES</h3>
+</div>
+<span class="bg-zine-red text-zine-cream font-mono text-xs px-2 py-1 font-bold">SP MODE</span>
+</div>
+<p class="font-grotesk text-xs text-zinc-700 mb-4">
+            Rótulos adesivos gastos pelo tempo. Sem ilustrações oficiais, apenas a estética crua de videolocadora underground e fitas gravadas da TV.
+          </p>
+<!-- Caixas de VHS empilhadas verticalmente -->
+<div class="space-y-3 font-mono">
+<!-- VHS 1: Attack on Titan -->
+<div class="bg-zinc-900 border-3 border-zine-black text-zinc-100 p-3 shadow-brutal flex items-center justify-between relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-2.5 bg-zine-red"></div>
+<div class="pl-3">
+<span class="text-[9px] text-zinc-400 block tracking-widest uppercase">TAPE VOL. 01 · HI-FI STEREO</span>
+<span class="font-anton text-xl tracking-wider text-zine-cream">ATTACK ON TITAN</span>
+</div>
+<div class="text-right">
+<span class="tape-strip px-2 py-0.5 text-[10px] font-marker text-zine-black inline-block transform rotate-1">
+                  REBOBINADA
+                </span>
+</div>
+</div>
+<!-- VHS 2: Frieren -->
+<div class="bg-zinc-900 border-3 border-zine-black text-zinc-100 p-3 shadow-brutal flex items-center justify-between relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-2.5 bg-zine-lavender"></div>
+<div class="pl-3">
+<span class="text-[9px] text-zinc-400 block tracking-widest uppercase">TAPE VOL. 02 · NTSC CH-03</span>
+<span class="font-anton text-xl tracking-wider text-zine-lavender">FRIEREN</span>
+</div>
+<div class="text-right">
+<span class="tape-strip px-2 py-0.5 text-[10px] font-marker text-zine-black inline-block transform -rotate-1">
+                  FAVORITA
+                </span>
+</div>
+</div>
+<!-- VHS 3: Edgerunners -->
+<div class="bg-zinc-900 border-3 border-zine-black text-zinc-100 p-3 shadow-brutal flex items-center justify-between relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-2.5 bg-zine-yellow"></div>
+<div class="pl-3">
+<span class="text-[9px] text-zinc-400 block tracking-widest uppercase">TAPE VOL. 03 · EP 01-10</span>
+<span class="font-anton text-xl tracking-wider text-zine-yellow">EDGERUNNERS</span>
+</div>
+<div class="text-right">
+<span class="tape-strip px-2 py-0.5 text-[10px] font-marker text-zine-red inline-block transform rotate-2">
+                  OVERDRIVE
+                </span>
+</div>
+</div>
+</div>
+<div class="mt-4 text-right">
+<span class="font-marker text-xs text-zine-red">"Por favor, rebobine antes de devolver!"</span>
+</div>
+</article>
+<!-- BLOCO 3: CARTUCHOS (Jogos) -->
+<article class="zine-paper p-6 relative" data-purpose="retro-cartridges">
+<!-- Tape no topo -->
+<div class="tape-strip absolute -top-3 right-8 w-28 h-5 transform rotate-3"></div>
+<div class="flex items-center justify-between border-b-2 border-zine-black pb-3 mb-4">
+<div>
+<span class="font-mono text-[10px] text-zinc-600 block uppercase font-bold">16-BIT / CONSOLE CORNER</span>
+<h3 class="font-anton text-2xl text-zine-black tracking-wide">CARTUCHOS DE JOGO</h3>
+</div>
+<span class="bg-zinc-800 text-zine-cream font-mono text-xs px-2 py-1 font-bold">SLOT 01</span>
+</div>
+<p class="font-grotesk text-xs text-zinc-700 mb-4">
+            Cartuchos cinza com encaixes ranhurados e stickers de identificação. Soprar o conector ainda é boa prática.
+          </p>
+<!-- Grade de Cartuchos Retrô 16-Bit -->
+<div class="grid grid-cols-2 gap-3 font-mono">
+<!-- Cartucho 1 -->
+<div class="bg-zinc-300 border-3 border-zine-black p-2.5 rounded-t-lg shadow-brutal relative">
+<div class="h-2 bg-zinc-400 rounded-t mb-2 border-b border-zinc-500"></div>
+<div class="bg-zine-red text-white p-2 border-2 border-zine-black rounded text-center">
+<span class="text-[8px] block tracking-widest text-zinc-200">RPG / TACTICS</span>
+<span class="font-anton text-sm sm:text-base leading-tight block">BALDUR'S GATE 3</span>
+</div>
+<div class="text-[8px] text-center text-zinc-700 mt-1 font-bold">CART. #0892</div>
+</div>
+<!-- Cartucho 2 -->
+<div class="bg-zinc-300 border-3 border-zine-black p-2.5 rounded-t-lg shadow-brutal relative">
+<div class="h-2 bg-zinc-400 rounded-t mb-2 border-b border-zinc-500"></div>
+<div class="bg-emerald-700 text-white p-2 border-2 border-zine-black rounded text-center">
+<span class="text-[8px] block tracking-widest text-emerald-200">SANDBOX / BLOCKS</span>
+<span class="font-anton text-sm sm:text-base leading-tight block">MINECRAFT</span>
+</div>
+<div class="text-[8px] text-center text-zinc-700 mt-1 font-bold">CART. #0014</div>
+</div>
+<!-- Cartucho 3 -->
+<div class="bg-zinc-300 border-3 border-zine-black p-2.5 rounded-t-lg shadow-brutal relative">
+<div class="h-2 bg-zinc-400 rounded-t mb-2 border-b border-zinc-500"></div>
+<div class="bg-blue-700 text-white p-2 border-2 border-zine-black rounded text-center">
+<span class="text-[8px] block tracking-widest text-blue-200">MOBA / ARAM ONLY</span>
+<span class="font-anton text-sm sm:text-base leading-tight block">LEAGUE OF LEGENDS</span>
+</div>
+<div class="text-[8px] text-center text-zinc-700 mt-1 font-bold">CART. #5521</div>
+</div>
+<!-- Cartucho 4 -->
+<div class="bg-zinc-300 border-3 border-zine-black p-2.5 rounded-t-lg shadow-brutal relative">
+<div class="h-2 bg-zinc-400 rounded-t mb-2 border-b border-zinc-500"></div>
+<div class="bg-amber-600 text-white p-2 border-2 border-zine-black rounded text-center">
+<span class="text-[8px] block tracking-widest text-amber-100">BRAWLER / ARENA</span>
+<span class="font-anton text-sm sm:text-base leading-tight block">BRAWLHALLA</span>
+</div>
+<div class="text-[8px] text-center text-zinc-700 mt-1 font-bold">CART. #3319</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between text-[11px] font-mono border-t border-zinc-300 pt-2">
+<span class="text-zinc-500 font-bold">SOPRO DE CONTATO: OK</span>
+<span class="font-marker text-zine-purpleDeep">press start to continue</span>
+</div>
+</article>
+<!-- BLOCO 4: XADREZ (Chess Player + Missi) -->
+<article class="zine-paper p-6 relative" data-purpose="chess-club">
+<!-- Tachinha Vermelha -->
+<div class="pushpin-red absolute top-3 left-4"></div>
+<div class="flex items-center justify-between border-b-2 border-zine-black pb-3 mb-4">
+<div>
+<span class="font-mono text-[10px] text-zinc-600 block uppercase font-bold">TACTICS &amp; GAMBITS</span>
+<h3 class="font-anton text-2xl text-zine-black tracking-wide">CHESS PLAYER</h3>
+</div>
+<span class="bg-zine-yellow text-zine-black font-mono text-xs px-2 py-1 font-bold">RAPID &amp; BLITZ</span>
+</div>
+<!-- Rating humorístico -->
+<div class="bg-zine-purpleDeep text-zine-cream border-2 border-zine-black p-3 rounded mb-4 shadow-brutal-sm">
+<div class="font-mono text-xs text-zine-lavender uppercase tracking-wider">STATUS OFICIAL DE RATING:</div>
+<div class="font-anton text-lg text-zine-cream mt-0.5">
+              RATING: DEPENDE DA QUANTIDADE DE CAFÉ
+            </div>
+</div>
+<!-- Tabuleiro e Cena da Gata Missi Derrubando Peça -->
+<div class="grid grid-cols-12 gap-4 items-center bg-white border-2 border-zine-black p-3.5 shadow-brutal">
+<!-- Mini Tabuleiro Estilizado -->
+<div class="col-span-5 grid grid-cols-4 grid-rows-4 border-2 border-zine-black w-28 h-28 mx-auto shadow-brutal-sm">
+<div class="bg-zine-cream"></div><div class="bg-zinc-800"></div><div class="bg-zine-cream"></div><div class="bg-zinc-800"></div>
+<div class="bg-zinc-800"></div><div class="bg-zine-cream"></div><div class="bg-zinc-800"></div><div class="bg-zine-cream"></div>
+<div class="bg-zine-cream"></div><div class="bg-zinc-800"></div><div class="bg-zine-cream"></div><div class="bg-zinc-800"></div>
+<div class="bg-zinc-800"></div><div class="bg-zine-cream"></div><div class="bg-zinc-800 relative">
+<!-- Peão sendo empurrado -->
+<span class="absolute -right-3 -bottom-2 text-xs font-mono font-bold bg-zine-red text-white px-1 border border-black transform rotate-45">♟ ↷</span>
+</div><div class="bg-zine-cream"></div>
+</div>
+<!-- Missi Bruxa com Chapéu de Mago e Comentário -->
+<div class="col-span-7 space-y-1.5">
+<div class="flex items-center gap-2">
+<!-- Ilustração Vetorial da Missi com Chapéu de Bruxa Roxo com Estrelas -->
+<svg class="w-12 h-14 shrink-0" fill="none" viewbox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
+<!-- Carinha da Siamesa -->
+<circle cx="25" cy="38" fill="#EFE9DA" r="14" stroke="#141414" stroke-width="2"></circle>
+<!-- Mancha siamesa no focinho -->
+<ellipse cx="25" cy="38" fill="#6B4F3B" rx="8" ry="6"></ellipse>
+<polygon fill="#6B4F3B" points="12,28 17,35 10,36"></polygon>
+<polygon fill="#6B4F3B" points="38,28 33,35 40,36"></polygon>
+<!-- Olhos azuis brilhantes -->
+<circle cx="21" cy="36" fill="#3B82F6" r="2"></circle>
+<circle cx="29" cy="36" fill="#3B82F6" r="2"></circle>
+<!-- Pata empurrando -->
+<ellipse cx="36" cy="46" fill="#EFE9DA" rx="5" ry="3" stroke="#141414" stroke-width="1.5"></ellipse>
+<!-- Chapéu de bruxa roxo com estrelas -->
+<path d="M7 26 C15 23 35 23 43 26 L25 4 Z" fill="#5D438A" stroke="#141414" stroke-width="2"></path>
+<ellipse cx="25" cy="26" fill="#5D438A" rx="18" ry="3" stroke="#141414" stroke-width="1.5"></ellipse>
+<!-- Estrelinhas no chapéu -->
+<circle cx="25" cy="14" fill="#F9D423" r="1.5"></circle>
+<circle cx="21" cy="20" fill="#F9D423" r="1"></circle>
+<circle cx="29" cy="18" fill="#F9D423" r="1"></circle>
+</svg>
+<div>
+<div class="font-anton text-sm text-zinc-900 leading-tight">MISSI THE WITCH</div>
+<div class="font-mono text-[9px] text-zinc-500 font-bold">Gata Siamesa · Nível GM</div>
+</div>
+</div>
+<!-- Anotação Manuscrita Zine -->
+<div class="bg-zinc-100 border border-dashed border-zinc-400 p-2 rounded transform rotate-1">
+<span class="font-marker text-xs text-zine-red block leading-tight">
+                  "blunder tático da Missi"
+                </span>
+<span class="font-mono text-[9px] text-zinc-600 block mt-0.5">
+                  Derrubou o rei adversário no lance 14. Vitória por W.O. felino.
+                </span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- END: Retro Collections -->
+<!-- BEGIN: Os Verdadeiros Gerentes Section -->
+<section class="mb-24" data-purpose="pet-managers">
+<div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
+<div class="inline-block tape-strip px-4 py-1 transform -rotate-1">
+<span class="font-mono text-xs uppercase tracking-widest text-zine-black font-bold">BACKSTAGE // AUTORIDADE MÁXIMA</span>
+</div>
+<h2 class="font-anton text-4xl md:text-5xl text-zine-cream tracking-wide drop-shadow-[3px_3px_0_#141414]">
+          OS VERDADEIROS GERENTES
+        </h2>
+<p class="font-grotesk text-zine-cream/90 text-sm md:text-base">
+          Nada sobe para produção sem o carimbo ou o sono profundo da diretoria executiva de 4 patas.
+        </p>
+</div>
+<!-- Dois Crachás Estilo VIP Backstage / Polaroid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
+<!-- Crachá 1: Mike -->
+<div class="relative group">
+<!-- Cordão do crachá -->
+<div class="w-6 h-12 bg-zine-red border-2 border-zine-black mx-auto -mb-3 rounded-t-sm shadow-brutal-sm relative z-10 flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-zine-cream border border-black"></div>
+</div>
+<!-- Cartão Crachá -->
+<div class="zine-paper p-6 pt-5 relative">
+<div class="flex items-center justify-between border-b-2 border-zine-black pb-2 mb-4">
+<span class="font-mono text-[10px] font-bold tracking-widest bg-zine-black text-white px-2 py-0.5">VIP BACKSTAGE</span>
+<span class="font-mono text-[10px] text-zinc-600 font-bold">ID: 001-CANINE</span>
+</div>
+<!-- Moldura Polaroid Foto -->
+<div class="bg-white border-2 border-zine-black p-4 pb-3 shadow-brutal-sm mb-4 text-center">
+<div class="w-full h-44 bg-zinc-200 border border-zinc-400 flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Halftone sutil na foto -->
+<div class="absolute inset-0 pattern-halftone pointer-events-none"></div>
+<!-- Carimbo / texto estilizado -->
+<div class="border-2 border-dashed border-zinc-700 p-3 rounded transform -rotate-6 bg-white/70">
+<span class="font-mono text-xs uppercase tracking-wider font-bold text-zinc-800 block">
+                    [ foto do Mike ]
+                  </span>
+<span class="font-grotesk text-[10px] text-zinc-600 block">
+                    Poodle Preto · Headphone Red
+                  </span>
+</div>
+</div>
+<div class="font-marker text-sm text-zinc-800 mt-2">Mike Hoelscher</div>
+</div>
+<!-- Metadados de Cargo -->
+<div class="space-y-2">
+<div class="bg-zine-yellow/30 border border-zine-black px-3 py-1.5">
+<span class="font-mono text-[9px] uppercase tracking-wider text-zinc-600 font-bold block">CARGO EXECUTIVO</span>
+<span class="font-anton text-sm text-zinc-900 block leading-tight">CHEFE DE RELAÇÕES HUMANAS // APROVA TUDO</span>
+</div>
+<blockquote class="bg-white border-2 border-dashed border-zinc-400 p-3 text-xs font-grotesk text-zinc-800 italic">
+                “Se você tem petisco ou faz carinho, o código tá aprovado sem review.”
+              </blockquote>
+</div>
+<div class="mt-4 pt-3 border-t border-zinc-300 flex items-center justify-between font-mono text-[10px] text-zinc-500">
+<span>STATUS: SONO REM</span>
+<span class="text-emerald-700 font-bold">● APROVAÇÃO 100%</span>
+</div>
+</div>
+</div>
+<!-- Crachá 2: Missi -->
+<div class="relative group">
+<!-- Cordão do crachá -->
+<div class="w-6 h-12 bg-zine-lavender border-2 border-zine-black mx-auto -mb-3 rounded-t-sm shadow-brutal-sm relative z-10 flex items-center justify-center">
+<div class="w-2 h-2 rounded-full bg-zine-cream border border-black"></div>
+</div>
+<!-- Cartão Crachá -->
+<div class="zine-paper p-6 pt-5 relative">
+<div class="flex items-center justify-between border-b-2 border-zine-black pb-2 mb-4">
+<span class="font-mono text-[10px] font-bold tracking-widest bg-zine-red text-white px-2 py-0.5">GERÊNCIA SUPREMA</span>
+<span class="font-mono text-[10px] text-zinc-600 font-bold">ID: 002-FELINE</span>
+</div>
+<!-- Moldura Polaroid Foto -->
+<div class="bg-white border-2 border-zine-black p-4 pb-3 shadow-brutal-sm mb-4 text-center">
+<div class="w-full h-44 bg-zinc-200 border border-zinc-400 flex flex-col items-center justify-center relative overflow-hidden">
+<!-- Halftone sutil na foto -->
+<div class="absolute inset-0 pattern-halftone pointer-events-none"></div>
+<!-- Carimbo / texto estilizado -->
+<div class="border-2 border-dashed border-zinc-700 p-3 rounded transform rotate-3 bg-white/70">
+<span class="font-mono text-xs uppercase tracking-wider font-bold text-zinc-800 block">
+                    [ foto da Missi ]
+                  </span>
+<span class="font-grotesk text-[10px] text-zinc-600 block">
+                    Siamesa · Chapéu de Bruxa
+                  </span>
+</div>
+</div>
+<div class="font-marker text-sm text-zinc-800 mt-2">Missi Hoelscher</div>
+</div>
+<!-- Metadados de Cargo -->
+<div class="space-y-2">
+<div class="bg-zine-lavender/30 border border-zine-black px-3 py-1.5">
+<span class="font-mono text-[9px] uppercase tracking-wider text-zinc-600 font-bold block">CARGO EXECUTIVO</span>
+<span class="font-anton text-sm text-zinc-900 block leading-tight">DIRETORA DE QA &amp; SEGURANÇA // REPROVA PRS</span>
+</div>
+<blockquote class="bg-white border-2 border-dashed border-zinc-400 p-3 text-xs font-grotesk text-zinc-800 italic">
+                “Deita no teclado durante o deploy e derruba os testes unitários por puro capricho.”
+              </blockquote>
+</div>
+<div class="mt-4 pt-3 border-t border-zinc-300 flex items-center justify-between font-mono text-[10px] text-zinc-500">
+<span>STATUS: VIGILÂNCIA MÁXIMA</span>
+<span class="text-zine-red font-bold">● MERGE BLOQUEADO</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Os Verdadeiros Gerentes Section -->
+<!-- BEGIN: Pinterest Mural Section -->
+<section class="mb-24" data-purpose="pinterest-moodboard">
+<!-- Moldura Externa de Cortiça / Craft -->
+<div class="pinboard-bg border-4 border-zine-black p-6 md:p-10 rounded-xl shadow-brutal-lg relative">
+<!-- Fita Crepe Título no Centro Topo -->
+<div class="text-center -mt-10 mb-8">
+<div class="inline-block tape-strip px-8 py-2.5 transform -rotate-1 border-2 border-zinc-700">
+<h2 class="font-marker text-xl md:text-2xl text-zine-black tracking-wide">
+              MURAL · o que eu salvo no Pinterest
+            </h2>
+</div>
+<p class="font-mono text-xs text-zinc-800 font-bold mt-2">
+            ARQUITETURA BRUTALISTA // POSTERS JAPONESES // CAFÉ // HARDWARE &amp; VINTAGE
+          </p>
+</div>
+<!-- Grade Assimétrica Estilo Masonry (Cards Curtos, Médios e Altos) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+<!-- PIN 1: Médio (Arquitetura Brutalista PB) -->
+<div class="bg-white border-3 border-zine-black p-3.5 shadow-brutal relative transform hover:-translate-y-1 transition-transform">
+<div class="pushpin-red absolute -top-2 left-1/2 -translate-x-1/2 z-10"></div>
+<div class="h-48 bg-zinc-900 border border-zinc-700 flex flex-col items-center justify-center text-center p-3 relative overflow-hidden">
+<div class="absolute inset-0 pattern-halftone"></div>
+<span class="font-anton text-2xl text-zinc-300 tracking-wider relative z-10">CONCRETO BRUTO</span>
+<span class="font-mono text-[9px] text-zinc-400 mt-1 uppercase relative z-10">BERLIM ORIENTAL · 1974</span>
+</div>
+<div class="pt-3">
+<span class="font-mono text-[10px] text-zinc-500 font-bold block">PIN #01 // ARCHITECTURE</span>
+<p class="font-grotesk text-xs text-zinc-800 font-medium mt-0.5">
+                Formas sólidas, sombras duras e zero enfeite desnecessário.
+              </p>
+</div>
+</div>
+<!-- PIN 2: Alto (Pôster Serigrafia Japonesa) -->
+<div class="bg-white border-3 border-zine-black p-3.5 shadow-brutal relative transform hover:-translate-y-1 transition-transform">
+<div class="pushpin-red absolute -top-2 left-6 z-10"></div>
+<div class="h-64 bg-zine-red border border-zinc-900 flex flex-col justify-between p-4 text-white relative">
+<div class="font-anton text-xs tracking-widest text-zinc-200">OSAKA PRINT EXPO</div>
+<div class="text-center my-auto">
+<span class="font-anton text-4xl tracking-tighter leading-none block">地下室</span>
+<span class="font-anton text-lg tracking-widest text-zinc-200 block mt-1">UNDERGROUND</span>
+</div>
+<div class="flex justify-between items-end font-mono text-[8px] border-t border-white/40 pt-1">
+<span>SERIGRAFIA 2 CORES</span>
+<span>LIMITED RUN</span>
+</div>
+</div>
+<div class="pt-3">
+<span class="font-mono text-[10px] text-zinc-500 font-bold block">PIN #02 // GRAPHIC DESIGN</span>
+<p class="font-grotesk text-xs text-zinc-800 font-medium mt-0.5">
+                Composições verticais e tipografia em bloco inspiram cada detalhe visual.
+              </p>
+</div>
+</div>
+<!-- PIN 3: Curto (Setup Retrô & Teclado Mecânico) -->
+<div class="bg-white border-3 border-zine-black p-3.5 shadow-brutal relative transform hover:-translate-y-1 transition-transform">
+<div class="pushpin-red absolute -top-2 right-6 z-10"></div>
+<div class="h-36 bg-zinc-800 border border-zinc-700 flex flex-col items-center justify-center text-center p-3 text-zinc-200">
+<span class="font-mono text-xs text-zine-yellow font-bold uppercase">CHERRY MX BLUE</span>
+<span class="font-anton text-xl tracking-wide mt-1">CLICK CLACK 1989</span>
+<span class="font-mono text-[9px] text-zinc-400 mt-1">CABO ESPIRALADO BEGE</span>
+</div>
+<div class="pt-3">
+<span class="font-mono text-[10px] text-zinc-500 font-bold block">PIN #03 // HARDWARE</span>
+<p class="font-grotesk text-xs text-zinc-800 font-medium mt-0.5">
+                Barulho tátil que dá ritmo ao raciocínio lógico.
+              </p>
+</div>
+</div>
+<!-- PIN 4: Médio-Alto (Café Coado & Stickers) -->
+<div class="bg-white border-3 border-zine-black p-3.5 shadow-brutal relative transform hover:-translate-y-1 transition-transform">
+<div class="pushpin-red absolute -top-2 left-1/2 -translate-x-1/2 z-10"></div>
+<div class="h-52 bg-amber-950 border border-zinc-900 p-3.5 text-zinc-100 flex flex-col justify-between relative">
+<div class="tape-strip px-2 py-0.5 text-zinc-900 font-marker text-[10px] w-fit transform -rotate-3">
+                HARIO V60 // 30g
+              </div>
+<div class="text-center">
+<span class="font-anton text-2xl text-amber-200 tracking-wide block">CAFÉ FILTRADO</span>
+<span class="font-mono text-[10px] text-zinc-300 mt-1 block">TORRA MÉDIA · NOTAS DE CACAU</span>
+</div>
+<div class="bg-zinc-900 p-1.5 border border-zinc-600 text-center font-mono text-[8px] text-zinc-400">
+                COMBUSTÍVEL PRIMÁRIO DO LADO A E LADO B
+              </div>
+</div>
+<div class="pt-3">
+<span class="font-mono text-[10px] text-zinc-500 font-bold block">PIN #04 // RITUAIS</span>
+<p class="font-grotesk text-xs text-zinc-800 font-medium mt-0.5">
+                O único ritual não negociável antes de qualquer linha ou disco.
+              </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Pinterest Mural Section -->
+<!-- BEGIN: Final Navigation CTA -->
+<section class="mt-16 text-center space-y-6" data-purpose="flip-disc-footer-cta">
+<!-- Bloco de Virada do Disco -->
+<div class="bg-zine-black border-4 border-zine-black p-8 md:p-12 rounded-xl text-zine-cream shadow-brutal-lg max-w-3xl mx-auto space-y-6 relative overflow-hidden">
+<div class="absolute -right-8 -bottom-8 opacity-10 pointer-events-none">
+<span class="font-anton text-9xl">33⅓</span>
+</div>
+<span class="font-mono text-xs uppercase tracking-[0.3em] text-zine-lavender font-bold block">
+          // FIM DA REPRODUÇÃO //
+        </span>
+<h3 class="font-anton text-3xl md:text-5xl tracking-wide uppercase leading-tight">
+          Pronto para voltar ao código e aos servidores?
+        </h3>
+<p class="font-grotesk text-zinc-400 text-sm md:text-base max-w-lg mx-auto">
+          O Lado B fica por aqui. Gire a bolacha de vinil para inspecionar os cases reais, scripts de infraestrutura e projetos no Lado A.
+        </p>
+<!-- Botão Massivo Brutalista -->
+<div class="pt-2">
+<a class="inline-block bg-zine-cream text-zine-black font-anton text-xl md:text-2xl px-8 py-4 uppercase tracking-wider border-4 border-zine-black shadow-brutal-red hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-150" href="#lado-a">
+            VIRAR O DISCO DE NOVO → LADO A
+          </a>
+</div>
+<!-- Link Menor e Elegante Manuscrito -->
+<div class="pt-3">
+<a class="inline-flex items-center gap-1 font-marker text-zine-lavender text-base md:text-lg hover:text-zine-red transition-colors underline decoration-2 underline-offset-4" href="#contato">
+<span>ou bora conversar</span>
+<span class="text-sm font-mono tracking-normal">✉</span>
+</a>
+</div>
+</div>
+</section>
+<!-- END: Final Navigation CTA -->
+</main>
+<!-- BEGIN: MainFooter -->
+<footer class="w-full bg-zine-black text-zinc-400 border-t-4 border-zine-black py-8 font-mono text-xs">
+<div class="max-w-[1440px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<span class="text-zinc-200 font-bold uppercase">HERICK HOELSCHER</span>
+<span class="text-zinc-600">/</span>
+<span class="text-zine-red font-bold">LADO B // UNPLUGGED</span>
+</div>
+<div class="text-center md:text-right text-[11px] text-zinc-500">
+        Feito à mão com café, ruído analógico, vinil e rock 'n' roll · Toledo / Oeste do Paraná · 2025
+      </div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>

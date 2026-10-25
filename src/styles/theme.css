@@ -1,0 +1,169 @@
+@import 'tailwindcss';
+
+/*
+  As cinco fontes do briefing, auto-hospedadas a partir de
+  referencias/prototipo/fonts/ (copiadas para public/fonts/).
+  Caminho estável = o preload de Anton no index.html não quebra no build.
+*/
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/anton.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Rubik Wet Paint';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/rubik-wet-paint.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Permanent Marker';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/permanent-marker.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Caveat Brush';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/caveat-brush.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space-mono-700.woff2') format('woff2');
+}
+
+/* Tokens da ESPECIFICACAO.md § 2. */
+@theme {
+  --color-ink: #141414;
+  --color-paper: #efe9da;
+  --color-white: #f6f2e8;
+  --color-red: #e8432e;
+  --color-purple: #765ba7;
+  --color-lav: #a68be6;
+
+  --font-display: 'Anton', 'Arial Narrow', sans-serif;
+  --font-spray: 'Rubik Wet Paint', 'Anton', sans-serif;
+  --font-marker: 'Permanent Marker', 'Comic Sans MS', cursive;
+  --font-hand: 'Caveat Brush', 'Comic Sans MS', cursive;
+  --font-body: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  /* Breakpoint principal do briefing (§ 8). */
+  --breakpoint-zine: 760px;
+}
+
+/*
+  Sombra dura, SEM desfoque (§ 2). drop-shadow em vez de box-shadow: num
+  elemento com clip-path de borda rasgada, box-shadow desenha o retângulo
+  original; drop-shadow acompanha o recorte.
+*/
+@utility shadow-zine {
+  filter: drop-shadow(10px 12px 0 rgb(0 0 0 / 0.3));
+}
+@utility shadow-zine-sm {
+  filter: drop-shadow(5px 6px 0 rgb(0 0 0 / 0.3));
+}
+
+/* Texturas emendáveis de assets/. */
+@utility tex-creme {
+  background-image: url('/assets/textura-creme.webp');
+  background-size: 420px;
+  background-color: var(--color-paper);
+}
+@utility tex-preta {
+  background-image: url('/assets/textura-preta.webp');
+  background-size: 420px;
+  background-color: var(--color-ink);
+}
+@utility tex-vermelha {
+  background-image: url('/assets/textura-vermelha.webp');
+  background-size: 420px;
+  background-color: var(--color-red);
+}
+@utility tex-roxa {
+  background-image: url('/assets/textura-roxa.webp');
+  background-size: 420px;
+  background-color: var(--color-purple);
+}
+@utility tex-halftone {
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    rgb(20 20 20 / 0.38) 1.6px,
+    transparent 0
+  );
+  background-size: 7px 7px;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-body);
+    /* "Sem rolagem horizontal da página" (§ 8). */
+    overflow-x: clip;
+  }
+
+  /* Foco visível, contorno vermelho tracejado (§ 9). */
+  :focus-visible {
+    outline: 3px dashed var(--color-red);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
