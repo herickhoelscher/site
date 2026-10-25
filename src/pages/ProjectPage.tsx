@@ -29,7 +29,18 @@ export default function ProjectPage() {
   const issues = t.issues.lista
   const index = issues.findIndex((item) => item.slug === issue.slug)
   const proxima = issues[(index + 1) % issues.length]
-  const passos = issue.passos.length > 0 ? issue.passos : (issue.clientes ?? [])
+  /*
+    A issue 006 não tem passos: ela lista clientes. Cada cliente virou um objeto
+    com nome, tag, descrição e repositório, então aqui ele é achatado numa linha
+    legível para reaproveitar a mesma lista numerada.
+  */
+  const passos: Array<{ texto: string; repo?: string }> =
+    issue.passos.length > 0
+      ? issue.passos.map((p) => ({ texto: p }))
+      : (issue.clientes ?? []).map((c) => ({
+          texto: `${c.nome}: ${c.descricao}`,
+          repo: c.repo,
+        }))
   const resultado = issue.resultadoGigante.split(' → ')
 
   return (
@@ -65,9 +76,25 @@ export default function ProjectPage() {
               <h2 className="mb-4 text-[clamp(2.6rem,4.4vw,4.4rem)] leading-none" style={{ fontFamily: 'var(--font-display)' }}>{t.projeto.oQueFiz}</h2>
               <ol className="divide-y-2 divide-dashed divide-ink/20">
                 {passos.map((passo, i) => (
-                  <li key={`${i}-${passo}`} className="flex items-start gap-4 py-3 text-[clamp(0.95rem,1.3vw,1.1rem)] leading-relaxed">
+                  <li key={`${i}-${passo.texto}`} className="flex items-start gap-4 py-3 text-[clamp(0.95rem,1.3vw,1.1rem)] leading-relaxed">
                     <span className="grid size-11 shrink-0 -rotate-6 place-items-center rounded-full bg-ink text-lg leading-none text-paper" style={{ fontFamily: 'var(--font-display)' }}>{String(i + 1).padStart(2, '0')}</span>
-                    <span className="min-w-0">{passo}</span>
+                    <span className="min-w-0">
+                      {passo.texto}
+                      {passo.repo ? (
+                        <>
+                          {' '}
+                          <a
+                            href={passo.repo}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[0.85em] whitespace-nowrap underline decoration-2 underline-offset-2 hover:text-red"
+                            style={{ fontFamily: 'var(--font-mono)' }}
+                          >
+                            {t.projeto.codigo} ↗
+                          </a>
+                        </>
+                      ) : null}
+                    </span>
                   </li>
                 ))}
               </ol>

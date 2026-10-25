@@ -6,112 +6,103 @@ type Props = {
   issue: Issue
   t: Content
   prefix: string
-  /** O 001 é o destaque: capa maior e texto maior. */
   featured?: boolean
-  /** O 006 é uma faixa larga com a lista de clientes. */
-  wide?: boolean
-  className?: string
 }
 
-/**
- * Pôster de uma issue.
- *
- * O hover "descola o canto" (§ 6): o card sobe e gira um pouco e a sombra
- * cresce. Fica no group do próprio card para o efeito valer em toda a área,
- * inclusive no link.
- */
-export function IssueCard({ issue, t, prefix, featured, wide, className = '' }: Props) {
-  const repo = issue.repositorio?.replace('https://github.com/', '') ?? null
+export function IssueCard({ issue, t, prefix, featured = false }: Props) {
+  const stampTone = issue.numero === '002' ? 'purple' : issue.numero === '003' || issue.numero === '005' ? 'ink' : 'red'
 
   return (
-    <article className={`group relative ${className}`}>
-      <Tape seed={`tape-${issue.slug}`} at="top-right" label={issue.numero} tone="red" />
+    <article className="group relative min-w-0 h-full">
+      <Tape seed={`tape-${issue.slug}`} at="top" width={92} height={20} />
 
       <TornPaper
         seed={`issue-${issue.slug}`}
         sides="trbl"
-        amp={7}
+        amp={4}
+        tilt={false}
         wrapperClassName="h-full transition-transform duration-200 group-hover:-translate-y-1"
-        className="tex-creme flex h-full flex-col p-5 text-ink"
+        className="tex-creme flex min-h-full flex-col border-2 border-ink p-4 text-ink zine:p-5"
       >
-        <header className="mb-3 flex items-start justify-between gap-3">
-          <div>
-            <p
-              className="text-[11px] font-bold tracking-[0.1em] text-red"
-              style={{ fontFamily: 'var(--font-mono)' }}
-            >
-              #{issue.numero}
-            </p>
-            {repo ? (
-              <p
-                className="text-[11px] tracking-[0.06em] text-ink/60"
+        <header className="mb-3 flex min-w-0 items-start justify-between gap-2 border-b border-ink/50 pb-2">
+          <span
+            className="shrink-0 text-[11px] font-bold tracking-wide text-red"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            ISSUE #{issue.numero}
+          </span>
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-2 gap-y-1 text-right">
+            {issue.kicker ? (
+              <span
+                className="text-[9px] leading-tight tracking-wide text-ink/55"
                 style={{ fontFamily: 'var(--font-mono)' }}
               >
-                {repo}
-              </p>
+                {issue.kicker}
+              </span>
             ) : null}
+            <Stamp seed={`selo-${issue.slug}`} tone={stampTone} className="shrink-0 text-[9px]">
+              {issue.selo}
+            </Stamp>
           </div>
-          <Stamp seed={`selo-${issue.slug}`} tone="red">
-            {issue.selo}
-          </Stamp>
         </header>
 
-        <h3
-          className={`mb-1 leading-[0.95] ${featured ? 'text-[clamp(2rem,4vw,3.25rem)]' : 'text-[clamp(1.4rem,2.4vw,2rem)]'}`}
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          {issue.titulo}
-        </h3>
+        <div className={`min-w-0 flex-1 ${featured ? 'zine:grid zine:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] zine:gap-5' : ''}`}>
+          <StickerImg
+            src={issue.capa}
+            alt={`${issue.titulo} — ${issue.numero}`}
+            seed={`capa-${issue.slug}`}
+            variant="cutout"
+            height={featured ? 210 : 160}
+            className="mb-4 w-full zine:mb-3"
+            placeholder={`[ ${t.projeto.print} ]`}
+          />
 
-        <p
-          className="mb-4 text-[clamp(1rem,1.6vw,1.35rem)] leading-tight text-red"
-          style={{ fontFamily: 'var(--font-hand)' }}
-        >
-          &ldquo;{issue.gancho}&rdquo;
-        </p>
+          <div className="flex min-w-0 flex-col">
+            <h3
+              className={`leading-none ${featured ? 'text-[clamp(1.9rem,3.4vw,3rem)]' : 'text-[clamp(1.55rem,2.3vw,2.1rem)]'}`}
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              {issue.titulo}
+            </h3>
+            <p
+              className="mt-1 text-[clamp(1.1rem,1.6vw,1.4rem)] leading-tight text-red"
+              style={{ fontFamily: 'var(--font-hand)' }}
+            >
+              &ldquo;{issue.gancho}&rdquo;
+            </p>
+            <p className="mt-3 text-[13px] leading-relaxed zine:text-[14px]">{issue.resumoCard}</p>
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {issue.stack.map((item) => (
+                <li
+                  key={item}
+                  className="border border-ink px-1.5 py-0.5 text-[9px] font-bold leading-tight"
+                  style={{ fontFamily: 'var(--font-mono)' }}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
-        <StickerImg
-          src={issue.capa}
-          alt={`Capa da issue ${issue.numero}, ${issue.titulo}`}
-          seed={`capa-${issue.slug}`}
-          variant="cutout"
-          height={featured ? 260 : 150}
-          className="mb-4 w-full"
-          placeholder={`[ ${t.projeto.print} ]`}
-        />
-
-        {wide && issue.clientes ? (
-          <ul className="mb-4 grid gap-1 zine:grid-cols-2">
-            {issue.clientes.map((c) => (
-              <li key={c} className="text-[13px] leading-snug">
-                <span className="text-red">▪</span> {c}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mb-4 flex-1 text-[15px] leading-relaxed">{issue.resumoCard}</p>
-        )}
-
-        <ul className="mb-4 flex flex-wrap gap-1.5">
-          {issue.stack.map((s) => (
-            <li
-              key={s}
-              className="border-2 border-ink px-2 py-0.5 text-[11px] font-bold tracking-[0.06em]"
+        <footer className="mt-4 flex flex-wrap items-center gap-2 border-t border-ink pt-3">
+          {issue.tempo ? (
+            <span
+              className="text-[10px] font-bold tracking-wide text-ink/75"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
-              {s}
-            </li>
-          ))}
-        </ul>
-
-        <Link
-          to={`${prefix}/issues/${issue.slug}`}
-          className="mt-auto inline-block self-start bg-ink px-4 py-2 text-[13px] font-bold tracking-[0.06em] text-white uppercase transition-transform hover:translate-x-0.5 hover:translate-y-0.5"
-          style={{ fontFamily: 'var(--font-mono)' }}
-        >
-          {t.issues.verMais}
-          <span className="sr-only"> — {issue.titulo}</span>
-        </Link>
+              {issue.tempo}
+            </span>
+          ) : null}
+          <Link
+            to={`${prefix}/issues/${issue.slug}`}
+            className="ml-auto bg-ink px-3 py-2 text-[10px] font-bold tracking-wide text-paper transition-colors hover:bg-red"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            {t.issues.verMais}
+            <span className="sr-only"> — {issue.titulo}</span>
+          </Link>
+        </footer>
       </TornPaper>
     </article>
   )

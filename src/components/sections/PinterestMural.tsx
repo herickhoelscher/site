@@ -1,6 +1,5 @@
 import type { Content } from '@/content'
 import type { Pin } from '@/content/types'
-import { LazyEmbed } from './LazyEmbed'
 
 type Props = { t: Content }
 
@@ -22,8 +21,13 @@ export function PinterestMural({ t }: Props) {
         <h2 className="inline-block -rotate-1 border-2 border-ink/50 bg-paper px-4 py-2 text-xl shadow-zine-sm zine:px-8 zine:text-2xl" style={{ fontFamily: 'var(--font-marker)' }}>{mural.titulo}</h2>
         <p className="mx-auto mt-4 max-w-3xl break-words text-[10px] font-bold leading-relaxed zine:text-xs" style={{ fontFamily: 'var(--font-mono)' }}>{mural.tags}</p>
       </header>
-      <LazyEmbed height={300} rootMargin="100px">
-        <ul className="grid grid-cols-1 items-start gap-6 zine:grid-cols-2 xl:grid-cols-4">
+      {/*
+        Os pins são conteúdo próprio, HTML puro: renderizam direto. O LazyEmbed
+        existe para script de terceiro, e envolvê-los aqui deixava a seção vazia
+        até a pessoa rolar até ela. Quando o widget real do Pinterest entrar,
+        é ELE que vai dentro do LazyEmbed, não os cartões.
+      */}
+      <ul className="grid grid-cols-1 items-start gap-6 zine:grid-cols-2 xl:grid-cols-4">
           {mural.pins.map((pin, index) => {
             const tone = TONES[pin.tom]
             return (
@@ -42,8 +46,7 @@ export function PinterestMural({ t }: Props) {
               </li>
             )
           })}
-        </ul>
-      </LazyEmbed>
+      </ul>
     </section>
   )
 }

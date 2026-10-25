@@ -1,7 +1,8 @@
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { makeRng } from '@/lib/rng'
 import { useMeasure } from '@/lib/useMeasure'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
 import { NetworkCable, Splat, Doodle, TornPaper } from '@/components/collage'
 import { LangToggle } from '@/components/LangToggle'
 import type { Content } from '@/content'
@@ -22,10 +23,25 @@ type Props = { t: Content }
 export function Hero({ t }: Props) {
   const [sectionRef, { width: W, height: H }] = useMeasure<HTMLElement>()
   const isMobile = useIsMobile()
+  const reduced = usePrefersReducedMotion()
 
-  // --- diagonal rasgada -----------------------------------------------------
-  const { darkClip, lightClip } = useMemo(() => {
-    if (!W || !H) return { darkClip: undefined, lightClip: undefined }
+  /*
+    A diagonal rasgada, em duas posições: a final e uma deslocada para cima.
+
+    A animação de entrada varre a linha de cima para baixo, então a inversão de
+    cor do nome é revelada progressivamente. Como os dois polígonos têm o MESMO
+    número de pontos, o navegador interpola `clip-path` sozinho por transição
+    CSS — nada de recalcular em JS a cada quadro.
+  */
+  const { darkClip, lightClip, darkClipStart, lightClipStart } = useMemo(() => {
+    if (!W || !H) {
+      return {
+        darkClip: undefined,
+        lightClip: undefined,
+        darkClipStart: undefined,
+        lightClipStart: undefined,
+      }
+    }
 
     const r = makeRng(42) // mesma semente do protótipo
     const yL = H * (isMobile ? 0.6 : 0.63)
@@ -37,14 +53,44 @@ export function Hero({ t }: Props) {
     }
     line.push([W, yR])
 
-    const P = (a: Array<[number, number]>) =>
-      a.map((p) => `${p[0].toFixed(1)}px ${p[1].toFixed(1)}px`).join(',')
+    const P = (a: Array<[number, number]>, dy = 0) =>
+      a.map((p) => `${p[0].toFixed(1)}px ${(p[1] + dy).toFixed(1)}px`).join(',')
+
+    const build = (dy: number) => ({
+      dark: `polygon(0 0,${W}px 0,${P([...line].reverse(), dy)},0 ${(yL + dy).toFixed(1)}px)`,
+      light: `polygon(${P(line, dy)},${W}px ${H}px,0 ${H}px)`,
+    })
+
+    const fim = build(0)
+    // começa acima do topo: a área escura nasce zerada e desce varrendo
+    const inicio = build(-H)
 
     return {
-      darkClip: `polygon(0 0,${W}px 0,${P([...line].reverse())},0 ${yL.toFixed(1)}px)`,
-      lightClip: `polygon(${P(line)},${W}px ${H}px,0 ${H}px)`,
+      darkClip: fim.dark,
+      lightClip: fim.light,
+      darkClipStart: inicio.dark,
+      lightClipStart: inicio.light,
     }
   }, [W, H, isMobile])
+
+  /*
+    Entrada: a varredura só acontece uma vez, no primeiro quadro depois de medir.
+    Com prefers-reduced-motion já nasce no lugar final, sem transição.
+  */
+  const [entrou, setEntrou] = useState(false)
+  useEffect(() => {
+    if (!W || !H) return
+    if (reduced) {
+      setEntrou(true)
+      return
+    }
+    const id = requestAnimationFrame(() => setEntrou(true))
+    return () => cancelAnimationFrame(id)
+  }, [W, H, reduced])
+
+  const varredura = reduced
+    ? undefined
+    : 'clip-path 1200ms cubic-bezier(.22,.61,.36,1) 120ms'
 
   // --- ajusta o nome à largura da tela --------------------------------------
   const probeRef = useRef<HTMLSpanElement>(null)
@@ -112,19 +158,19 @@ export function Hero({ t }: Props) {
       {/* metade escura, recortada pela diagonal */}
       <div
         className="tex-preta pointer-events-none absolute inset-0"
-        style={{ clipPath: darkClip }}
+        style={{ clipPath: entrou ? darkClip : darkClipStart, transition: varredura }}
         aria-hidden="true"
       />
 
       {/* respingos e rabiscos, como no protótipo */}
       <Splat
         seed="hero-1"
-        className="absolute"
+        className={`absolute ${entrou ? 'hero-in' : 'hero-out'}`}
         style={{ left: -40, top: 60, width: 300, height: 260 }}
       />
       <Splat
         seed="hero-2"
-        className="absolute hidden zine:block"
+        className={`absolute hidden zine:block ${entrou ? 'hero-in' : 'hero-out'}`}
         style={{ right: '2vw', top: '52%', width: 260, height: 240 }}
       />
       <span className="absolute left-[4vw] top-[58%] z-[3]">
@@ -174,7 +220,7 @@ export function Hero({ t }: Props) {
       */}
       <div
         className="pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-paper"
-        style={{ clipPath: darkClip }}
+        style={{ clipPath: entrou ? darkClip : darkClipStart, transition: varredura }}
         aria-hidden="true"
       >
         <Name hidden />
@@ -182,7 +228,7 @@ export function Hero({ t }: Props) {
 
       <h1
         className="pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-ink"
-        style={{ clipPath: lightClip }}
+        style={{ clipPath: entrou ? lightClip : lightClipStart, transition: varredura }}
       >
         <Name hidden={false} />
       </h1>
@@ -219,7 +265,7 @@ export function Hero({ t }: Props) {
       <img
         src="/assets/pets-espiando.png"
         alt="Mike e Missi espiando por cima do nome"
-        className="pointer-events-none absolute left-1/2 z-[6] w-[26vw] max-w-[300px] -translate-x-1/2 zine:left-[56%]"
+        className={`pointer-events-none absolute left-1/2 z-[6] w-[26vw] max-w-[300px] -translate-x-1/2 zine:left-[56%] ${entrou ? 'hero-pets-in' : 'hero-pets-out'}`}
         style={{
           mixBlendMode: 'lighten',
           // apoiados na borda de cima das letras, que começam em ~18% da seção
@@ -233,7 +279,7 @@ export function Hero({ t }: Props) {
           seed="hero-sticker"
           amp={4}
           tilt={-5}
-          wrapperClassName="inline-block"
+          wrapperClassName={`inline-block ${entrou ? 'hero-in' : 'hero-out'}`}
           className="tex-vermelha px-6 py-2 text-ink"
         >
           <span

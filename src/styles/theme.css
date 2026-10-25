@@ -167,3 +167,38 @@
     }
   }
 }
+
+/*
+  Entrada do hero (§ 6): depois que a diagonal varre, o adesivo cai girando, os
+  respingos assentam e os pets sobem de trás do papel. São transições de
+  transform/opacity, que o compositor resolve sem repintar.
+
+  Tudo isso é anulado pelo bloco prefers-reduced-motion mais acima, que zera a
+  duração de qualquer transição.
+*/
+@layer components {
+  .hero-out {
+    opacity: 0;
+    transform: translateY(-18px) rotate(-8deg);
+  }
+  .hero-in {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+    transition:
+      opacity 420ms ease-out 900ms,
+      transform 560ms cubic-bezier(.34, 1.56, .64, 1) 900ms;
+  }
+
+  /* os pets vêm de baixo, como se subissem por trás das letras */
+  .hero-pets-out {
+    opacity: 0;
+    transform: translate(-50%, 26%);
+  }
+  .hero-pets-in {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition:
+      opacity 380ms ease-out 1150ms,
+      transform 620ms cubic-bezier(.22, .61, .36, 1) 1150ms;
+  }
+}
