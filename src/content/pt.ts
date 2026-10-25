@@ -49,13 +49,21 @@ export const pt: Content = {
   },
 
   issues: {
+    tag: 'ZINE CATALOG // DISPATCHED WORKS',
     titulo: 'ISSUES',
-    sub: '6 edições. Código aberto no GitHub.',
-    verMais: 'VER MAIS →',
+    sub: '6 edições com projetos reais. Código aberto no GitHub, em produção e nos laboratórios.',
+    verMais: 'LER A ISSUE →',
+    lineup: {
+      tag: 'ISSUE #006 // CLIENT LINEUP',
+      titulo: 'SITES & CLIENTES NO AR',
+      frase: 'Produção independente de alta fidelidade',
+    },
     lista: [
       {
         slug: 'leitor-rco',
         numero: '001',
+        kicker: 'PYTHON DESKTOP TOOL',
+        tempo: 'TEMPO: HORAS → SEGUNDOS',
         titulo: 'LEITOR RCO',
         gancho: 'nenhum PDF sobreviveu',
         resumoCard:
@@ -259,11 +267,37 @@ export const pt: Content = {
         capa: '/assets/issue-sites.jpg',
         autorizacao: 'Pedir autorização de cada cliente para nome, logo e prints.',
         clientes: [
-          'SIPH: landing de agendamento com formulário validado, WhatsApp, Meta Pixel, Google Ads e integração de leads',
-          'Dr. Adriano Tagarra: landing de emagrecimento com vídeo',
-          'Empreender com Pilates (Dra. Vanessa Meira): no ar, com página de obrigado pós-compra',
-          'Boss Finance: financeiro terceirizado para clínicas',
-          'Begônia Ateliê: vitrine e loja de crochê com Pix e cartão, em Cloudflare Workers',
+          {
+            nome: 'SIPH',
+            tag: 'PORTAL CORPORATIVO',
+            descricao:
+              'landing de agendamento com formulário validado, WhatsApp, Meta Pixel, Google Ads e integração de leads',
+            repo: 'https://github.com/herickhoelscher/Lp_Ship',
+          },
+          {
+            nome: 'Dr. Adriano Tagarra',
+            tag: 'SAÚDE & AGENDAMENTO',
+            descricao: 'landing de emagrecimento com vídeo',
+            repo: 'https://github.com/herickhoelscher/Lp_Dradriano',
+          },
+          {
+            nome: 'Empreender com Pilates (Dra. Vanessa Meira)',
+            tag: 'LANDING & ADS',
+            descricao: 'no ar, com página de obrigado pós-compra',
+            repo: 'https://github.com/herickhoelscher/lp_drVanessa',
+          },
+          {
+            nome: 'Boss Finance',
+            tag: 'FINANCE & B2B',
+            descricao: 'financeiro terceirizado para clínicas',
+            repo: 'https://github.com/herickhoelscher/Boss-finance',
+          },
+          {
+            nome: 'Begônia Ateliê',
+            tag: 'CATÁLOGO & LOJA',
+            descricao: 'vitrine e loja de crochê com Pix e cartão, em Cloudflare Workers',
+            repo: 'https://github.com/herickhoelscher/Begonia-atelie',
+          },
         ],
       },
     ],

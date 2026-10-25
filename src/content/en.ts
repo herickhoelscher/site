@@ -46,13 +46,21 @@ export const en: Content = {
   },
 
   issues: {
+    tag: 'ZINE CATALOG // DISPATCHED WORKS',
     titulo: 'ISSUES',
-    sub: '6 issues. Open source on GitHub.',
-    verMais: 'SEE MORE →',
+    sub: '6 issues with real projects. Open source on GitHub, in production and in the lab.',
+    verMais: 'READ THE ISSUE →',
+    lineup: {
+      tag: 'ISSUE #006 // CLIENT LINEUP',
+      titulo: 'CLIENT SITES, LIVE',
+      frase: 'Independent production, high fidelity',
+    },
     lista: [
       {
         slug: 'leitor-rco',
         numero: '001',
+        kicker: 'PYTHON DESKTOP TOOL',
+        tempo: 'TIME: HOURS → SECONDS',
         titulo: 'LEITOR RCO',
         gancho: 'no PDF survived',
         resumoCard:
@@ -252,11 +260,37 @@ export const en: Content = {
         capa: '/assets/issue-sites.jpg',
         autorizacao: 'Authorization required from each client for name, logo and screenshots.',
         clientes: [
-          'SIPH: booking landing page with validated form, WhatsApp, Meta Pixel, Google Ads and lead integration',
-          'Dr. Adriano Tagarra: weight-loss landing page with video',
-          'Empreender com Pilates (Dra. Vanessa Meira): live, with a post-purchase thank-you page',
-          'Boss Finance: outsourced finance for clinics',
-          'Begônia Ateliê: crochet showcase and store with Pix and card, on Cloudflare Workers',
+          {
+            nome: 'SIPH',
+            tag: 'CORPORATE PORTAL',
+            descricao:
+              'booking landing page with validated form, WhatsApp, Meta Pixel, Google Ads and lead integration',
+            repo: 'https://github.com/herickhoelscher/Lp_Ship',
+          },
+          {
+            nome: 'Dr. Adriano Tagarra',
+            tag: 'HEALTH & BOOKING',
+            descricao: 'weight-loss landing page with video',
+            repo: 'https://github.com/herickhoelscher/Lp_Dradriano',
+          },
+          {
+            nome: 'Empreender com Pilates (Dra. Vanessa Meira)',
+            tag: 'LANDING & ADS',
+            descricao: 'live, with a post-purchase thank-you page',
+            repo: 'https://github.com/herickhoelscher/lp_drVanessa',
+          },
+          {
+            nome: 'Boss Finance',
+            tag: 'FINANCE & B2B',
+            descricao: 'outsourced finance for clinics',
+            repo: 'https://github.com/herickhoelscher/Boss-finance',
+          },
+          {
+            nome: 'Begônia Ateliê',
+            tag: 'CATALOG & STORE',
+            descricao: 'crochet showcase and store with Pix and card, on Cloudflare Workers',
+            repo: 'https://github.com/herickhoelscher/Begonia-atelie',
+          },
         ],
       },
     ],

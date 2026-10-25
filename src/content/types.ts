@@ -13,6 +13,10 @@ export type Issue = {
   titulo: string
   /** A frase manuscrita do card. */
   gancho: string
+  /** Linha técnica no topo do card, quando o design mostra uma. */
+  kicker?: string
+  /** Resultado resumido no rodapé do card, quando existe. */
+  tempo?: string
   /** Texto curto, usado no card. */
   resumoCard: string
   /** Texto longo, usado na página do projeto. */
@@ -37,7 +41,16 @@ export type Issue = {
   /** Aviso interno; não é renderizado. */
   autorizacao?: string
   /** Só a issue 006 tem lista de clientes. */
-  clientes?: string[]
+  clientes?: Client[]
+}
+
+/** Um cliente da issue 006. O repositório é conferido contra o GitHub. */
+export type Client = {
+  nome: string
+  /** Rótulo curto do chip na faixa do 006. */
+  tag: string
+  descricao: string
+  repo: string
 }
 
 export type Track = {
@@ -133,9 +146,13 @@ export type Content = {
     notas: { comecei: string; missi: string; mike: string }
   }
   issues: {
+    /** "ZINE CATALOG // DISPATCHED WORKS" */
+    tag: string
     titulo: string
     sub: string
     verMais: string
+    /** A faixa vermelha do 006. */
+    lineup: { tag: string; titulo: string; frase: string }
     lista: Issue[]
   }
   projeto: {

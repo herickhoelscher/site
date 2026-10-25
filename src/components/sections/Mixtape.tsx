@@ -1,114 +1,59 @@
-import { TornPaper, Tape } from '@/components/collage'
-import { LazyEmbed } from './LazyEmbed'
 import type { Content } from '@/content'
+import { LazyEmbed } from './LazyEmbed'
 
 type Props = { t: Content }
 
-/** Altura do embed compacto de faixa do Spotify (§ 5). */
-const EMBED_H = 80
-
-/*
-  Aviso da moldura enquanto o spotifyId está vazio. O texto não existe em
-  t.ladob (o dono ainda não passou os IDs), então fica aqui, por idioma.
-*/
-const SEM_ID: Record<Content['lang'], string> = {
-  pt: 'o player entra quando o ID do Spotify chegar',
-  en: 'the player goes in once the Spotify ID arrives',
-}
-
-/**
- * Mixtape (§ 5): Mike dormindo sobre a fita e as 3 faixas com player e nota.
- *
- * O spotifyId vem vazio de propósito. Só renderiza o iframe quando há um ID
- * de verdade; nunca monta uma URL com ID inventado.
- */
 export function Mixtape({ t }: Props) {
-  const { musicas, gerentes } = t.ladob
+  const { mixtape, musicas } = t.ladob
 
   return (
-    <div className="relative">
-      {/* o Mike sobre a fita: ele vem na frente e desce um pouco sobre ela */}
-      <div className="relative mx-auto w-[92%] max-w-[420px]">
-        <img
-          src="/assets/mike-discos.png"
-          alt={gerentes[0].nome}
-          loading="lazy"
-          decoding="async"
-          className="relative z-[2] mx-auto -mb-[8%] block w-[88%]"
-          style={{ filter: 'drop-shadow(5px 6px 0 rgba(0,0,0,.3))' }}
-        />
-        {/* decorativa: o texto "MIXTAPE" já está desenhado na fita */}
-        <img
-          src="/assets/mixtape.png"
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="relative z-[1] block w-full"
-          style={{ filter: 'drop-shadow(5px 6px 0 rgba(0,0,0,.3))' }}
-        />
+    <article className="relative min-w-0 border-[3px] border-ink bg-paper p-4 text-ink shadow-zine-sm zine:p-6">
+      <span aria-hidden="true" className="absolute -top-3 left-1/3 h-5 w-28 -rotate-2 border-x-2 border-dashed border-ink/20 bg-paper/85" />
+      <header className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b-2 border-ink pb-3">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold tracking-widest text-ink/65" style={{ fontFamily: 'var(--font-mono)' }}>{mixtape.kicker}</p>
+          <h3 className="text-[clamp(1.35rem,3vw,1.75rem)] leading-tight" style={{ fontFamily: 'var(--font-display)' }}>{mixtape.titulo}</h3>
+        </div>
+        <span className="bg-ink px-2 py-1 text-[10px] font-bold text-paper" style={{ fontFamily: 'var(--font-mono)' }}>{mixtape.tipo}</span>
+      </header>
+
+      <div className="relative mb-5 rounded-lg border-4 border-ink bg-zinc-800 p-3 shadow-zine-sm zine:p-4" aria-label={mixtape.titulo}>
+        {['top-2 left-2', 'top-2 right-2', 'bottom-2 left-2', 'bottom-2 right-2'].map((position) => (
+          <span key={position} aria-hidden="true" className={`absolute h-2 w-2 rounded-full border border-ink bg-zinc-400 ${position}`} />
+        ))}
+        <div className="rounded border-2 border-ink bg-paper p-3 text-center">
+          <div className="flex justify-between gap-2 border-b border-dashed border-ink/35 pb-1 text-[9px] font-bold zine:text-[10px]" style={{ fontFamily: 'var(--font-mono)' }}>
+            <span className="text-red">{mixtape.side}</span><span>{mixtape.dolby}</span>
+          </div>
+          <div aria-hidden="true" className="my-2 flex items-center justify-around gap-2 rounded-full border-2 border-zinc-500 bg-zinc-950 px-2 py-2 zine:px-4">
+            {[0, 1].map((reel) => <span key={reel} className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-zinc-400 ${reel === 1 ? 'order-3' : ''}`}><span className="h-2.5 w-2.5 rounded-full bg-zinc-200" /></span>)}
+            <span className="h-4 min-w-0 flex-1 rounded border border-zinc-600 bg-amber-950" />
+          </div>
+          <p className="text-xs" style={{ fontFamily: 'var(--font-marker)' }}>{mixtape.nota}</p>
+        </div>
       </div>
 
-      <div className="relative mt-2">
-        {/* a fita fica fora do TornPaper: dentro, o clip-path recortaria ela junto */}
-        <Tape seed="ladob-mixtape-tape" at="top" width={96} />
-        <TornPaper
-          seed="ladob-mixtape"
-          amp={5}
-          tilt={-1}
-          className="tex-creme px-4 pt-6 pb-5 text-ink zine:px-5"
-        >
-          <ol className="flex flex-col gap-5">
-            {musicas.map((musica) => (
-              <li key={musica.titulo}>
-                <p className="text-[15px] leading-tight font-bold">
-                  {musica.titulo}
-                  <span
-                    className="block text-[11px] font-normal tracking-[0.06em] uppercase"
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
-                    {musica.artista}
-                  </span>
-                </p>
-
-                <div className="mt-2">
-                  {musica.spotifyId ? (
-                    <LazyEmbed height={EMBED_H}>
-                      <iframe
-                        title={`${musica.titulo} · ${musica.artista}`}
-                        src={`https://open.spotify.com/embed/track/${musica.spotifyId}`}
-                        width="100%"
-                        height={EMBED_H}
-                        allow="encrypted-media"
-                        loading="lazy"
-                        className="block rounded-xl border-0"
-                      />
-                    </LazyEmbed>
-                  ) : (
-                    <div
-                      className="tex-halftone flex items-center justify-center bg-ink/10 px-3 text-center"
-                      style={{ height: EMBED_H, border: '2px dashed var(--color-ink)' }}
-                    >
-                      <span
-                        className="text-[11px] font-bold tracking-[0.06em] uppercase"
-                        style={{ fontFamily: 'var(--font-mono)' }}
-                      >
-                        {SEM_ID[t.lang]}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <p
-                  className="mt-1 text-[1.15rem] leading-tight text-red"
-                  style={{ fontFamily: 'var(--font-hand)' }}
-                >
-                  {musica.nota}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </TornPaper>
-      </div>
-    </div>
+      <ol className="space-y-2.5">
+        {musicas.map((musica, index) => {
+          const spotifyId = musica.spotifyId.trim()
+          return (
+            <li key={`${musica.titulo}-${index}`} className="min-w-0 border-2 border-ink bg-white p-2 shadow-zine-sm">
+              <div className="flex min-w-0 items-center gap-2 text-[11px]" style={{ fontFamily: 'var(--font-mono)' }}>
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-ink font-bold text-white">{index + 1}</span>
+                <span className="min-w-0 flex-1 leading-snug"><strong className="block break-words">{musica.titulo}</strong><span className="block break-words text-ink/65">{musica.artista}</span></span>
+                <span className="shrink-0 text-[10px] text-ink/55">{musica.duracao}</span>
+              </div>
+              {spotifyId ? (
+                <LazyEmbed height={80} className="mt-2">
+                  <iframe title={`${musica.titulo} · ${musica.artista}`} src={`https://open.spotify.com/embed/track/${encodeURIComponent(spotifyId)}`} width="100%" height="80" loading="lazy" allow="encrypted-media" className="block border-0" />
+                </LazyEmbed>
+              ) : (
+                <div aria-hidden="true" className="mt-2 h-5 border border-dashed border-ink/30 bg-ink/5" />
+              )}
+            </li>
+          )
+        })}
+      </ol>
+    </article>
   )
 }
