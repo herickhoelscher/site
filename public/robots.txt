@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /kit
+
+Sitemap: https://herickhoelscher.dev/sitemap.xml

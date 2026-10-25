@@ -1,14 +1,19 @@
 import { Helmet } from 'react-helmet-async'
 import { useContent } from '@/content'
 import { Hero } from '@/components/sections/Hero'
+import { About } from '@/components/sections/About'
 import { IssuesWall } from '@/components/sections/IssuesWall'
+import { Setlist } from '@/components/sections/Setlist'
+import { FlipRecord } from '@/components/sections/FlipRecord'
+import { Contact } from '@/components/sections/Contact'
+import { Footer } from '@/components/sections/Footer'
 
-/**
- * Lado A. Por enquanto Hero e Issues (Etapa 2). As seções Quem, Setlist,
- * Virar o disco e Contato entram na Etapa 3.
- */
+const SITE = 'https://herickhoelscher.dev'
+
+/** Lado A, o lado profissional. A ordem é a da especificação § 0. */
 export default function LadoA() {
-  const { t, locale, prefix } = useContent()
+  const { t, prefix } = useContent()
+  const canonical = `${SITE}${prefix || '/'}`
 
   return (
     <>
@@ -16,19 +21,25 @@ export default function LadoA() {
         <html lang={t.htmlLang} />
         <title>Herick Hoelscher · {t.hero.tagline}</title>
         <meta name="description" content={t.hero.tagline} />
-        <link rel="alternate" hrefLang="pt-BR" href="/" />
-        <link rel="alternate" hrefLang="en" href="/en" />
-        <link rel="alternate" hrefLang="x-default" href="/" />
+        <link rel="canonical" href={canonical} />
+        <link rel="alternate" hrefLang="pt-BR" href={`${SITE}/`} />
+        <link rel="alternate" hrefLang="en" href={`${SITE}/en`} />
+        <link rel="alternate" hrefLang="x-default" href={`${SITE}/`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`Herick Hoelscher · ${t.hero.tagline}`} />
+        <meta property="og:description" content={t.hero.tagline} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:image" content={`${SITE}/og.jpg`} />
+        <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 
       <Hero t={t} />
+      <About t={t} />
       <IssuesWall t={t} prefix={prefix} />
-
-      <p className="px-6 py-10 text-center text-[13px] text-paper/50" style={{ fontFamily: 'var(--font-mono)' }}>
-        {locale === 'pt'
-          ? 'Quem, Setlist, Virar o disco e Contato: Etapa 3.'
-          : 'Who, Setlist, Flip the record and Contact: stage 3.'}
-      </p>
+      <Setlist t={t} />
+      <FlipRecord t={t} prefix={prefix} />
+      <Contact t={t} />
+      <Footer t={t} />
     </>
   )
 }

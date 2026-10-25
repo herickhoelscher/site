@@ -3,6 +3,7 @@ import { makeRng } from '@/lib/rng'
 import { useMeasure } from '@/lib/useMeasure'
 import { useIsMobile } from '@/lib/useIsMobile'
 import { NetworkCable, Splat, Doodle, TornPaper } from '@/components/collage'
+import { LangToggle } from '@/components/LangToggle'
 import type { Content } from '@/content'
 
 type Props = { t: Content }
@@ -162,12 +163,7 @@ export function Hero({ t }: Props) {
         >
           ☰ MENU
         </span>
-        <span
-          className="rounded-full border-2 border-white px-4 py-1 text-[13px] font-bold text-white"
-          style={{ fontFamily: 'var(--font-mono)' }}
-        >
-          {t.nav.lang}
-        </span>
+        <LangToggle className="text-white" />
       </nav>
 
       {/*

@@ -3,16 +3,15 @@
 Portfólio pessoal em React, no estilo fanzine punk/indie. Duas faces: o **Lado A**
 (profissional) e o **Lado B** (pessoal).
 
-> **Estado: Etapas 1 e 2 de 8 concluídas.** Existe a fundação (tokens, as 5 fontes,
-> texturas e os componentes de colagem portados do `zine.js`), a página `/kit`, e o Lado A
-> com Hero e Issues em PT e EN. Veja [Roteiro](#roteiro).
+> **Estado: site completo.** Lado A, as 6 páginas de projeto, o Lado B e a 404, em PT e
+> EN, com as animações e os easter eggs. Falta só o material listado no fim deste arquivo.
 
 ## Rodar
 
 ```bash
 npm install
-npm run dev     # http://localhost:5173/  (e /kit, /en)
-npm run build   # gera dist/
+npm run dev     # http://localhost:5173/
+npm run build   # gera dist/ (e o sitemap)
 npm run preview # serve o dist/
 ```
 
@@ -129,12 +128,12 @@ Saída estática em `dist/`. Como o app usa rotas de cliente, o host precisa dev
 
 - [x] **1. Fundação** — setup, tokens, fontes, texturas, componentes de colagem, `/kit`
 - [x] **2. Hero e Issues** — diagonal rasgada, nome em duas camadas, mural 12 colunas, carrossel
-- [ ] 3. Quem é esse cara, Setlist, Virar o disco, Contato
-- [ ] 4. Página de projeto (6 projetos)
-- [ ] 5. Lado B
-- [ ] 6. Versão celular
-- [ ] 7. Cabo de rede, animações e transição do disco
-- [ ] 8. Inglês, 404, easter eggs, SEO e build de produção
+- [x] **3. Quem, Setlist, Virar o disco, Contato** — feito por um worker Codex
+- [x] **4. Página de projeto** — feito por um worker Codex
+- [x] **5. Lado B** — feito por um worker Claude
+- [x] **6. Versão celular** — verificada em 390px em todas as páginas
+- [x] **7. Cabo, animações e transição do disco**
+- [x] **8. Inglês, 404, easter eggs, SEO e build**
 
 ## O que ainda falta de material
 
