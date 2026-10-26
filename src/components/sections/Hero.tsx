@@ -3,7 +3,7 @@ import { makeRng } from '@/lib/rng'
 import { useMeasure } from '@/lib/useMeasure'
 import { useIsMobile } from '@/lib/useIsMobile'
 import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
-import { NetworkCable, Splat, Doodle, TornPaper } from '@/components/collage'
+import { NetworkCable, Doodle, InkField, TornPaper } from '@/components/collage'
 import { LangToggle } from '@/components/LangToggle'
 import type { Content } from '@/content'
 
@@ -33,13 +33,15 @@ export function Hero({ t }: Props) {
     número de pontos, o navegador interpola `clip-path` sozinho por transição
     CSS — nada de recalcular em JS a cada quadro.
   */
-  const { darkClip, lightClip, darkClipStart, lightClipStart } = useMemo(() => {
+  const { darkClip, lightClip, darkClipStart, lightClipStart, lineAt } = useMemo(() => {
+    const semLinha = (x: number) => x * 0
     if (!W || !H) {
       return {
         darkClip: undefined,
         lightClip: undefined,
         darkClipStart: undefined,
         lightClipStart: undefined,
+        lineAt: semLinha,
       }
     }
 
@@ -70,6 +72,8 @@ export function Hero({ t }: Props) {
       lightClip: fim.light,
       darkClipStart: inicio.dark,
       lightClipStart: inicio.light,
+      // y do rasgo para um x normalizado: é por aqui que a tinta se adensa
+      lineAt: (xn: number) => yL + (yR - yL) * xn,
     }
   }, [W, H, isMobile])
 
@@ -162,17 +166,7 @@ export function Hero({ t }: Props) {
         aria-hidden="true"
       />
 
-      {/* respingos e rabiscos, como no protótipo */}
-      <Splat
-        seed="hero-1"
-        className={`absolute ${entrou ? 'hero-in' : 'hero-out'}`}
-        style={{ left: -40, top: 60, width: 300, height: 260 }}
-      />
-      <Splat
-        seed="hero-2"
-        className={`absolute hidden zine:block ${entrou ? 'hero-in' : 'hero-out'}`}
-        style={{ right: '2vw', top: '52%', width: 260, height: 240 }}
-      />
+      {/* rabiscos; a tinta fica por conta do InkField, dentro das camadas */}
       <span className="absolute left-[4vw] top-[58%] z-[3]">
         <Doodle kind="star" seed="hero-star-1" size={64} />
       </span>
@@ -224,6 +218,14 @@ export function Hero({ t }: Props) {
         aria-hidden="true"
       >
         <Name hidden />
+        <InkField
+          seed="hero-ink"
+          width={W}
+          height={H}
+          lineAt={lineAt}
+          color="var(--color-paper)"
+          settled={entrou}
+        />
       </div>
 
       <h1
@@ -231,6 +233,14 @@ export function Hero({ t }: Props) {
         style={{ clipPath: entrou ? lightClip : lightClipStart, transition: varredura }}
       >
         <Name hidden={false} />
+        <InkField
+          seed="hero-ink"
+          width={W}
+          height={H}
+          lineAt={lineAt}
+          color="var(--color-ink)"
+          settled={entrou}
+        />
       </h1>
 
       {/* sonda invisível, só para medir a largura natural do nome */}

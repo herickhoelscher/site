@@ -13,7 +13,13 @@ export function ScrollToTop() {
 
   useEffect(() => {
     if (hash) return
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    /*
+      'instant', não 'auto': o html tem `scroll-behavior: smooth` para as
+      âncoras do menu, e 'auto' herda esse valor. O resultado era a página
+      subindo rolando por quase um segundo ao abrir uma issue, mostrando o
+      conteúdo antigo passando. 'instant' ignora a regra CSS.
+    */
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }, [pathname, hash])
 
   return null
