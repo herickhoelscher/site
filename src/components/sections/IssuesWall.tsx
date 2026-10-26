@@ -3,6 +3,16 @@ import type { Content } from '@/content'
 import { ClientLineup } from './ClientLineup'
 import { IssueCard } from './IssueCard'
 
+/**
+ * Mural das Issues, conforme referencias/wireframes/v2/issues-v3.png.
+ *
+ * Fileira 1: a 001 larga (2 colunas, imagem ao lado do texto) e a 002 estreita.
+ * Fileira 2: 003, 004 e 005 iguais. Fileira 3: a faixa vermelha dos clientes.
+ *
+ * `items-start` é de propósito: na referência os cartões têm alturas próprias,
+ * não esticam para igualar a linha. Esticar deixava um vazio enorme dentro da
+ * 001, que tem menos texto que a 002.
+ */
 export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
   const [first, second, third, fourth, fifth, sixth] = t.issues.lista
   const cards = t.issues.lista.slice(0, 5)
@@ -17,30 +27,41 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
       <div className="relative z-[3] mx-auto max-w-[1200px]">
         <header className="px-6 zine:px-10">
           <span
-            className="inline-block border border-paper/50 bg-ink px-2 py-1 text-[10px] font-bold tracking-wide text-paper"
+            className="inline-block bg-paper px-2 py-1 text-[10px] font-bold tracking-[0.12em] text-ink uppercase"
             style={{ fontFamily: 'var(--font-mono)' }}
           >
             {t.issues.tag}
           </span>
+
           <div className="mt-2 flex flex-col gap-3 zine:flex-row zine:items-end zine:justify-between">
+            {/*
+              Anton sólido, não o spray pingando: na referência o título é um
+              bloco compacto e limpo, com uma leve sombra deslocada.
+            */}
             <h2
-              className="text-[clamp(3.5rem,9vw,7rem)] leading-none text-paper"
-              style={{ fontFamily: 'var(--font-spray)', WebkitTextStroke: '1px var(--color-ink)' }}
+              className="text-[clamp(3rem,7.5vw,5.5rem)] leading-[0.85] text-paper"
+              style={{
+                fontFamily: 'var(--font-display)',
+                textShadow: '4px 4px 0 rgba(0,0,0,.55)',
+              }}
             >
               {t.issues.titulo}
             </h2>
+
             <p
-              className="max-w-[48ch] text-[11px] leading-snug tracking-wide text-red zine:mb-2 zine:text-right"
+              className="max-w-[46ch] text-[10px] leading-snug tracking-[0.08em] text-red uppercase zine:mb-3 zine:text-right"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
               {t.issues.sub}
             </p>
           </div>
+
           <div aria-hidden="true" className="mt-4 h-[3px] w-full bg-red" />
         </header>
 
+        {/* celular: carrossel com encaixe, um pôster por vez */}
         <div className="mt-8 zine:hidden">
-          <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-6 pb-5 scroll-px-6">
+          <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-5">
             {cards.map((issue) => (
               <div key={issue.slug} className="w-[84vw] shrink-0 snap-start">
                 <IssueCard issue={issue} t={t} prefix={prefix} />
@@ -53,20 +74,37 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
             ) : null}
           </div>
           <p
-            className="px-6 text-[11px] tracking-wide text-paper/70"
+            className="px-6 text-[11px] tracking-[0.1em] text-paper/60 uppercase"
             style={{ fontFamily: 'var(--font-mono)' }}
           >
             arraste →
           </p>
         </div>
 
-        <div className="relative hidden grid-cols-3 gap-6 px-10 pt-8 zine:grid">
-          {first ? <div className="col-span-2 min-w-0"><IssueCard issue={first} t={t} prefix={prefix} featured /></div> : null}
-          {second ? <div className="min-w-0"><IssueCard issue={second} t={t} prefix={prefix} /></div> : null}
-          {[third, fourth, fifth].map((issue) => issue ? (
-            <div key={issue.slug} className="min-w-0"><IssueCard issue={issue} t={t} prefix={prefix} /></div>
-          ) : null)}
-          {sixth ? <div className="col-span-3 min-w-0"><ClientLineup issue={sixth} t={t} /></div> : null}
+        {/* desktop: a grade da referência */}
+        <div className="hidden grid-cols-3 items-start gap-7 px-10 pt-10 zine:grid">
+          {first ? (
+            <div className="col-span-2 min-w-0">
+              <IssueCard issue={first} t={t} prefix={prefix} featured />
+            </div>
+          ) : null}
+          {second ? (
+            <div className="min-w-0">
+              <IssueCard issue={second} t={t} prefix={prefix} />
+            </div>
+          ) : null}
+          {[third, fourth, fifth].map((issue) =>
+            issue ? (
+              <div key={issue.slug} className="min-w-0">
+                <IssueCard issue={issue} t={t} prefix={prefix} />
+              </div>
+            ) : null,
+          )}
+          {sixth ? (
+            <div className="col-span-3 min-w-0 pt-3">
+              <ClientLineup issue={sixth} t={t} />
+            </div>
+          ) : null}
         </div>
       </div>
     </section>
