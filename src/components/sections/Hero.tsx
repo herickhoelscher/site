@@ -4,6 +4,7 @@ import { useMeasure } from '@/lib/useMeasure'
 import { useIsMobile } from '@/lib/useIsMobile'
 import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
 import { NetworkCable, Doodle, InkField, TornPaper } from '@/components/collage'
+import { HeroCanvas } from './HeroCanvas'
 import { LangToggle } from '@/components/LangToggle'
 import type { Content } from '@/content'
 
@@ -81,6 +82,13 @@ export function Hero({ t }: Props) {
     Entrada: a varredura só acontece uma vez, no primeiro quadro depois de medir.
     Com prefers-reduced-motion já nasce no lugar final, sem transição.
   */
+  /*
+    Com movimento permitido quem pinta o hero é o canvas: ele faz a varredura,
+    a retícula das letras, o impacto e a tremida. Sem movimento, cai na versão
+    em CSS que já existia, estática. O h1 fica no HTML nos dois casos.
+  */
+  const comCanvas = !reduced && W > 0 && H > 0
+  const [petsVisiveis, setPetsVisiveis] = useState(false)
   const [entrou, setEntrou] = useState(false)
   useEffect(() => {
     if (!W || !H) return
@@ -159,12 +167,23 @@ export function Hero({ t }: Props) {
       id="topo"
       className="tex-creme relative flex min-h-[100svh] flex-col overflow-hidden"
     >
-      {/* metade escura, recortada pela diagonal */}
-      <div
-        className="tex-preta pointer-events-none absolute inset-0"
-        style={{ clipPath: entrou ? darkClip : darkClipStart, transition: varredura }}
-        aria-hidden="true"
-      />
+      {comCanvas ? (
+        <HeroCanvas
+          linhas={isMobile ? ['HER', 'ICK'] : [t.hero.name]}
+          adesivo={t.hero.sticker}
+          width={W}
+          height={H}
+          isMobile={isMobile}
+          onEntradaFim={() => setPetsVisiveis(true)}
+        />
+      ) : (
+        /* metade escura, recortada pela diagonal */
+        <div
+          className="tex-preta pointer-events-none absolute inset-0"
+          style={{ clipPath: entrou ? darkClip : darkClipStart, transition: varredura }}
+          aria-hidden="true"
+        />
+      )}
 
       {/* rabiscos; a tinta fica por conta do InkField, dentro das camadas */}
       <span className="absolute left-[4vw] top-[58%] z-[3]">
@@ -213,7 +232,7 @@ export function Hero({ t }: Props) {
         o mesmo polígono num elemento menor recortava no lugar errado.
       */}
       <div
-        className="pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-paper"
+        className={`pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-paper ${comCanvas ? 'hidden' : ''}`}
         style={{ clipPath: entrou ? darkClip : darkClipStart, transition: varredura }}
         aria-hidden="true"
       >
@@ -228,9 +247,17 @@ export function Hero({ t }: Props) {
         />
       </div>
 
+      {/*
+        O h1 nunca sai do HTML: é ele que o buscador e o leitor de tela leem.
+        Quando o canvas está pintando, ele vira sr-only em vez de desaparecer.
+      */}
       <h1
-        className="pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-ink"
-        style={{ clipPath: entrou ? lightClip : lightClipStart, transition: varredura }}
+        className={
+          comCanvas
+            ? 'sr-only'
+            : 'pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-ink'
+        }
+        style={comCanvas ? undefined : { clipPath: entrou ? lightClip : lightClipStart, transition: varredura }}
       >
         <Name hidden={false} />
         <InkField
@@ -275,7 +302,7 @@ export function Hero({ t }: Props) {
       <img
         src="/assets/pets-espiando.png"
         alt="Mike e Missi espiando por cima do nome"
-        className={`pointer-events-none absolute left-1/2 z-[6] w-[26vw] max-w-[300px] -translate-x-1/2 zine:left-[56%] ${entrou ? 'hero-pets-in' : 'hero-pets-out'}`}
+        className={`pointer-events-none absolute left-1/2 z-[6] w-[26vw] max-w-[300px] -translate-x-1/2 zine:left-[56%] ${(comCanvas ? petsVisiveis : entrou) ? 'hero-pets-in' : 'hero-pets-out'}`}
         style={{
           mixBlendMode: 'lighten',
           // apoiados na borda de cima das letras, que começam em ~18% da seção
@@ -284,7 +311,7 @@ export function Hero({ t }: Props) {
       />
 
       {/* adesivo vermelho */}
-      <div className="relative z-[5] -mt-2 px-[6vw] zine:px-[16vw]">
+      <div className={`relative z-[5] -mt-2 px-[6vw] zine:px-[16vw] ${comCanvas ? 'hidden' : ''}`}>
         <TornPaper
           seed="hero-sticker"
           amp={4}
