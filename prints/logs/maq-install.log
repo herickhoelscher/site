@@ -1,25 +1,56 @@
-npm error code EUSAGE
-npm error
-npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
-npm error
-npm error Missing: @emnapi/runtime@1.11.3 from lock file
-npm error Missing: @emnapi/core@1.11.3 from lock file
-npm error
-npm error Clean install a project
-npm error
-npm error Usage:
-npm error npm ci
-npm error
-npm error Options:
-npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
-npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
-npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
-npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
-npm error [--no-bin-links] [--no-fund] [--dry-run]
-npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
-npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
-npm error
-npm error aliases: clean-install, ic, install-clean, isntall-clean
-npm error
-npm error Run "npm help ci" for more info
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-10-30T06_28_52_912Z-debug-0.log
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+> maqcenter-site@0.1.0 postinstall
+> prisma generate
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+
+✔ Generated Prisma Client (7.10.1) to ./src/generated/prisma in 108ms
+
+
+added 539 packages in 14s
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.prisma.
+Datasource "db": SQLite database "maq.db" at "file:/tmp/maq.db"
+
+SQLite database maq.db created at file:/tmp/maq.db
+
+4 migrations found in prisma/migrations
+
+Applying migration `20261016014936_init`
+Applying migration `20261016042200_shop`
+Applying migration `20261016042253_equipment_catalog_fields`
+Applying migration `20261016151500_staff_admin_login`
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 7.10.1 -> 8.0.0-rc.28                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20261016014936_init/
+    └─ migration.sql
+  └─ 20261016042200_shop/
+    └─ migration.sql
+  └─ 20261016042253_equipment_catalog_fields/
+    └─ migration.sql
+  └─ 20261016151500_staff_admin_login/
+    └─ migration.sql
+
+All migrations have been successfully applied.
+Loaded Prisma config from prisma.config.ts.
+
+Running seed command `tsx prisma/seed.ts` ...
+Seed concluido
+
+🌱  The seed command has been executed.

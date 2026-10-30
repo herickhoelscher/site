@@ -1,25 +1,52 @@
-npm error code EUSAGE
-npm error
-npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
-npm error
-npm error Missing: @emnapi/runtime@1.11.3 from lock file
-npm error Missing: @emnapi/core@1.11.3 from lock file
-npm error
-npm error Clean install a project
-npm error
-npm error Usage:
-npm error npm ci
-npm error
-npm error Options:
-npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
-npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
-npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
-npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
-npm error [--no-bin-links] [--no-fund] [--dry-run]
-npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
-npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
-npm error
-npm error aliases: clean-install, ic, install-clean, isntall-clean
-npm error
-npm error Run "npm help ci" for more info
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-10-30T06_28_52_176Z-debug-0.log
+npm warn deprecated tsconfck@3.1.6: unmaintained
+npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 572 packages in 17s
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "ecommerce", schema "public" at "localhost:5432"
+
+2 migrations found in prisma/migrations
+
+Applying migration `20260831124856_init`
+Applying migration `20260903110502_senha_trocada_em`
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 6.19.3 -> 8.0.0-rc.28                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+The following migration(s) have been applied:
+
+migrations/
+  └─ 20260831124856_init/
+    └─ migration.sql
+  └─ 20260903110502_senha_trocada_em/
+    └─ migration.sql
+      
+All migrations have been successfully applied.
+
+> ecommerce-br@1.0.0 db:seed
+> tsx prisma/seed.ts
+
+Iniciando seed...
+
+Configuracoes da loja: Casa Linho
+
+ADMIN_PASSWORD nao definido no .env: o usuario administrador NAO foi criado.
+Defina ADMIN_EMAIL e ADMIN_PASSWORD e rode "npm run create:admin".
+
+Categorias: 5 (com 9 subcategorias)
+Marcas: 4
+Produtos: 13 criados
+Banners: 4 criados
+Cupons: 3
+
+Seed concluido com sucesso.

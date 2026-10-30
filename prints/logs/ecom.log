@@ -1,0 +1,19 @@
+▲ Next.js 16.3.3 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://10.1.0.5:3001
+✓ Ready in 308ms
+✓ Running next.config.ts took 32ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+- Experiments (use with caution):
+  · optimizePackageImports
+
+○ Compiling / ...
+ GET / 200 in 4.2s (next.js: 3.4s, application-code: 805ms)
+ GET /produtos 200 in 985ms (next.js: 646ms, application-code: 339ms)
+ GET / 200 in 272ms (next.js: 4ms, application-code: 268ms)
+ GET /produto/trio-parede-de-galeria 200 in 1750ms (next.js: 1493ms, application-code: 257ms)
+ GET / 200 in 276ms (next.js: 8ms, application-code: 268ms)
