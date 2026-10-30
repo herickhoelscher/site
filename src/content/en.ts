@@ -30,7 +30,7 @@ export const en: Content = {
   },
 
   quem: {
-    titulo: 'WHO IS THIS GUY?',
+    titulo: 'WHO AM I?',
     bio: [
       'I started working at 14, stamping paper and building spreadsheets. Then came the retail counter, then IT support, and then the server room: networks, firewalls, Microsoft 365 and a lot of scripts so nobody had to repeat manual work.',
       'That is where I found out what I actually love: taking a boring process and turning it into code. Today I do that with websites, online stores, systems and automations, from landing pages to AI agents.',

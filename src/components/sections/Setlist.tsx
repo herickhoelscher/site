@@ -12,16 +12,18 @@ export function Setlist({ t }: { t: Content }) {
         pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
       />
       <div
-        className="pointer-events-none absolute inset-y-0 left-[18%] w-[52%]"
+        className="fx-flicker pointer-events-none absolute inset-y-0 left-[18%] w-[52%]"
         style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 0%, rgba(255,236,190,.20), rgba(255,236,190,.06) 55%, transparent 75%)', clipPath: 'polygon(38% 0,62% 0,100% 100%,0 100%)' }}
         aria-hidden="true"
       />
-      <span className="absolute left-[6%] top-16 z-[4]">
-        <Doodle kind="star" seed="setlist-star" size={60} color="#E8432E" />
+      <span data-fx="pop" className="absolute left-[6%] top-16 z-[4]">
+        <span className="fx-spin-slow block">
+          <Doodle kind="star" seed="setlist-star" size={60} color="#E8432E" />
+        </span>
       </span>
 
       <div className="relative z-[3] mx-auto grid max-w-[1320px] items-end gap-10 zine:grid-cols-[1.3fr_.7fr] zine:gap-[4vw]">
-        <div className="relative min-w-0">
+        <div data-fx="rise" className="relative min-w-0">
           <TornPaper
             seed="setlist-sheet"
             sides="tb"
@@ -31,7 +33,8 @@ export function Setlist({ t }: { t: Content }) {
             style={{ backgroundImage: 'repeating-linear-gradient(transparent 0 43px, rgba(118,91,167,.16) 43px 45px)' }}
           >
             <h2
-              className="text-[clamp(3.25rem,7vw,6.75rem)] leading-none"
+              data-fx="slam"
+              className="origin-left text-[clamp(3.25rem,7vw,6.75rem)] leading-none"
               style={{ fontFamily: 'var(--font-marker)' }}
             >
               {t.setlist.titulo}
@@ -39,7 +42,7 @@ export function Setlist({ t }: { t: Content }) {
             <p className="mb-5 mt-1 text-[1.6rem] leading-none text-red" style={{ fontFamily: 'var(--font-hand)' }}>
               {t.setlist.sub}
             </p>
-            <ol>
+            <ol data-fx="stagger" data-fx-child="slide-l">
               {t.setlist.faixas.map((track, i) => {
                 const open = openTrack === i
                 const panelId = `setlist-detail-${i}`
@@ -80,7 +83,7 @@ export function Setlist({ t }: { t: Content }) {
           >
             {t.setlist.nota}
           </p>
-          <div className="absolute right-0 bottom-0 h-[150px] w-[170px] rounded border-[6px] border-[#2a2a2a] bg-[#1d1d1d] shadow-zine zine:h-[230px] zine:w-[260px]">
+          <div data-fx="drop" className="absolute right-0 bottom-0 h-[150px] w-[170px] rounded border-[6px] border-[#2a2a2a] bg-[#1d1d1d] shadow-zine zine:h-[230px] zine:w-[260px]">
             <div className="absolute inset-x-3 top-3 flex gap-2" aria-hidden="true">
               {[0, 1, 2].map((i) => <i key={i} className="size-3 rounded-full bg-paper" />)}
             </div>
@@ -90,8 +93,11 @@ export function Setlist({ t }: { t: Content }) {
               aria-hidden="true"
             />
           </div>
-          <StickerImg src="/assets/mike-corpo.png" alt="Mike no palco" variant="plain" width="58%" className="absolute bottom-0 left-0 z-[3] max-w-[230px]" />
-          <StickerImg src="/assets/missi-sentada.png" alt="Missi em cima do amplificador" variant="plain" width="42%" className="absolute right-[9%] bottom-[142px] z-[4] max-w-[170px] zine:bottom-[222px]" />
+          <span data-fx="slide-r" className="absolute bottom-[18px] left-0 z-[3] w-[72%] max-w-[300px] zine:bottom-[40px]">
+            <span className="fx-float block">
+              <StickerImg src="/assets/herick-roxo.png" alt="Retrato do Herick em roxo, no palco" variant="plain" width="100%" />
+            </span>
+          </span>
         </div>
       </div>
     </section>

@@ -95,7 +95,7 @@ export function IssueCard({ issue, t, prefix, featured = false }: Props) {
               rel="noreferrer"
               tabIndex={-1}
               aria-hidden="true"
-              className="mb-4 block"
+              className="mb-4 block transition-transform duration-300 group-hover:scale-[1.03] group-hover:-rotate-1"
             >
               <BrowserShot
                 src={issue.foto}
@@ -137,11 +137,11 @@ export function IssueCard({ issue, t, prefix, featured = false }: Props) {
             <p className="mt-3 text-[13px] leading-relaxed zine:text-[14px]">{issue.resumoCard}</p>
 
             {/* pastilhas preenchidas, como na referência */}
-            <ul className="mt-3 flex flex-wrap gap-1.5">
+            <ul data-fx="stagger" data-fx-child="pop" className="mt-3 flex flex-wrap gap-1.5">
               {issue.stack.map((item) => (
                 <li
                   key={item}
-                  className="bg-ink px-2 py-[3px] text-[9px] font-bold tracking-[0.04em] text-paper"
+                  className="fx-wiggle bg-ink px-2 py-[3px] text-[9px] font-bold tracking-[0.04em] text-paper"
                   style={{ fontFamily: 'var(--font-mono)' }}
                 >
                   {item}

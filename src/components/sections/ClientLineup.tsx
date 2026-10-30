@@ -33,7 +33,7 @@ export function ClientLineup({ issue, t }: { issue: Issue; t: Content }) {
       </div>
       <div aria-hidden="true" className="my-3 h-px bg-paper/80" />
 
-      <ul className="grid grid-cols-2 gap-3 zine:grid-cols-5">
+      <ul data-fx="stagger" data-fx-child="pop" className="grid grid-cols-2 gap-3 zine:grid-cols-5">
         {issue.clientes?.map((cliente, i, todos) => {
           const href = cliente.site ?? cliente.repo
           // no celular, o último de uma lista ímpar ocupa a linha inteira
@@ -77,7 +77,7 @@ export function ClientLineup({ issue, t }: { issue: Issue; t: Content }) {
         })}
       </ul>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-paper/70 pt-3">
+      <div data-fx="stagger" data-fx-child="slide-l" className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-paper/70 pt-3">
         <span
           className="text-[10px] font-bold tracking-[0.12em] text-paper"
           style={{ fontFamily: 'var(--font-mono)' }}
@@ -90,7 +90,7 @@ export function ClientLineup({ issue, t }: { issue: Issue; t: Content }) {
             href={p.href}
             target="_blank"
             rel="noreferrer"
-            className="bg-ink px-3 py-1.5 text-[15px] leading-none text-paper shadow-zine-sm transition-transform hover:-translate-y-0.5"
+            className="fx-jelly bg-ink px-3 py-1.5 text-[15px] leading-none text-paper shadow-zine-sm"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             {p.nome}

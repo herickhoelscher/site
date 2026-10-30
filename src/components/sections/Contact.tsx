@@ -8,19 +8,25 @@ export function Contact({ t }: { t: Content }) {
         path=".9,-.02;.95,.22;.975,.52;.94,.82;.9,1.02"
         pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
       />
-      <Splat seed="contact-splat" className="absolute left-[30%] top-6 h-40 w-60 opacity-85" />
-      <span className="absolute left-[12%] top-16">
-        <Doodle kind="star" seed="contact-star" size={64} color="#E8432E" />
+      <span data-fx="pop" className="absolute left-[30%] top-6 block h-40 w-60">
+        <Splat seed="contact-splat" className="h-full w-full opacity-85" />
       </span>
-      <span className="absolute right-[30%] top-12 hidden zine:block">
-        <Doodle kind="crown" seed="contact-crown" size={58} color="#765BA7" />
+      <span data-fx="pop" className="absolute left-[12%] top-16">
+        <span className="fx-float block">
+          <Doodle kind="star" seed="contact-star" size={64} color="#E8432E" />
+        </span>
+      </span>
+      <span data-fx="pop" className="absolute right-[30%] top-12 hidden zine:block">
+        <span className="fx-float-2 block">
+          <Doodle kind="crown" seed="contact-crown" size={58} color="#765BA7" />
+        </span>
       </span>
       {/*
         Os tênis ficam inteiros dentro da tela. O PNG corta a sola do tênis da
         esquerda numa reta; a borda de baixo vira rasgo de colagem.
       */}
       <span
-        className="absolute right-[3%] top-0 z-[5] zine:right-[2.5%]"
+        className="fx-swing absolute right-[3%] top-0 z-[5] zine:right-[2.5%]"
         style={{
           clipPath:
             'polygon(0 0,100% 0,100% 90%,93% 93%,86% 89%,79% 94%,71% 90%,63% 95%,55% 91%,47% 96%,39% 92%,31% 97%,23% 93%,15% 97%,7% 93%,0 96%)',
@@ -31,24 +37,12 @@ export function Contact({ t }: { t: Content }) {
           alt="Par de tênis pendurado no cabo"
           variant="plain"
           width="clamp(98px, 12vw, 180px)"
+          // sem lazy: dentro do recorte girando, o navegador às vezes não via a imagem e nunca carregava
+          loading="eager"
         />
       </span>
-      <StickerImg
-        src="/assets/mike-surpreso.png"
-        alt="Mike surpreso"
-        variant="plain"
-        width="clamp(85px, 14vw, 190px)"
-        className="absolute bottom-4 right-1 z-[5] zine:bottom-auto zine:left-[2%] zine:right-auto zine:top-[36%]"
-      />
-      <StickerImg
-        src="/assets/missi-rindo.png"
-        alt="Missi rindo"
-        variant="plain"
-        width="clamp(110px, 14vw, 190px)"
-        className="absolute right-[10%] top-[62%] z-[5] hidden zine:block"
-      />
 
-      <div className="relative z-[4] mx-auto mt-8 max-w-[960px] drop-shadow-[14px_16px_0_rgba(0,0,0,0.28)]">
+      <div data-fx="drop" className="relative z-[4] mx-auto mt-8 max-w-[960px] drop-shadow-[14px_16px_0_rgba(0,0,0,0.28)]">
         <div
           className="tex-creme grid -rotate-[1.5deg] text-ink zine:-rotate-[2.5deg] zine:grid-cols-[1fr_170px]"
           style={{
@@ -79,17 +73,17 @@ export function Contact({ t }: { t: Content }) {
         </div>
       </div>
 
-      <div className="relative z-[6] mx-auto mt-14 flex max-w-[760px] flex-col justify-center gap-4 zine:flex-row zine:gap-6">
+      <div data-fx="stagger" data-fx-child="pop" className="relative z-[6] mx-auto mt-14 flex max-w-[760px] flex-col justify-center gap-4 zine:flex-row zine:gap-6">
         <a
           href={`mailto:${t.contato.emailAddr}`}
-          className="-rotate-2 bg-ink px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-paper shadow-[6px_7px_0_#E8432E] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
+          className="fx-jelly -rotate-2 bg-ink px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-paper shadow-[6px_7px_0_#E8432E] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           {t.contato.email}
         </a>
         <a
           href="/cv-herick-pt.pdf"
-          className="rotate-1 bg-red px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-ink shadow-[6px_7px_0_#141414] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
+          className="fx-jelly rotate-1 bg-red px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-ink shadow-[6px_7px_0_#141414] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           {t.contato.cv}

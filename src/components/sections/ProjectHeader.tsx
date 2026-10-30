@@ -36,7 +36,7 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
         </nav>
 
         <div className="relative z-[2] mx-auto grid max-w-[1360px] items-center gap-12 px-6 pb-20 pt-8 zine:grid-cols-2 zine:gap-[5vw] zine:px-10 zine:pb-24">
-          <div className="relative min-w-0">
+          <div data-fx="slide-l" className="relative min-w-0">
             <Tape seed={`case-cover-tape-left-${issue.slug}`} at="top-left" width={80} />
             <Tape seed={`case-cover-tape-right-${issue.slug}`} at="bottom-right" width={80} />
             <TornPaper
@@ -62,20 +62,10 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
                 {issue.selo}
               </Stamp>
             </span>
-            {issue.slug === 'leitor-rco' ? (
-              <StickerImg
-                src="/assets/mike-feliz.png"
-                alt="Mike, o cachorro do Herick"
-                variant="plain"
-                width={100}
-                height={100}
-                className="absolute -bottom-9 -left-3 z-[4] hidden object-contain zine:block"
-              />
-            ) : null}
           </div>
 
-          <div className="relative min-w-0">
-            <span className="absolute -top-12 right-8 hidden zine:block">
+          <div data-fx="slide-r" className="relative min-w-0">
+            <span className="fx-spin-slow absolute -top-12 right-8 hidden zine:block">
               <Doodle kind="star" seed={`case-star-${issue.slug}`} size={55} />
             </span>
             <p
@@ -121,6 +111,7 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
 
       <section className="tex-creme px-6 pt-12 text-ink zine:px-10 zine:pt-16">
         <dl
+          data-fx="rise"
           className={`relative z-[3] mx-auto grid max-w-[1360px] grid-cols-2 border-2 border-ink ${repo ? 'zine:grid-cols-4' : 'zine:grid-cols-3'}`}
         >
           <div className="min-w-0 border-b-2 border-r-2 border-ink p-3 zine:border-b-0 zine:p-4">

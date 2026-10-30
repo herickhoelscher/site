@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
 
 const KONAMI = [
@@ -21,19 +22,20 @@ const KONAMI = [
  * scrub, quedas, cursor e easter eggs de física". O componente devolve `null`
  * nesse caso, então nem listener é registrado.
  *
- * - Konami: o Mike atravessa a tela correndo.
+ * - Konami: o Mike atravessa a tela correndo (só no Lado B: os pets moram lá).
  * - 5 cliques na Missi: ela derruba um elemento, que cai com gravidade simples.
  * - Cursor de estrela, só no desktop com mouse de verdade.
  */
 export function EasterEggs() {
   const reduced = usePrefersReducedMotion()
+  const ladoB = useLocation().pathname.includes('/lado-b')
   const [mikeRunning, setMikeRunning] = useState(false)
   const [star, setStar] = useState<{ x: number; y: number } | null>(null)
   const buffer = useRef<string[]>([])
 
   // --- Konami -------------------------------------------------------------
   useEffect(() => {
-    if (reduced) return
+    if (reduced || !ladoB) return
     const onKey = (e: KeyboardEvent) => {
       buffer.current = [...buffer.current, e.key].slice(-KONAMI.length)
       if (KONAMI.every((k, i) => k.toLowerCase() === buffer.current[i]?.toLowerCase())) {
@@ -44,7 +46,7 @@ export function EasterEggs() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [reduced])
+  }, [reduced, ladoB])
 
   // --- cursor de estrela ---------------------------------------------------
   useEffect(() => {

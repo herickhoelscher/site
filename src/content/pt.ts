@@ -33,7 +33,7 @@ export const pt: Content = {
   },
 
   quem: {
-    titulo: 'QUEM É ESSE CARA?',
+    titulo: 'QUEM SOU EU?',
     bio: [
       'Comecei a trabalhar com 14 anos, carimbando papel e montando planilha. Passei pelo balcão, caí no suporte de TI e fui parar na sala do servidor: rede, firewall, Microsoft 365 e muito script pra ninguém precisar repetir trabalho manual.',
       'Foi ali que eu descobri do que gosto de verdade: pegar um processo chato e transformar em código. Hoje faço isso em sites, lojas, sistemas e automações, de landing page a agente de IA.',

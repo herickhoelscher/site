@@ -27,6 +27,7 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
       <div className="relative z-[3] mx-auto max-w-[1200px]">
         <header className="px-6 zine:px-10">
           <span
+            data-fx="wipe"
             className="inline-block bg-paper px-2 py-1 text-[10px] font-bold tracking-[0.12em] text-ink uppercase"
             style={{ fontFamily: 'var(--font-mono)' }}
           >
@@ -39,7 +40,8 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
               bloco compacto e limpo, com uma leve sombra deslocada.
             */}
             <h2
-              className="text-[clamp(3rem,7.5vw,5.5rem)] leading-[0.85] text-paper"
+              data-fx="slam"
+              className="origin-left text-[clamp(3rem,7.5vw,5.5rem)] leading-[0.85] text-paper"
               style={{
                 fontFamily: 'var(--font-display)',
                 textShadow: '4px 4px 0 rgba(0,0,0,.55)',
@@ -49,6 +51,7 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
             </h2>
 
             <p
+              data-fx="rise"
               className="max-w-[46ch] text-[10px] leading-snug tracking-[0.08em] text-red uppercase zine:mb-3 zine:text-right"
               style={{ fontFamily: 'var(--font-mono)' }}
             >
@@ -56,14 +59,14 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
             </p>
           </div>
 
-          <div aria-hidden="true" className="mt-4 h-[3px] w-full bg-red" />
+          <div aria-hidden="true" data-fx="wipe" className="mt-4 h-[3px] w-full bg-red" />
         </header>
 
         {/* celular: carrossel com encaixe, um pôster por vez */}
         <div className="mt-8 zine:hidden">
           <div className="flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain scroll-px-6 px-6 pb-5">
             {cards.map((issue) => (
-              <div key={issue.slug} className="w-[84vw] shrink-0 snap-start">
+              <div key={issue.slug} data-fx="rise" className="w-[84vw] shrink-0 snap-start">
                 <IssueCard issue={issue} t={t} prefix={prefix} />
               </div>
             ))}
@@ -76,7 +79,7 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
           </p>
           {/* os clientes têm print cada um: no celular ficam fora do carrossel */}
           {sixth ? (
-            <div className="mt-8 px-6">
+            <div data-fx="rise" className="mt-8 px-6">
               <ClientLineup issue={sixth} t={t} />
             </div>
           ) : null}
@@ -85,24 +88,24 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
         {/* desktop: a grade da referência */}
         <div className="hidden grid-cols-3 items-start gap-7 px-10 pt-10 zine:grid">
           {first ? (
-            <div className="col-span-2 min-w-0">
+            <div data-fx="drop" className="col-span-2 min-w-0">
               <IssueCard issue={first} t={t} prefix={prefix} featured />
             </div>
           ) : null}
           {second ? (
-            <div className="min-w-0">
+            <div data-fx="drop" className="min-w-0">
               <IssueCard issue={second} t={t} prefix={prefix} />
             </div>
           ) : null}
           {[third, fourth, fifth].map((issue) =>
             issue ? (
-              <div key={issue.slug} className="min-w-0">
+              <div key={issue.slug} data-fx="drop" className="min-w-0">
                 <IssueCard issue={issue} t={t} prefix={prefix} />
               </div>
             ) : null,
           )}
           {sixth ? (
-            <div className="col-span-3 min-w-0 pt-3">
+            <div data-fx="rise" className="col-span-3 min-w-0 pt-3">
               <ClientLineup issue={sixth} t={t} />
             </div>
           ) : null}

@@ -25,7 +25,7 @@ export function FlipRecord({ t, prefix }: Props) {
 
       <div className="relative z-[3] mx-auto grid max-w-[1200px] items-center gap-12 px-6 zine:grid-cols-[minmax(0,420px)_1fr] zine:gap-16 zine:px-10">
         {/* capa + vinil */}
-        <div className="group relative mx-auto w-full max-w-[360px]">
+        <div data-fx="slide-l" className="group relative mx-auto w-full max-w-[360px]">
           {/* o vinil, atrás da capa, saindo pela direita */}
           <div
             aria-hidden="true"
@@ -36,7 +36,15 @@ export function FlipRecord({ t, prefix }: Props) {
               transition: reduced ? undefined : 'transform 420ms cubic-bezier(.22,.61,.36,1)',
             }}
           >
-            <span className="absolute inset-0 m-auto h-[30%] w-[30%] rounded-full bg-red" />
+            {/* o rótulo gira: é ele que mostra que o disco está tocando */}
+            <span className="fx-spin absolute inset-0 m-auto grid h-[30%] w-[30%] place-items-center rounded-full bg-red">
+              <span
+                className="absolute top-[14%] text-[clamp(0.45rem,1.3vw,0.6rem)] font-bold tracking-[0.12em] text-ink"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                33⅓
+              </span>
+            </span>
             <span className="absolute inset-0 m-auto h-[4%] w-[4%] rounded-full bg-paper" />
           </div>
 
@@ -80,7 +88,7 @@ export function FlipRecord({ t, prefix }: Props) {
         </div>
 
         {/* texto */}
-        <div className="relative z-[4]">
+        <div data-fx="rise" className="relative z-[4]">
           <span
             className="inline-block border-2 border-ink bg-paper px-3 py-1 text-[11px] font-bold tracking-[0.12em] text-ink uppercase"
             style={{ fontFamily: 'var(--font-mono)' }}
@@ -89,7 +97,8 @@ export function FlipRecord({ t, prefix }: Props) {
           </span>
 
           <h2
-            className="mt-4 text-[clamp(2.4rem,6vw,4.5rem)] leading-[0.92] text-white"
+            data-fx="slam"
+            className="mt-4 origin-left text-[clamp(2.4rem,6vw,4.5rem)] leading-[0.92] text-white"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             {t.flip.titulo}
@@ -101,7 +110,7 @@ export function FlipRecord({ t, prefix }: Props) {
 
           <Link
             to={`${prefix}/lado-b`}
-            className="mt-8 inline-block bg-paper px-6 py-3 text-[clamp(0.95rem,1.6vw,1.2rem)] text-ink shadow-[6px_6px_0_var(--color-ink)] transition-transform hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_var(--color-ink)]"
+            className="fx-jelly mt-8 inline-block bg-paper px-6 py-3 text-[clamp(0.95rem,1.6vw,1.2rem)] text-ink shadow-[6px_6px_0_var(--color-ink)] transition-transform hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_var(--color-ink)]"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             {t.flip.botao}

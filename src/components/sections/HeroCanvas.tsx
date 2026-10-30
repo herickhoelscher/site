@@ -19,6 +19,16 @@ const INK = '#141414'
 const PAPER = '#EFE9DA'
 const RED = '#E8432E'
 const ROXO = '#765BA7'
+const LAV = '#A68BE6'
+
+/**
+ * Cores das partículas. A cor depende do lado da linha em que a partícula está
+ * (o mesmo `tom` vira creme em cima e preto embaixo), então ela "troca de cor"
+ * quando atravessa o corte, como as letras do nome.
+ */
+const TONS_TOPO = [PAPER, PAPER, RED, LAV]
+const TONS_FUNDO = [INK, INK, RED, ROXO]
+const TAU = Math.PI * 2
 
 /** As mesmas texturas das seções (tex-creme, tex-roxa, tex-vermelha), no mesmo tamanho. */
 const TEXTURAS = {
@@ -61,6 +71,21 @@ const TREMIDA = [16, -10, 6, -3, 1]
 let aberturaTocou = false
 
 type Glifo = { ch: string; x: number; w: number }
+/** Partícula solta: poeira do fundo, faísca do impacto, poeira das letras ou rastro do ponteiro. */
+type Particula = {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  s: number // tamanho
+  ang: number
+  va: number // giro por quadro
+  forma: number // 0 ponto, 1 quadrado, 2 cruz, 3 triângulo, 4 asterisco
+  tom: number // índice em TONS_TOPO / TONS_FUNDO
+  z: number // profundidade: mais perto, maior e mais rápida
+  vida: number // 1 → 0; a poeira do fundo fica sempre em 1
+  queda: number // gravidade por quadro
+}
 type Gota = { x: number; y: number; vy: number; r: number; vida: number }
 type Mancha = {
   u: number // posição ao longo da largura (0..1)
@@ -498,7 +523,7 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
     const montaTinta = () => {
       manchas.length = 0
       const tr = makeRng(91)
-      const N = isMobile ? 70 : 140
+      const N = isMobile ? 110 : 230
       const gauss = () => {
         let u = 0
         while (!u) u = tr.next()
@@ -527,9 +552,10 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       // respingo fixo em volta do asterisco e no começo do nome
       const a = asteriscoPos()
       const focos = [
-        { x: a.x, y: a.y, n: isMobile ? 10 : 18, raio: capa * SY * 0.5 },
-        { x: W * 0.09, y: yBase(W * 0.09), n: isMobile ? 7 : 12, raio: capa * SY * 0.35 },
-        { x: W * 0.62, y: yBase(W * 0.62), n: isMobile ? 4 : 7, raio: capa * SY * 0.25 },
+        { x: a.x, y: a.y, n: isMobile ? 16 : 28, raio: capa * SY * 0.55 },
+        { x: W * 0.09, y: yBase(W * 0.09), n: isMobile ? 10 : 16, raio: capa * SY * 0.4 },
+        { x: W * 0.62, y: yBase(W * 0.62), n: isMobile ? 6 : 10, raio: capa * SY * 0.3 },
+        { x: W * 0.35, y: yBase(W * 0.35), n: isMobile ? 5 : 9, raio: capa * SY * 0.25 },
       ]
       for (const f of focos) {
         for (let i = 0; i < f.n; i++) {
@@ -559,6 +585,119 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
 
     const gotas: Gota[] = []
     const mouse = { x: -9999, y: -9999 }
+
+    // ===================== partículas =====================
+    const poeira: Particula[] = []
+    const faiscas: Particula[] = []
+    const rngP = makeRng(131)
+    const MAX_FAISCAS = isMobile ? 220 : 480
+
+    /** Poeira do fundo: mais densa perto da linha, anda junto com a tinta. */
+    const montaPoeira = () => {
+      poeira.length = 0
+      const N = isMobile ? 120 : 260
+      for (let i = 0; i < N; i++) {
+        const x = rngP.range(0, W)
+        const z = rngP.range(0.45, 1)
+        const vx = rngP.range(0.25, 1.1) * z * escalaTinta
+        const espalha = rngP.next() < 0.6 ? 0.35 : 0.95
+        poeira.push({
+          x,
+          y: yBase(x) + (rngP.next() - 0.5) * H * espalha,
+          vx,
+          vy: vx * Math.tan(ANG),
+          s: rngP.range(2, 6.5) * z * escalaTinta,
+          ang: rngP.next() * TAU,
+          va: rngP.range(-0.08, 0.08),
+          forma: Math.floor(rngP.next() * 5),
+          tom: Math.floor(rngP.next() * 4),
+          z,
+          vida: 1,
+          queda: 0,
+        })
+      }
+    }
+
+    /** Solta `n` faíscas de um ponto, em todas as direções. */
+    const estoura = (x: number, y: number, n: number, forca: number, queda: number) => {
+      for (let i = 0; i < n; i++) {
+        const a = rngP.next() * TAU
+        const v = rngP.range(0.3, 1) * forca
+        faiscas.push({
+          x,
+          y,
+          vx: Math.cos(a) * v,
+          vy: Math.sin(a) * v - forca * 0.15,
+          s: rngP.range(2, 6.5) * escalaTinta,
+          ang: a,
+          va: rngP.range(-0.3, 0.3),
+          forma: Math.floor(rngP.next() * 5),
+          tom: Math.floor(rngP.next() * 4),
+          z: 1,
+          vida: 1,
+          queda,
+        })
+      }
+      if (faiscas.length > MAX_FAISCAS) faiscas.splice(0, faiscas.length - MAX_FAISCAS)
+    }
+
+    const desenhaParticula = (c: CanvasRenderingContext2D, p: Particula, alfa: number) => {
+      const cor = (p.y < yLinha(p.x) ? TONS_TOPO : TONS_FUNDO)[p.tom]
+      const s = p.s
+      c.globalAlpha = alfa
+      c.fillStyle = cor
+      c.strokeStyle = cor
+      c.save()
+      c.translate(p.x, p.y)
+      c.rotate(p.ang)
+      switch (p.forma) {
+        case 0:
+          c.beginPath()
+          c.arc(0, 0, s, 0, TAU)
+          c.fill()
+          break
+        case 1:
+          c.fillRect(-s * 0.85, -s * 0.85, s * 1.7, s * 1.7)
+          break
+        case 2:
+          c.lineWidth = Math.max(1.2, s * 0.55)
+          c.beginPath()
+          c.moveTo(-s * 1.3, 0)
+          c.lineTo(s * 1.3, 0)
+          c.moveTo(0, -s * 1.3)
+          c.lineTo(0, s * 1.3)
+          c.stroke()
+          break
+        case 3:
+          c.beginPath()
+          c.moveTo(0, -s * 1.3)
+          c.lineTo(s * 1.15, s * 0.8)
+          c.lineTo(-s * 1.15, s * 0.8)
+          c.closePath()
+          c.fill()
+          break
+        default:
+          // asterisco pequeno, eco do grande
+          c.lineWidth = Math.max(1.1, s * 0.45)
+          c.lineCap = 'round'
+          c.beginPath()
+          for (let k = 0; k < 3; k++) {
+            const a = (k * Math.PI) / 3
+            c.moveTo(-Math.cos(a) * s * 1.3, -Math.sin(a) * s * 1.3)
+            c.lineTo(Math.cos(a) * s * 1.3, Math.sin(a) * s * 1.3)
+          }
+          c.stroke()
+      }
+      c.restore()
+    }
+
+    const desenhaParticulas = (t: number) => {
+      // a poeira aparece junto com a tinta, depois do impacto
+      const k = Math.max(0, Math.min(1, (t - T_IMPACTO()) / (8 * POSE)))
+      if (k > 0) for (const p of poeira) desenhaParticula(ctx, p, k * (0.65 + 0.35 * p.z))
+      for (const f of faiscas) desenhaParticula(ctx, f, Math.min(1, f.vida * 1.6))
+      ctx.globalAlpha = 1
+    }
 
     // ===================== pintura de um quadro =====================
     const pintaMascara = (t: number, tp: number) => {
@@ -647,6 +786,9 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       ctx.drawImage(inv, 0, 0)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
+      // partículas por cima do nome e embaixo da plaquinha e do asterisco
+      desenhaParticulas(t)
+
       // plaquinha
       const kP = Math.floor((tp - T_PLACA()) / POSE)
       if (kP >= 0) desenhaPlaca(ctx, [1.4, 1.12, 0.96][kP] ?? 1)
@@ -716,6 +858,8 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
           pousou[i] = true
           const p = paraTela(g.x + g.w / 2, capa / 2)
           empurra(p.x / W, 4.5)
+          // poeira levantando do pé da letra
+          estoura(p.x, p.y, isMobile ? 7 : 14, 4.5, 0.2)
         }
       })
 
@@ -725,10 +869,12 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         congela = POSE // hit-stop: o quadro do impacto segura uma pose
         empurra(asteriscoPos().x / W, -16)
         empurra(0.5, 7)
+        const a = asteriscoPos()
+        estoura(a.x, a.y, isMobile ? 70 : 150, 20, 0.34)
       }
 
       // gotas que saem da linha
-      if (t > T_IMPACTO() + 6 * POSE && rngSim.next() < 0.22) {
+      if (t > T_IMPACTO() + 6 * POSE && rngSim.next() < 0.32) {
         const x = rngSim.range(0, W)
         const sobe = rngSim.next() < 0.5
         gotas.push({
@@ -745,6 +891,42 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         g.x += 0.6
         g.vida -= 0.035
         if (g.vida <= 0) gotas.splice(i, 1)
+      }
+
+      // poeira do fundo: anda na direção da linha, ondula e foge do ponteiro
+      const solta = t > T_IMPACTO()
+      for (const p of poeira) {
+        if (solta) {
+          p.x += p.vx
+          p.y += p.vy + Math.sin(t * 0.0021 + p.ang) * 0.3 * p.z
+          p.ang += p.va
+        }
+        const dx = p.x - mouse.x
+        const dy = p.y - mouse.y
+        const d2 = dx * dx + dy * dy
+        if (d2 < 140 * 140 && d2 > 0.01) {
+          const d = Math.sqrt(d2)
+          const f = ((140 - d) / 140) * 3.2
+          p.x += (dx / d) * f
+          p.y += (dy / d) * f
+        }
+        if (p.x > W + 12) {
+          p.x = -12
+          p.y = yBase(0) + (rngSim.next() - 0.5) * H * 0.8
+        }
+        if (p.y < -12) p.y = H + 12
+        else if (p.y > H + 12) p.y = -12
+      }
+      // faíscas: freiam, caem e somem
+      for (let i = faiscas.length - 1; i >= 0; i--) {
+        const f = faiscas[i]
+        f.vx *= 0.94
+        f.vy = f.vy * 0.94 + f.queda
+        f.x += f.vx
+        f.y += f.vy
+        f.ang += f.va
+        f.vida -= 0.028
+        if (f.vida <= 0) faiscas.splice(i, 1)
       }
 
       // a tinta anda para a direita e o mouse junta
@@ -812,10 +994,17 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       }
     }
 
+    let ultimoRastro = 0
     const mover = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect()
       mouse.x = e.clientX - r.left
       mouse.y = e.clientY - r.top
+      // rastro: o ponteiro solta faíscas pequenas enquanto anda pelo hero
+      const agora = performance.now()
+      if (agora - ultimoRastro > 45 && mouse.y >= 0 && mouse.y <= H) {
+        ultimoRastro = agora
+        estoura(mouse.x, mouse.y, 3, 2.6, 0.06)
+      }
     }
     const sair = () => {
       mouse.x = mouse.y = -9999
@@ -830,6 +1019,7 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       montaHalo()
       montaTinta()
       marcaNascimentos()
+      montaPoeira()
 
       if (reduced) {
         // parado: só o quadro final, sem tremida

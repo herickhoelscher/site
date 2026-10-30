@@ -207,3 +207,110 @@ html {
       transform 620ms cubic-bezier(.22, .61, .36, 1) 1150ms;
   }
 }
+
+/*
+ * Animações contínuas. As de entrada ficam em components/Fx.tsx.
+ * Usam as propriedades soltas (translate, rotate, scale) para somar com o
+ * transform que o GSAP e os componentes já usam, sem brigar com ele.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .fx-float {
+    animation: fx-float 5.5s ease-in-out infinite;
+  }
+  .fx-float-2 {
+    animation: fx-float 7s ease-in-out -2.5s infinite reverse;
+  }
+  .fx-swing {
+    transform-origin: 55% 0;
+    animation: fx-swing 3.8s ease-in-out infinite;
+  }
+  .fx-spin {
+    animation: fx-spin 5s linear infinite;
+  }
+  .fx-spin-slow {
+    animation: fx-spin 16s linear infinite;
+  }
+  .fx-flicker {
+    animation: fx-flicker 5s steps(1, end) infinite;
+  }
+  .fx-jelly:hover {
+    animation: fx-jelly 0.55s ease;
+  }
+  .fx-wiggle:hover {
+    animation: fx-wiggle 0.45s ease-in-out;
+  }
+}
+@keyframes fx-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -9px;
+  }
+}
+@keyframes fx-swing {
+  0%,
+  100% {
+    rotate: -4deg;
+  }
+  50% {
+    rotate: 4deg;
+  }
+}
+@keyframes fx-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes fx-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 0.5;
+  }
+  9% {
+    opacity: 1;
+  }
+  47% {
+    opacity: 0.78;
+  }
+  48% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0.6;
+  }
+  72% {
+    opacity: 1;
+  }
+}
+@keyframes fx-jelly {
+  0%,
+  100% {
+    scale: 1;
+  }
+  30% {
+    scale: 1.18 0.86;
+  }
+  50% {
+    scale: 0.9 1.1;
+  }
+  70% {
+    scale: 1.05 0.96;
+  }
+}
+@keyframes fx-wiggle {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: -6deg;
+  }
+  75% {
+    rotate: 6deg;
+  }
+}

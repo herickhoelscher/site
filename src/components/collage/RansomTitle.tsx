@@ -8,6 +8,8 @@ type Props = {
   className?: string
   /** Tamanho da letra. Pode ser qualquer unidade CSS. */
   size?: string
+  /** Letras caem uma a uma quando o título entra na tela (ver components/Fx). */
+  fx?: boolean
 }
 
 /**
@@ -40,6 +42,7 @@ export function RansomTitle({
   as: Tag = 'h2',
   className = '',
   size = 'clamp(2rem, 7vw, 4.5rem)',
+  fx = false,
 }: Props) {
   const words = useMemo(() => {
     const r = makeRng(hashSeed(seed))
@@ -63,6 +66,7 @@ export function RansomTitle({
 
   return (
     <Tag
+      data-fx={fx ? 'letters' : undefined}
       className={`flex flex-wrap items-center gap-x-[0.3em] gap-y-2 uppercase leading-none ${className}`}
       style={{ fontSize: size }}
     >

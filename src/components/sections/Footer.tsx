@@ -7,7 +7,7 @@ export function Footer({ t }: { t: Content }) {
 
   return (
     <footer className="bg-ink px-6 py-7 text-paper zine:px-10">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-5 zine:flex-row zine:items-start zine:justify-between">
+      <div data-fx="rise" className="mx-auto flex max-w-[1440px] flex-col gap-5 zine:flex-row zine:items-start zine:justify-between">
         <p className="text-xs leading-relaxed" style={{ fontFamily: 'var(--font-mono)' }}>
           {t.footer.left}
         </p>

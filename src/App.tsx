@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import { ScrollToTop } from '@/components/ScrollToTop'
 import { RecordTransition } from '@/components/RecordTransition'
 import { EasterEggs } from '@/components/EasterEggs'
+import { Fx } from '@/components/Fx'
 import LadoA from '@/pages/LadoA'
 import LadoB from '@/pages/LadoB'
 import ProjectPage from '@/pages/ProjectPage'
@@ -21,6 +22,7 @@ export default function App() {
       <ScrollToTop />
       <RecordTransition />
       <EasterEggs />
+      <Fx />
       <Routes>
         {/* PT */}
         <Route path="/" element={<LadoA />} />
