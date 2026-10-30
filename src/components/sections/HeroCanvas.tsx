@@ -17,6 +17,28 @@ type Props = {
 
 const INK = '#141414'
 const PAPER = '#EFE9DA'
+const RED = '#E8432E'
+const ROXO = '#765BA7'
+
+/** As mesmas texturas das seções (tex-creme, tex-roxa, tex-vermelha), no mesmo tamanho. */
+const TEXTURAS = {
+  creme: '/assets/textura-creme.webp',
+  roxa: '/assets/textura-roxa.webp',
+  vermelha: '/assets/textura-vermelha.webp',
+}
+const TEX_PX = 420
+
+type Fundo = string | CanvasPattern
+/** Cores de um quadro: fundo de cada lado da linha e a letra de cada lado. */
+type Paleta = { fundo: Fundo; topo: Fundo; letraTopo: string; letraFundo: string }
+
+const carregaImagem = (src: string) =>
+  new Promise<HTMLImageElement | null>((ok) => {
+    const img = new Image()
+    img.onload = () => ok(img)
+    img.onerror = () => ok(null)
+    img.src = src
+  })
 
 /** Relógio de desenho animado: 24 quadros por segundo, poses seguradas por 2 quadros. */
 const QUADRO = 1000 / 24
@@ -56,14 +78,15 @@ type Mancha = {
  * Abertura do hero em canvas 2D.
  *
  * Composição: o nome inteiro inclinado (-7°) e cortado por uma linha paralela
- * a ele, que passa pelo meio das letras. Acima da linha o fundo é preto e a
- * letra creme; abaixo, o contrário.
+ * a ele, que passa pelo meio das letras. Acima da linha o fundo é roxo e a
+ * letra creme; abaixo, papel creme e letra preta. As cores e as texturas são
+ * as mesmas das seções do site.
  *
- * Tudo o que "inverte" (manchas de tinta, anel de choque, halo da plaquinha,
- * gotas da linha) é pintado numa máscara. O quadro é desenhado duas vezes,
- * normal e com as cores trocadas, e a versão trocada só aparece onde a máscara
- * tem tinta. Assim uma mancha sobre o preto fica creme, sobre o creme fica
- * preta, e sobre uma letra inverte a letra, sempre com as duas cores exatas.
+ * Tudo o que é tinta (manchas, anel de choque, halo da plaquinha, gotas da
+ * linha) é pintado numa máscara. O quadro é desenhado duas vezes, normal e na
+ * paleta da tinta (vermelho com a letra creme), e a segunda versão só aparece
+ * onde a máscara tem tinta. Assim a tinta é vermelha dos dois lados da linha e,
+ * sobre uma letra preta, a letra vira creme.
  *
  * Linha do tempo (no relógio de poses de 83 ms):
  *   1. as letras caem uma a uma, com fantasmas, em retícula que fecha até sólida;
@@ -267,6 +290,18 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       [PAPER]: NIVEIS.map((c) => ladrilho(PAPER, c)),
     } as Record<string, CanvasPattern[]>
 
+    // ===================== paletas =====================
+    // começam lisas; viram textura quando as imagens carregam (em comecar)
+    let NORMAL: Paleta = { fundo: PAPER, topo: ROXO, letraTopo: PAPER, letraFundo: INK }
+    let TINTA: Paleta = { fundo: RED, topo: RED, letraTopo: PAPER, letraFundo: PAPER }
+    const textura = (img: HTMLImageElement | null, cor: string): Fundo => {
+      if (!img) return cor
+      const p = ctx.createPattern(img, 'repeat')
+      if (!p) return cor
+      p.setTransform(new DOMMatrix().scale(TEX_PX / img.width))
+      return p
+    }
+
     // ===================== linha do tempo =====================
     const T_LETRAS = 180
     const fimLetras = () => T_LETRAS + (glifos.length - 1) * ENTRE_LETRAS + 4 * POSE
@@ -316,29 +351,27 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       c.restore()
     }
 
-    /** Quadro base: fundo creme, área escura acima da linha, nome invertido nos dois lados. */
-    const desenhaBase = (c: CanvasRenderingContext2D, trocado: boolean, t: number) => {
-      const fundo = trocado ? INK : PAPER
-      const topo = trocado ? PAPER : INK
+    /** Quadro base: papel embaixo, roxo acima da linha, a letra de cada lado na sua cor. */
+    const desenhaBase = (c: CanvasRenderingContext2D, pal: Paleta, t: number) => {
       c.setTransform(dpr, 0, 0, dpr, 0, 0)
       c.globalCompositeOperation = 'source-over'
       c.globalAlpha = 1
-      c.fillStyle = fundo
+      c.fillStyle = pal.fundo
       c.fillRect(0, 0, W, H)
       caminhoEscuro(c)
-      c.fillStyle = topo
+      c.fillStyle = pal.topo
       c.fill()
 
       c.save()
       caminhoEscuro(c)
       c.clip()
-      desenhaNome(c, fundo, t)
+      desenhaNome(c, pal.letraTopo, t)
       c.restore()
 
       c.save()
       caminhoClaro(c)
       c.clip()
-      desenhaNome(c, topo, t)
+      desenhaNome(c, pal.letraFundo, t)
       c.restore()
     }
 
@@ -398,6 +431,10 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       c.scale(escala, escala)
       const w = placaW
       const h = placaH
+      // sombra sólida vermelha, como os botões do site
+      const sombra = Math.max(3, h * 0.13)
+      c.fillStyle = RED
+      c.fillRect(-w / 2 + sombra, -h / 2 + sombra, w, h)
       c.fillStyle = INK
       c.fillRect(-w / 2, -h / 2, w, h)
       c.strokeStyle = PAPER
@@ -443,13 +480,13 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       c.lineWidth = R * 0.78
       c.stroke()
       c.restore()
-      // contorno preto e miolo creme
+      // contorno preto e miolo vermelho
       bracos(c)
       c.strokeStyle = INK
       c.lineWidth = R * 0.78
       c.stroke()
       bracos(c)
-      c.strokeStyle = PAPER
+      c.strokeStyle = RED
       c.lineWidth = R * 0.5
       c.stroke()
       c.restore()
@@ -597,8 +634,8 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
     const pinta = (t: number, poseTremida: number) => {
       const tp = Math.floor(t / POSE) * POSE // poses seguram 2 quadros
 
-      desenhaBase(ctx, false, tp)
-      desenhaBase(invCtx, true, tp)
+      desenhaBase(ctx, NORMAL, tp)
+      desenhaBase(invCtx, TINTA, tp)
       pintaMascara(t, tp)
 
       // a versão trocada só onde a máscara tem tinta
@@ -816,9 +853,17 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
     }
 
     Promise.all([
+      carregaImagem(TEXTURAS.creme),
+      carregaImagem(TEXTURAS.roxa),
+      carregaImagem(TEXTURAS.vermelha),
       document.fonts?.load?.(`400 100px Anton`),
       document.fonts?.load?.(`400 40px "Permanent Marker"`),
-    ]).then(comecar, comecar)
+    ]).then(([creme, roxa, vermelha]) => {
+      const tRed = textura(vermelha, RED)
+      NORMAL = { ...NORMAL, fundo: textura(creme, PAPER), topo: textura(roxa, ROXO) }
+      TINTA = { ...TINTA, fundo: tRed, topo: tRed }
+      comecar()
+    }, comecar)
 
     return () => {
       rodando = false

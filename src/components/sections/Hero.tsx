@@ -31,7 +31,7 @@ export function Hero({ t }: Props) {
     <section
       ref={sectionRef}
       id="topo"
-      className="relative min-h-[100svh] overflow-hidden bg-paper"
+      className="tex-creme relative min-h-[100svh] overflow-hidden"
     >
       {W > 0 && H > 0 && (
         <HeroCanvas

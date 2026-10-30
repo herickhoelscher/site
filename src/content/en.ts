@@ -50,10 +50,19 @@ export const en: Content = {
     titulo: 'ISSUES',
     sub: '6 issues with real projects. Open source on GitHub, in production and in the lab.',
     verMais: 'READ THE ISSUE →',
+    verSite: 'VISIT THE SITE ↗',
+    verCodigo: 'SEE THE CODE ↗',
     lineup: {
       tag: 'ISSUE #006 // CLIENT LINEUP',
       titulo: 'CLIENT SITES, LIVE',
       frase: 'Independent production, high fidelity',
+    },
+    parceiros: {
+      titulo: 'PARTNER AGENCIES',
+      lista: [
+        { nome: 'Agência B7', cidade: 'Cascavel', href: 'https://www.instagram.com/agenciadb7/' },
+        { nome: 'Mais Mídias', href: 'https://www.agenciamaismidias.com.br/' },
+      ],
     },
     lista: [
       {
@@ -86,6 +95,7 @@ export const en: Content = {
         resultadoGigante: 'HOURS → SECONDS',
         resultadoFrase: 'and still running in production',
         capa: '/assets/issue-rco.jpg',
+        foto: '/prints/leitor-rco-1.jpg',
       },
       {
         slug: 'agrovision',
@@ -115,6 +125,7 @@ export const en: Content = {
         resultadoGigante: 'WATCH → ASK',
         resultadoFrase: 'teaching project for software courses',
         capa: '/assets/issue-agro.jpg',
+        foto: '/prints/agrovision-1.jpg',
       },
       {
         slug: 'portal',
@@ -151,6 +162,8 @@ export const en: Content = {
         resultadoGigante: 'WAIT FOR THE DEV → PUBLISH ALONE',
         resultadoFrase: 'ready to deploy on Vercel',
         capa: '/assets/issue-qtal.jpg',
+        foto: '/prints/portal-1.jpg',
+        site: 'https://qtal-production.up.railway.app/',
         autorizacao: 'Client authorization required before naming them or showing screenshots.',
       },
       {
@@ -188,6 +201,8 @@ export const en: Content = {
         resultadoGigante: 'OPENCART → NEXT.JS',
         resultadoFrase: 'in progress',
         capa: '/assets/issue-maq.jpg',
+        foto: '/prints/maqcenter-1.jpg',
+        site: 'https://www.maqcentercascavel.com.br/',
         autorizacao: 'Client authorization required.',
       },
       {
@@ -227,6 +242,7 @@ export const en: Content = {
         resultadoGigante: 'JUST A SHOWCASE → FULL STORE',
         resultadoFrase: "a base ready to become any client's store",
         capa: '/assets/issue-ecommerce.jpg',
+        foto: '/prints/ecommerce-1.jpg',
       },
       {
         slug: 'clientes',
@@ -258,6 +274,7 @@ export const en: Content = {
         resultadoGigante: 'TEMPLATE → TAILOR-MADE',
         resultadoFrase: 'the next one could be yours',
         capa: '/assets/issue-sites.jpg',
+        foto: '/prints/clientes-1.jpg',
         autorizacao: 'Authorization required from each client for name, logo and screenshots.',
         clientes: [
           {
@@ -265,30 +282,37 @@ export const en: Content = {
             tag: 'CORPORATE PORTAL',
             descricao:
               'booking landing page with validated form, WhatsApp, Meta Pixel, Google Ads and lead integration',
+            foto: '/prints/clientes/siph.jpg',
             repo: 'https://github.com/herickhoelscher/Lp_Ship',
           },
           {
             nome: 'Dr. Adriano Tagarra',
             tag: 'HEALTH & BOOKING',
             descricao: 'weight-loss landing page with video',
+            foto: '/prints/clientes/adriano.jpg',
             repo: 'https://github.com/herickhoelscher/Lp_Dradriano',
-          },
-          {
-            nome: 'Empreender com Pilates (Dra. Vanessa Meira)',
-            tag: 'LANDING & ADS',
-            descricao: 'live, with a post-purchase thank-you page',
-            repo: 'https://github.com/herickhoelscher/lp_drVanessa',
           },
           {
             nome: 'Boss Finance',
             tag: 'FINANCE & B2B',
             descricao: 'outsourced finance for clinics',
+            foto: '/prints/clientes/boss.jpg',
+            site: 'https://www.bossmedical.com.br/',
             repo: 'https://github.com/herickhoelscher/Boss-finance',
+          },
+          {
+            nome: 'ALPE Consultoria',
+            tag: 'FINANCIAL BPO',
+            descricao: 'landing page moved off WordPress into a fast static page',
+            foto: '/prints/clientes/alpe.jpg',
+            site: 'https://alpeconsultoria.com.br/',
           },
           {
             nome: 'Begônia Ateliê',
             tag: 'CATALOG & STORE',
             descricao: 'crochet showcase and store with Pix and card, on Cloudflare Workers',
+            foto: '/prints/clientes/begonia.jpg',
+            site: 'https://begonia-atelie.begoniaatelie.workers.dev/',
             repo: 'https://github.com/herickhoelscher/Begonia-atelie',
           },
         ],

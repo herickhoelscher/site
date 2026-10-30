@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { StickerImg, Tape } from '@/components/collage'
 import type { Content, Issue } from '@/content'
+import { BrowserShot } from './BrowserShot'
 
 type Props = {
   issue: Issue
@@ -33,6 +34,9 @@ const ACENTO: Record<string, { cor: string; sobre: string }> = {
  */
 export function IssueCard({ issue, t, prefix, featured = false }: Props) {
   const acento = ACENTO[issue.numero] ?? ACENTO['003']
+  // o card leva ao projeto no ar; sem site, ao código
+  const fora = issue.site ?? issue.repositorio
+  const foraLabel = issue.site ? t.issues.verSite : t.issues.verCodigo
 
   return (
     <article className="group relative h-full min-w-0">
@@ -84,15 +88,34 @@ export function IssueCard({ issue, t, prefix, featured = false }: Props) {
             featured ? 'zine:grid zine:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] zine:gap-6' : ''
           }`}
         >
-          <StickerImg
-            src={issue.capa}
-            alt={`${issue.titulo}, issue ${issue.numero}`}
-            seed={`capa-${issue.slug}`}
-            variant="cutout"
-            height={featured ? 215 : 150}
-            className="mb-4 w-full"
-            placeholder={`[ ${t.projeto.print} ]`}
-          />
+          {issue.foto ? (
+            <a
+              href={fora ?? undefined}
+              target="_blank"
+              rel="noreferrer"
+              tabIndex={-1}
+              aria-hidden="true"
+              className="mb-4 block"
+            >
+              <BrowserShot
+                src={issue.foto}
+                alt={`${t.projeto.print}: ${issue.titulo}`}
+                url={fora}
+                seed={`capa-${issue.slug}`}
+                height={featured ? 215 : 150}
+              />
+            </a>
+          ) : (
+            <StickerImg
+              src={issue.capa}
+              alt={`${issue.titulo}, issue ${issue.numero}`}
+              seed={`capa-${issue.slug}`}
+              variant="cutout"
+              height={featured ? 215 : 150}
+              className="mb-4 w-full"
+              placeholder={`[ ${t.projeto.print} ]`}
+            />
+          )}
 
           <div className="flex min-w-0 flex-col">
             <h3
@@ -140,21 +163,37 @@ export function IssueCard({ issue, t, prefix, featured = false }: Props) {
             </span>
           ) : null}
 
-          <Link
-            to={`${prefix}/issues/${issue.slug}`}
-            className={`text-center text-[10px] font-bold tracking-[0.08em] uppercase transition-transform hover:translate-x-[2px] hover:translate-y-[2px] ${
-              featured ? 'ml-auto px-5 py-2.5' : 'w-full px-4 py-2.5'
-            }`}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              backgroundColor: featured ? acento.cor : 'var(--color-ink)',
-              color: 'var(--color-white)',
-              boxShadow: '4px 4px 0 var(--color-ink)',
-            }}
-          >
-            {t.issues.verMais}
-            <span className="sr-only"> — {issue.titulo}</span>
-          </Link>
+          <div className={featured ? 'ml-auto flex flex-wrap gap-2' : 'grid w-full grid-cols-2 gap-2'}>
+            {fora ? (
+              <a
+                href={fora}
+                target="_blank"
+                rel="noreferrer"
+                className={`border-2 border-ink bg-paper text-center text-[10px] font-bold tracking-[0.06em] text-ink uppercase transition-transform hover:translate-x-[2px] hover:translate-y-[2px] ${
+                  featured ? 'px-5 py-2' : 'px-2 py-2'
+                }`}
+                style={{ fontFamily: 'var(--font-mono)', boxShadow: '4px 4px 0 var(--color-ink)' }}
+              >
+                {foraLabel}
+                <span className="sr-only">: {issue.titulo}</span>
+              </a>
+            ) : null}
+            <Link
+              to={`${prefix}/issues/${issue.slug}`}
+              className={`text-center text-[10px] font-bold tracking-[0.06em] uppercase transition-transform hover:translate-x-[2px] hover:translate-y-[2px] ${
+                featured ? 'px-5 py-2.5' : fora ? 'px-2 py-2.5' : 'col-span-2 px-4 py-2.5'
+              }`}
+              style={{
+                fontFamily: 'var(--font-mono)',
+                backgroundColor: featured ? acento.cor : 'var(--color-ink)',
+                color: 'var(--color-white)',
+                boxShadow: '4px 4px 0 var(--color-ink)',
+              }}
+            >
+              {t.issues.verMais}
+              <span className="sr-only">: {issue.titulo}</span>
+            </Link>
+          </div>
         </footer>
       </div>
     </article>

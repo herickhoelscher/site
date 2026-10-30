@@ -67,11 +67,6 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
                 <IssueCard issue={issue} t={t} prefix={prefix} />
               </div>
             ))}
-            {sixth ? (
-              <div className="w-[84vw] shrink-0 snap-start">
-                <ClientLineup issue={sixth} t={t} />
-              </div>
-            ) : null}
           </div>
           <p
             className="px-6 text-[11px] tracking-[0.1em] text-paper/60 uppercase"
@@ -79,6 +74,12 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
           >
             arraste →
           </p>
+          {/* os clientes têm print cada um: no celular ficam fora do carrossel */}
+          {sixth ? (
+            <div className="mt-8 px-6">
+              <ClientLineup issue={sixth} t={t} />
+            </div>
+          ) : null}
         </div>
 
         {/* desktop: a grade da referência */}

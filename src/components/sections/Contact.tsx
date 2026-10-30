@@ -15,13 +15,24 @@ export function Contact({ t }: { t: Content }) {
       <span className="absolute right-[30%] top-12 hidden zine:block">
         <Doodle kind="crown" seed="contact-crown" size={58} color="#765BA7" />
       </span>
-      <StickerImg
-        src="/assets/tenis.png"
-        alt="Par de tênis pendurado no cabo"
-        variant="plain"
-        width="clamp(105px, 13vw, 190px)"
-        className="absolute right-[-1%] top-0 z-[5]"
-      />
+      {/*
+        Os tênis ficam inteiros dentro da tela. O PNG corta a sola do tênis da
+        esquerda numa reta; a borda de baixo vira rasgo de colagem.
+      */}
+      <span
+        className="absolute right-[3%] top-0 z-[5] zine:right-[2.5%]"
+        style={{
+          clipPath:
+            'polygon(0 0,100% 0,100% 90%,93% 93%,86% 89%,79% 94%,71% 90%,63% 95%,55% 91%,47% 96%,39% 92%,31% 97%,23% 93%,15% 97%,7% 93%,0 96%)',
+        }}
+      >
+        <StickerImg
+          src="/assets/tenis.png"
+          alt="Par de tênis pendurado no cabo"
+          variant="plain"
+          width="clamp(98px, 12vw, 180px)"
+        />
+      </span>
       <StickerImg
         src="/assets/mike-surpreso.png"
         alt="Mike surpreso"

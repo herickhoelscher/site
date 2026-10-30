@@ -48,12 +48,12 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
               className="tex-creme p-3 zine:p-4"
             >
               <StickerImg
-                src={issue.capa}
-                alt={`Capa da issue ${issue.numero}, ${issue.titulo}`}
+                src={issue.foto ?? issue.capa}
+                alt={issue.foto ? `${t.projeto.print}: ${issue.titulo}` : `Capa da issue ${issue.numero}, ${issue.titulo}`}
                 seed={`case-image-${issue.slug}`}
                 variant="cutout"
                 loading="eager"
-                className="aspect-[4/3] w-full"
+                className="aspect-[4/3] w-full object-top"
                 placeholder={`[ ${t.projeto.print} ]`}
               />
             </TornPaper>
@@ -85,7 +85,12 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
               ISSUE {issue.numero}{repo ? ` · ${repo}` : ''}
             </p>
             <h1
-              className="mt-3 text-[clamp(3.5rem,8vw,8.25rem)] leading-[0.88] text-paper"
+              className={`mt-3 leading-[0.88] text-paper ${
+                /* palavra longa (MULTICONTEÚDO) quebrava no meio: corpo menor */
+                Math.max(...issue.titulo.split(' ').map((p) => p.length)) > 9
+                  ? 'text-[clamp(2.6rem,5.6vw,6rem)]'
+                  : 'text-[clamp(3.5rem,8vw,8.25rem)]'
+              }`}
               style={{ fontFamily: 'var(--font-display)', overflowWrap: 'anywhere' }}
             >
               {issue.titulo}
@@ -99,6 +104,17 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
             <p className="mt-5 max-w-[560px] text-[clamp(1rem,1.5vw,1.2rem)] leading-relaxed text-paper">
               {issue.resumoLongo}
             </p>
+            {issue.site ? (
+              <a
+                href={issue.site}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-block -rotate-1 bg-red px-5 py-3 text-[clamp(1.1rem,1.8vw,1.4rem)] text-ink shadow-[5px_6px_0_var(--color-paper)] transition-transform hover:-translate-y-0.5"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                {t.issues.verSite}
+              </a>
+            ) : null}
           </div>
         </div>
       </header>

@@ -38,6 +38,10 @@ export type Issue = {
   /** A linha curta embaixo do resultado gigante. */
   resultadoFrase: string
   capa: string
+  /** Print real do projeto, usado no card das Issues. Sem ele o card usa a capa. */
+  foto?: string
+  /** Endereço do projeto no ar. Sem ele o card leva ao código. */
+  site?: string
   /** Aviso interno; não é renderizado. */
   autorizacao?: string
   /** Só a issue 006 tem lista de clientes. */
@@ -50,7 +54,20 @@ export type Client = {
   /** Rótulo curto do chip na faixa do 006. */
   tag: string
   descricao: string
-  repo: string
+  /** Print da página inicial do cliente. */
+  foto: string
+  /** Site no ar. Quando não tem, o cartão leva ao repositório. */
+  site?: string
+  /** Repositório público, quando existe. */
+  repo?: string
+}
+
+/** Agência parceira, citada embaixo da faixa de clientes. */
+export type Partner = {
+  nome: string
+  /** Cidade, quando faz parte do jeito que o Herick cita a agência. */
+  cidade?: string
+  href: string
 }
 
 export type Track = {
@@ -151,8 +168,13 @@ export type Content = {
     titulo: string
     sub: string
     verMais: string
+    /** Botão do card que abre o projeto no ar. */
+    verSite: string
+    /** Botão do card quando o projeto não tem site, só código. */
+    verCodigo: string
     /** A faixa vermelha do 006. */
     lineup: { tag: string; titulo: string; frase: string }
+    parceiros: { titulo: string; lista: Partner[] }
     lista: Issue[]
   }
   projeto: {

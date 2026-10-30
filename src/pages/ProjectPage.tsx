@@ -4,6 +4,13 @@ import { StickerImg, Tape, TornPaper } from '@/components/collage'
 import { useContent, findIssue } from '@/content'
 import { ProjectFlow } from '@/components/sections/ProjectFlow'
 import { ProjectHeader } from '@/components/sections/ProjectHeader'
+import type { IssueSlug } from '@/content/types'
+
+/**
+ * Quantos prints reais cada projeto tem em public/prints/[slug]-N.jpg. Os apps
+ * que não rodam na web (desktop e o painel com câmera) têm só um.
+ */
+const PRINTS: Partial<Record<IssueSlug, number>> = { 'leitor-rco': 1, agrovision: 1 }
 
 export default function ProjectPage() {
   const { slug } = useParams()
@@ -34,14 +41,16 @@ export default function ProjectPage() {
     com nome, tag, descrição e repositório, então aqui ele é achatado numa linha
     legível para reaproveitar a mesma lista numerada.
   */
-  const passos: Array<{ texto: string; repo?: string }> =
+  const passos: Array<{ texto: string; repo?: string; site?: string }> =
     issue.passos.length > 0
       ? issue.passos.map((p) => ({ texto: p }))
       : (issue.clientes ?? []).map((c) => ({
           texto: `${c.nome}: ${c.descricao}`,
           repo: c.repo,
+          site: c.site,
         }))
   const resultado = issue.resultadoGigante.split(' → ')
+  const quantosPrints = PRINTS[issue.slug] ?? 3
 
   return (
     <>
@@ -80,6 +89,20 @@ export default function ProjectPage() {
                     <span className="grid size-11 shrink-0 -rotate-6 place-items-center rounded-full bg-ink text-lg leading-none text-paper" style={{ fontFamily: 'var(--font-display)' }}>{String(i + 1).padStart(2, '0')}</span>
                     <span className="min-w-0">
                       {passo.texto}
+                      {passo.site ? (
+                        <>
+                          {' '}
+                          <a
+                            href={passo.site}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[0.85em] whitespace-nowrap text-red underline decoration-2 underline-offset-2 hover:text-ink"
+                            style={{ fontFamily: 'var(--font-mono)' }}
+                          >
+                            SITE ↗
+                          </a>
+                        </>
+                      ) : null}
                       {passo.repo ? (
                         <>
                           {' '}
@@ -102,8 +125,12 @@ export default function ProjectPage() {
             </div>
           </div>
 
-          <div className="mx-auto mt-20 grid max-w-[1360px] gap-8 zine:grid-cols-3">
-            {[1, 2, 3].map((n) => (
+          <div
+            className={`mx-auto mt-20 grid gap-8 ${
+              quantosPrints === 1 ? 'max-w-[760px]' : 'max-w-[1360px] zine:grid-cols-3'
+            }`}
+          >
+            {Array.from({ length: quantosPrints }, (_, i) => i + 1).map((n) => (
               <div key={n} className="relative min-w-0 border-2 border-ink bg-paper p-3 shadow-zine-sm">
                 <Tape seed={`print-tape-${issue.slug}-${n}`} at="top" width={70} />
                 <StickerImg
@@ -111,8 +138,8 @@ export default function ProjectPage() {
                   alt={`${t.projeto.print} ${n}: ${issue.titulo}`}
                   seed={`print-${issue.slug}-${n}`}
                   variant="cutout"
-                  height={220}
-                  className="w-full"
+                  height={quantosPrints === 1 ? 420 : 220}
+                  className="w-full object-top"
                   placeholder={`[ ${t.projeto.print} ]`}
                 />
               </div>
