@@ -69,6 +69,11 @@
   src: url('/fonts/space-mono-700.woff2') format('woff2');
 }
 
+/* A largura não muda quando a barra de rolagem aparece: evita redesenhar o hero. */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Tokens da ESPECIFICACAO.md § 2. */
 @theme {
   --color-ink: #141414;

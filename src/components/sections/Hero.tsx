@@ -1,362 +1,86 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { makeRng } from '@/lib/rng'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useMeasure } from '@/lib/useMeasure'
 import { useIsMobile } from '@/lib/useIsMobile'
 import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
-import { NetworkCable, Doodle, InkField, TornPaper } from '@/components/collage'
+import { useContent } from '@/content'
+import type { Content } from '@/content'
 import { HeroCanvas } from './HeroCanvas'
 import { LangToggle } from '@/components/LangToggle'
-import type { Content } from '@/content'
 
 type Props = { t: Content }
 
 /**
- * Hero. Porte de `hero()` do zine.js.
+ * Hero no espírito da abertura do dotconor.com: a primeira tela é só o nome
+ * cortado pela linha, a plaquinha, o asterisco e a tinta, com uma linha de
+ * texto embaixo. Menu, cabo e pets entram a partir da seção seguinte.
  *
- * O efeito central: o fundo é cortado por uma diagonal rasgada (preto em cima,
- * creme embaixo) e o nome "HERICK" é desenhado DUAS vezes, uma em creme
- * recortada pela área escura e outra em preto recortada pela área clara. Onde
- * as letras cruzam o corte, a cor inverte sozinha.
- *
- * Acessibilidade (§ 9): só a camada clara é o <h1>; a escura é aria-hidden,
- * senão o leitor de tela anunciaria "HERICK" duas vezes.
+ * Todo o desenho é do HeroCanvas. O h1 continua no HTML (sr-only) para o
+ * buscador e o leitor de tela; o canvas é aria-hidden.
  */
 export function Hero({ t }: Props) {
   const [sectionRef, { width: W, height: H }] = useMeasure<HTMLElement>()
   const isMobile = useIsMobile()
   const reduced = usePrefersReducedMotion()
+  const { prefix } = useContent()
+  const [pronto, setPronto] = useState(false)
 
-  /*
-    A diagonal rasgada, em duas posições: a final e uma deslocada para cima.
-
-    A animação de entrada varre a linha de cima para baixo, então a inversão de
-    cor do nome é revelada progressivamente. Como os dois polígonos têm o MESMO
-    número de pontos, o navegador interpola `clip-path` sozinho por transição
-    CSS — nada de recalcular em JS a cada quadro.
-  */
-  const { darkClip, lightClip, darkClipStart, lightClipStart, lineAt } = useMemo(() => {
-    const semLinha = (x: number) => x * 0
-    if (!W || !H) {
-      return {
-        darkClip: undefined,
-        lightClip: undefined,
-        darkClipStart: undefined,
-        lightClipStart: undefined,
-        lineAt: semLinha,
-      }
-    }
-
-    const r = makeRng(42) // mesma semente do protótipo
-    const yL = H * (isMobile ? 0.6 : 0.63)
-    const yR = H * (isMobile ? 0.4 : 0.36)
-
-    const line: Array<[number, number]> = []
-    for (let x = 0; x <= W; x += 10 + r.next() * 8) {
-      line.push([x, yL + (yR - yL) * (x / W) + (r.next() - 0.5) * 9])
-    }
-    line.push([W, yR])
-
-    const P = (a: Array<[number, number]>, dy = 0) =>
-      a.map((p) => `${p[0].toFixed(1)}px ${(p[1] + dy).toFixed(1)}px`).join(',')
-
-    const build = (dy: number) => ({
-      dark: `polygon(0 0,${W}px 0,${P([...line].reverse(), dy)},0 ${(yL + dy).toFixed(1)}px)`,
-      light: `polygon(${P(line, dy)},${W}px ${H}px,0 ${H}px)`,
-    })
-
-    const fim = build(0)
-    // começa acima do topo: a área escura nasce zerada e desce varrendo
-    const inicio = build(-H)
-
-    return {
-      darkClip: fim.dark,
-      lightClip: fim.light,
-      darkClipStart: inicio.dark,
-      lightClipStart: inicio.light,
-      // y do rasgo para um x normalizado: é por aqui que a tinta se adensa
-      lineAt: (xn: number) => yL + (yR - yL) * xn,
-    }
-  }, [W, H, isMobile])
-
-  /*
-    Entrada: a varredura só acontece uma vez, no primeiro quadro depois de medir.
-    Com prefers-reduced-motion já nasce no lugar final, sem transição.
-  */
-  /*
-    Com movimento permitido quem pinta o hero é o canvas: ele faz a varredura,
-    a retícula das letras, o impacto e a tremida. Sem movimento, cai na versão
-    em CSS que já existia, estática. O h1 fica no HTML nos dois casos.
-  */
-  const comCanvas = !reduced && W > 0 && H > 0
-  const [petsVisiveis, setPetsVisiveis] = useState(false)
-  const [entrou, setEntrou] = useState(false)
-  useEffect(() => {
-    if (!W || !H) return
-    if (reduced) {
-      setEntrou(true)
-      return
-    }
-    const id = requestAnimationFrame(() => setEntrou(true))
-    return () => cancelAnimationFrame(id)
-  }, [W, H, reduced])
-
-  const varredura = reduced
-    ? undefined
-    : 'clip-path 1200ms cubic-bezier(.22,.61,.36,1) 120ms'
-
-  // --- ajusta o nome à largura da tela --------------------------------------
-  const probeRef = useRef<HTMLSpanElement>(null)
-  const [fontSize, setFontSize] = useState(100)
-
-  useLayoutEffect(() => {
-    if (!W) return
-    let cancelled = false
-
-    const fit = () => {
-      const probe = probeRef.current
-      if (!probe || cancelled) return
-      const target = W * (isMobile ? 0.92 : 0.94)
-      // no celular o nome quebra em duas linhas; manda a linha mais larga
-      const widest = isMobile
-        ? Math.max(
-            ...[...probe.querySelectorAll('[data-line]')].map(
-              (e) => e.getBoundingClientRect().width,
-            ),
-          )
-        : probe.getBoundingClientRect().width
-      if (widest > 0) setFontSize((100 * target) / widest)
-    }
-
-    // espera a Anton carregar: medir antes dá a largura da fonte substituta
-    document.fonts.ready.then(fit)
-    fit()
-    return () => {
-      cancelled = true
-    }
-  }, [W, isMobile])
-
-  const Name = ({ hidden }: { hidden: boolean }) => (
-    <span
-      data-name
-      className="block whitespace-nowrap"
-      style={{
-        fontFamily: 'var(--font-display)',
-        fontSize: `${fontSize}px`,
-        lineHeight: 0.82,
-      }}
-      aria-hidden={hidden ? 'true' : undefined}
-    >
-      {isMobile ? (
-        <>
-          <span data-line className="block">
-            HER
-          </span>
-          <span data-line className="block">
-            ICK
-          </span>
-        </>
-      ) : (
-        t.hero.name
-      )}
-    </span>
-  )
+  const aparece = `transition-opacity duration-500 ${pronto || reduced ? 'opacity-100' : 'opacity-0'}`
 
   return (
     <section
       ref={sectionRef}
       id="topo"
-      className="tex-creme relative flex min-h-[100svh] flex-col overflow-hidden"
+      className="relative min-h-[100svh] overflow-hidden bg-paper"
     >
-      {comCanvas ? (
+      {W > 0 && H > 0 && (
         <HeroCanvas
-          linhas={isMobile ? ['HER', 'ICK'] : [t.hero.name]}
-          adesivo={t.hero.sticker}
+          nome={t.hero.name}
+          placa={t.hero.sticker}
           width={W}
           height={H}
           isMobile={isMobile}
-          onEntradaFim={() => setPetsVisiveis(true)}
-        />
-      ) : (
-        /* metade escura, recortada pela diagonal */
-        <div
-          className="tex-preta pointer-events-none absolute inset-0"
-          style={{ clipPath: entrou ? darkClip : darkClipStart, transition: varredura }}
-          aria-hidden="true"
+          reduced={reduced}
+          onEntradaFim={() => setPronto(true)}
         />
       )}
 
-      {/* rabiscos; a tinta fica por conta do InkField, dentro das camadas */}
-      <span className="absolute left-[4vw] top-[58%] z-[3]">
-        <Doodle kind="star" seed="hero-star-1" size={64} />
-      </span>
-      <span className="absolute left-[8vw] top-[68%] z-[3] hidden zine:block">
-        <Doodle kind="star" seed="hero-star-2" size={46} />
-      </span>
+      <h1 className="sr-only">Herick Hoelscher · {t.hero.tagline}</h1>
 
-      {/* o cabo começa aqui; no hero ele já nasce desenhado */}
-      <NetworkCable
-        path=".80,.40;.92,.48;.97,.66;.91,.86;.9,1.02"
-        pathMobile=".84,.44;.95,.56;.96,.8;.93,1.02"
-        scrub={false}
-        className="z-[2]"
-      />
+      <div className={`absolute top-5 right-5 z-10 zine:top-7 zine:right-8 ${aparece}`}>
+        <LangToggle className="text-paper" />
+      </div>
 
-      {/* nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-6 zine:px-10">
-        <ul className="hidden gap-6 zine:flex">
-          {[t.nav.quem, t.nav.issues, t.nav.setlist, t.nav.contato].map((label, i) => (
-            <li key={label}>
-              <a
-                href={`#${['quem', 'issues', 'setlist', 'contato'][i]}`}
-                className="text-[13px] font-bold tracking-[0.06em] text-white uppercase hover:text-red"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                {label}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <span
-          className="text-[13px] font-bold tracking-[0.06em] text-white uppercase zine:hidden"
-          style={{ fontFamily: 'var(--font-mono)' }}
-        >
-          ☰ MENU
-        </span>
-        <LangToggle className="text-white" />
-      </nav>
-
-      {/*
-        As duas camadas do nome cobrem a SEÇÃO inteira. Isso não é estético: o
-        clip-path é calculado em coordenadas da seção (0..W, 0..H), então o
-        elemento que recebe o recorte precisa ter exatamente essa caixa. Aplicar
-        o mesmo polígono num elemento menor recortava no lugar errado.
-      */}
+      {/* rodapé da primeira tela, como o "a product designer in NYC" da referência */}
       <div
-        className={`pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-paper ${comCanvas ? 'hidden' : ''}`}
-        style={{ clipPath: entrou ? darkClip : darkClipStart, transition: varredura }}
-        aria-hidden="true"
+        className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-4 px-5 pb-6 zine:flex-row zine:items-end zine:justify-between zine:px-10 zine:pb-8 ${aparece}`}
       >
-        <Name hidden />
-        <InkField
-          seed="hero-ink"
-          width={W}
-          height={H}
-          lineAt={lineAt}
-          color="var(--color-paper)"
-          settled={entrou}
-        />
-      </div>
-
-      {/*
-        O h1 nunca sai do HTML: é ele que o buscador e o leitor de tela leem.
-        Quando o canvas está pintando, ele vira sr-only em vez de desaparecer.
-      */}
-      <h1
-        className={
-          comCanvas
-            ? 'sr-only'
-            : 'pointer-events-none absolute inset-0 z-[4] flex items-center px-[3vw] text-ink'
-        }
-        style={comCanvas ? undefined : { clipPath: entrou ? lightClip : lightClipStart, transition: varredura }}
-      >
-        <Name hidden={false} />
-        <InkField
-          seed="hero-ink"
-          width={W}
-          height={H}
-          lineAt={lineAt}
-          color="var(--color-ink)"
-          settled={entrou}
-        />
-      </h1>
-
-      {/* sonda invisível, só para medir a largura natural do nome */}
-      <span
-        ref={probeRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 whitespace-nowrap opacity-0"
-        style={{ fontFamily: 'var(--font-display)', fontSize: 100, lineHeight: 0.82 }}
-      >
-        {isMobile ? (
-          <>
-            <span data-line className="block">
-              HER
-            </span>
-            <span data-line className="block">
-              ICK
-            </span>
-          </>
-        ) : (
-          t.hero.name
-        )}
-      </span>
-
-      {/* empurra o rodapé para baixo do nome */}
-      <div className="flex-1" />
-
-      {/*
-        O PNG vem com fundo preto chapado. `lighten` descarta o preto contra a
-        área escura do hero, que é onde os pets ficam — era isso ou pedir uma
-        versão recortada do arquivo.
-      */}
-      <img
-        src="/assets/pets-espiando.png"
-        alt="Mike e Missi espiando por cima do nome"
-        className={`pointer-events-none absolute left-1/2 z-[6] w-[26vw] max-w-[300px] -translate-x-1/2 zine:left-[56%] ${(comCanvas ? petsVisiveis : entrou) ? 'hero-pets-in' : 'hero-pets-out'}`}
-        style={{
-          mixBlendMode: 'lighten',
-          // apoiados na borda de cima das letras, que começam em ~18% da seção
-          top: 'max(2%, calc(18% - 13vw))',
-        }}
-      />
-
-      {/* adesivo vermelho */}
-      <div className={`relative z-[5] -mt-2 px-[6vw] zine:px-[16vw] ${comCanvas ? 'hidden' : ''}`}>
-        <TornPaper
-          seed="hero-sticker"
-          amp={4}
-          tilt={-5}
-          wrapperClassName={`inline-block ${entrou ? 'hero-in' : 'hero-out'}`}
-          className="tex-vermelha px-6 py-2 text-ink"
-        >
-          <span
-            className="block whitespace-nowrap text-[clamp(1.1rem,2.8vw,2.1rem)] leading-none"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            {t.hero.sticker}
-          </span>
-        </TornPaper>
-      </div>
-
-      {/* rodapé do hero */}
-      <div className="relative z-[5] flex flex-col gap-4 px-6 pb-8 zine:flex-row zine:items-end zine:justify-between zine:px-10">
         <p
-          className="max-w-[20ch] text-[clamp(1.1rem,2.2vw,1.75rem)] leading-tight text-ink"
-          style={{ fontFamily: 'var(--font-hand)' }}
+          className="max-w-[26ch] text-[clamp(1.15rem,2vw,2.2rem)] leading-[1.1] text-ink zine:max-w-none"
+          style={{ fontFamily: 'var(--font-body)' }}
         >
-          {t.hero.tagline} ↘
+          {t.hero.tagline}
         </p>
-        <ul className="flex gap-5">
+        <div className="flex items-center gap-5">
           {t.hero.links.map((l) => (
-            <li key={l.label}>
-              <a
-                href={l.href}
-                className="text-[13px] font-bold text-ink underline decoration-2 underline-offset-4 hover:decoration-[3px] hover:decoration-red"
-                style={{ fontFamily: 'var(--font-mono)' }}
-              >
-                {l.label}
-              </a>
-            </li>
+            <a
+              key={l.label}
+              href={l.href}
+              className="text-[15px] text-ink hover:underline hover:decoration-2 hover:underline-offset-4"
+              style={{ fontFamily: 'var(--font-body)' }}
+            >
+              {l.label}
+            </a>
           ))}
-        </ul>
+          <Link
+            to={`${prefix}/lado-b`}
+            className="rounded-full bg-ink px-5 py-2 text-[15px] font-medium text-paper transition-transform hover:scale-105"
+            style={{ fontFamily: 'var(--font-body)' }}
+          >
+            {t.nav.ladob}
+          </Link>
+        </div>
       </div>
-
-      <span
-        className="absolute bottom-3 left-1/2 z-[5] -translate-x-1/2 text-[11px] font-bold tracking-[0.1em] text-ink uppercase"
-        style={{ fontFamily: 'var(--font-mono)' }}
-      >
-        {t.hero.scroll}
-      </span>
     </section>
   )
 }

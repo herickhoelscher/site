@@ -2,61 +2,78 @@ import { useEffect, useRef } from 'react'
 import { makeRng } from '@/lib/rng'
 
 type Props = {
-  /** O nome, uma linha por item. No celular vem quebrado em duas. */
-  linhas: string[]
-  /** Texto do adesivo vermelho. */
-  adesivo: string
+  /** O nome, numa linha só. */
+  nome: string
+  /** Texto da plaquinha, ex. "*HERICK HOELSCHER". */
+  placa: string
   width: number
   height: number
   isMobile: boolean
-  /** Chamado quando a entrada termina, para o pai subir o Mike e a Missi. */
+  /** Sem movimento: desenha só o quadro final, parado. */
+  reduced: boolean
+  /** Chamado quando a abertura termina. */
   onEntradaFim?: () => void
 }
 
 const INK = '#141414'
 const PAPER = '#EFE9DA'
-const RED = '#E8432E'
-const CIANO = '#00E5FF'
 
-/** 24 fps, e cada pose segura 2 quadros. */
+/** Relógio de desenho animado: 24 quadros por segundo, poses seguradas por 2 quadros. */
 const QUADRO = 1000 / 24
 const POSE = QUADRO * 2
 
-const LETRA_MS = 400
-const ENTRE_LETRAS = 40
-const QUEDA_MS = 250
-const TREMIDA_POSES = 5
-const ANEL_MS = 520
+/** Quanto da letra a retícula cobre em cada pose da entrada, antes de fechar. */
+const COBERTURA = [0.3, 0.46, 0.6, 0.7]
+/** Queda de cada letra, em frações da altura de queda, pose a pose (com um repique no fim). */
+const QUEDA = [1.14, 0.74, 0.38, 0.1, -0.05, 0.015, 0]
+const ENTRE_LETRAS = 42
 
-/** Nós da corda que desenha a diagonal. */
-const NOS = 72
+/** Anel de choque: raio e espessura por pose, em frações da diagonal da tela. */
+const ANEL_R = [0.08, 0.17, 0.3, 0.45, 0.62, 0.8, 0.98]
+const ANEL_E = [1, 0.3, 0.22, 0.16, 0.11, 0.08, 0.05]
 
-type Gota = { x: number; y: number; vy: number; vida: number; sobe: boolean }
-type Faisca = { x: number; y: number; vx: number; vy: number; forte: boolean }
-type Anel = { x: number; y: number; nasceu: number }
+/** Tremida de registro: deslocamento das fatias, pose a pose. */
+const TREMIDA = [16, -10, 6, -3, 1]
+
+/** A abertura só toca uma vez por visita, mesmo se o componente remontar. */
+let aberturaTocou = false
+
+type Glifo = { ch: string; x: number; w: number }
+type Gota = { x: number; y: number; vy: number; r: number; vida: number }
+type Mancha = {
+  u: number // posição ao longo da largura (0..1)
+  d: number // distância da linha, em px (negativo = acima)
+  r: number
+  vx: number
+  fase: number
+  ancora: boolean
+  nasce: number // ms em que aparece
+  ox: number // deslocamento atual (mouse)
+  oy: number
+}
 
 /**
  * Abertura do hero em canvas 2D.
  *
- * O desenho é todo próprio. A ideia emprestada da referência é o conceito — um
- * nome gigante partido por uma diagonal onde a cor inverte, com granulado e
- * tinta. Retícula que fecha, mola na linha, hit-stop e tremida de placas são
- * implementação daqui.
+ * Composição: o nome inteiro inclinado (-7°) e cortado por uma linha paralela
+ * a ele, que passa pelo meio das letras. Acima da linha o fundo é preto e a
+ * letra creme; abaixo, o contrário.
  *
- * Três decisões que valem explicação:
+ * Tudo o que "inverte" (manchas de tinta, anel de choque, halo da plaquinha,
+ * gotas da linha) é pintado numa máscara. O quadro é desenhado duas vezes,
+ * normal e com as cores trocadas, e a versão trocada só aparece onde a máscara
+ * tem tinta. Assim uma mancha sobre o preto fica creme, sobre o creme fica
+ * preta, e sobre uma letra inverte a letra, sempre com as duas cores exatas.
  *
- * 1. Nada de easing contínuo. Tudo é amostrado num relógio de POSE (83 ms), que
- *    é a cadência dura de stop-motion pedida. O requestAnimationFrame existe só
- *    para acertar o passo: o estado só anda quando a pose vira.
- *
- * 2. A inversão de cor não é truque de cor: o nome é desenhado duas vezes, uma
- *    em creme recortada pela área escura e outra em preto recortada pela área
- *    clara, com `clip()`. Mesmo princípio da versão em CSS.
- *
- * 3. O h1 de verdade continua no HTML do pai. Este canvas é `aria-hidden`, não
- *    carrega texto acessível e pode sumir sem perda de conteúdo.
+ * Linha do tempo (no relógio de poses de 83 ms):
+ *   1. as letras caem uma a uma, com fantasmas, em retícula que fecha até sólida;
+ *   2. a plaquinha entra;
+ *   3. o asterisco bate: o quadro do impacto congela uma pose (hit-stop), sai o
+ *      anel de choque e a tinta nasce por onde o anel passa;
+ *   4. tremida de registro (fatias deslocadas) por 5 poses;
+ *   5. repouso: a linha ondula, solta gotas, a tinta anda e o mouse junta.
  */
-export function HeroCanvas({ linhas, adesivo, width, height, isMobile, onEntradaFim }: Props) {
+export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEntradaFim }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fimRef = useRef(onEntradaFim)
   fimRef.current = onEntradaFim
@@ -67,23 +84,583 @@ export function HeroCanvas({ linhas, adesivo, width, height, isMobile, onEntrada
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    canvas.width = Math.round(width * dpr)
-    canvas.height = Math.round(height * dpr)
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    const W = width
+    const H = height
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 1.5)
+    const novoCanvas = () => {
+      const c = document.createElement('canvas')
+      c.width = Math.round(W * dpr)
+      c.height = Math.round(H * dpr)
+      return c
+    }
+    canvas.width = Math.round(W * dpr)
+    canvas.height = Math.round(H * dpr)
 
-    const rng = makeRng(42)
+    // quadro com as cores trocadas e a máscara de inversão
+    const inv = novoCanvas()
+    const invCtx = inv.getContext('2d')!
+    const masc = novoCanvas()
+    const mascCtx = masc.getContext('2d')!
+
+    const rng = makeRng(7)
     let rodando = true
     let raf = 0
 
-    // ---- granulado: um ruído só, reaproveitado ----------------------------
+    // ===================== geometria =====================
+    const ANG = ((isMobile ? -6 : -7) * Math.PI) / 180
+    const SY = isMobile ? 1.9 : 1 // no celular a letra é esticada na vertical
+    const cos = Math.cos(ANG)
+    const sin = Math.sin(ANG)
+    const diag = Math.hypot(W, H)
+
+    let S = 100 // corpo da fonte
+    let capa = 70 // altura da maiúscula
+    let glifos: Glifo[] = []
+    let larguraNome = 0
+    const fonte = (px: number) => `${px}px Anton, "Arial Narrow", sans-serif`
+    const TRACK = -0.012 // letras quase encostando, como na referência
+
+    const medir = () => {
+      ctx.font = fonte(100)
+      const capa100 = ctx.measureText('H').actualBoundingBoxAscent || 73
+      const larg100 =
+        [...nome].reduce((s, ch) => s + ctx.measureText(ch).width, 0) + TRACK * 100 * (nome.length - 1)
+      // largura do nome girado ocupa ~94% da tela
+      const alvoW = W * (isMobile ? 0.9 : 0.94)
+      const k1 = alvoW / (larg100 * cos + capa100 * SY * Math.abs(sin))
+      // e não passa de ~70% da altura (a referência chega a 75%)
+      const k2 = (H * (isMobile ? 0.42 : 0.7)) / (larg100 * Math.abs(sin) + capa100 * SY * cos)
+      const k = Math.min(k1, k2)
+      S = 100 * k
+      capa = capa100 * k
+      ctx.font = fonte(S)
+      glifos = []
+      let x = 0
+      for (const ch of nome) {
+        const w = ctx.measureText(ch).width
+        glifos.push({ ch, x, w })
+        x += w + TRACK * S
+      }
+      larguraNome = x - TRACK * S
+      for (const g of glifos) g.x -= larguraNome / 2
+    }
+
+    // centro do nome na tela
+    const CX = W * 0.5
+    const CY = H * (isMobile ? 0.45 : 0.48)
+    /** Coordenadas do nome (x ao longo da palavra, y para baixo) para a tela. */
+    const paraTela = (x: number, y: number) => ({
+      x: CX + x * cos - y * SY * sin,
+      y: CY + x * sin + y * SY * cos,
+    })
+
+    // ===================== a linha (mola + degraus) =====================
+    const NOS = 80
+    const desl = new Float32Array(NOS)
+    const vel = new Float32Array(NOS)
+    // degraus fixos: a linha é rasgada em dentes, não lisa
+    const DEGRAUS = isMobile ? 18 : 34
+    const dente = Array.from({ length: DEGRAUS }, () => rng.jitter(isMobile ? 5 : 7))
+
+    /** y da linha sem a mola: paralela ao nome, a ~43% da altura da letra. */
+    let linhaY0 = 0
+    const atualizaLinha = () => {
+      const p = paraTela(0, -capa / 2 + capa * 0.43)
+      linhaY0 = p.y - p.x * Math.tan(ANG)
+    }
+    const yBase = (x: number) => linhaY0 + x * Math.tan(ANG)
+
+    const yLinha = (x: number, comDente = true) => {
+      const f = Math.max(0, Math.min(NOS - 1, (x / W) * (NOS - 1)))
+      const i = Math.min(NOS - 2, Math.floor(f))
+      const t = f - i
+      const m = desl[i] + (desl[i + 1] - desl[i]) * t
+      const dn = comDente ? dente[Math.min(DEGRAUS - 1, Math.floor((x / W) * DEGRAUS))] : 0
+      return yBase(x) + m + dn
+    }
+
+    const empurra = (xn: number, forca: number) => {
+      const c = Math.round(xn * (NOS - 1))
+      for (let i = -7; i <= 7; i++) {
+        const k = c + i
+        if (k < 1 || k >= NOS - 1) continue
+        vel[k] += forca * Math.exp(-(i * i) / 12)
+      }
+    }
+
+    let mare = 0
+    const passoLinha = () => {
+      mare += 1
+      for (let i = 1; i < NOS - 1; i++) {
+        vel[i] += ((desl[i - 1] + desl[i + 1]) / 2 - desl[i]) * 0.5 - desl[i] * 0.02
+        vel[i] *= 0.88
+      }
+      for (let i = 1; i < NOS - 1; i++) {
+        // maré: uma onda lenta que anda para a direita
+        desl[i] += vel[i] + Math.sin(mare * 0.11 - i * 0.35) * 0.06
+      }
+    }
+
+    /** Pontos do contorno da linha, da direita para a esquerda, com os degraus. */
+    const contornoLinha = (c: CanvasRenderingContext2D, daDireita: boolean) => {
+      const passo = W / DEGRAUS
+      const pts: Array<[number, number]> = []
+      for (let s = 0; s < DEGRAUS; s++) {
+        const x0 = s * passo
+        for (let j = 0; j <= 4; j++) {
+          const x = x0 + (passo * j) / 4
+          pts.push([x, yBase(x) + molaEm(x) + dente[s]])
+        }
+      }
+      if (daDireita) pts.reverse()
+      for (const [x, y] of pts) c.lineTo(x, y)
+    }
+    /** Região escura: acima da linha. */
+    const caminhoEscuro = (c: CanvasRenderingContext2D) => {
+      c.beginPath()
+      c.moveTo(0, -2)
+      c.lineTo(W, -2)
+      contornoLinha(c, true)
+      c.closePath()
+    }
+    /** Região clara: abaixo da linha. */
+    const caminhoClaro = (c: CanvasRenderingContext2D) => {
+      c.beginPath()
+      c.moveTo(0, H + 2)
+      contornoLinha(c, false)
+      c.lineTo(W, H + 2)
+      c.closePath()
+    }
+    const molaEm = (x: number) => {
+      const f = Math.max(0, Math.min(NOS - 1, (x / W) * (NOS - 1)))
+      const i = Math.min(NOS - 2, Math.floor(f))
+      const t = f - i
+      return desl[i] + (desl[i + 1] - desl[i]) * t
+    }
+
+    // ===================== retícula =====================
+    const PASSO = Math.max(4, Math.round(Math.min(W, 1600) * (isMobile ? 0.012 : 0.0062)))
+    /** Ladrilho com pontos a 45° (cantos + centro) que cobre `cob` da área. */
+    const ladrilho = (cor: string, cob: number) => {
+      const c = document.createElement('canvas')
+      c.width = c.height = PASSO * 2
+      const g = c.getContext('2d')!
+      const p = PASSO * 2
+      const r = p * Math.sqrt(cob / (2 * Math.PI))
+      g.fillStyle = cor
+      for (const [x, y] of [
+        [0, 0],
+        [p, 0],
+        [0, p],
+        [p, p],
+        [p / 2, p / 2],
+      ]) {
+        g.beginPath()
+        g.arc(x, y, r, 0, Math.PI * 2)
+        g.fill()
+      }
+      return ctx.createPattern(c, 'repeat')!
+    }
+    const NIVEIS = [0.16, ...COBERTURA]
+    const padroes = {
+      [INK]: NIVEIS.map((c) => ladrilho(INK, c)),
+      [PAPER]: NIVEIS.map((c) => ladrilho(PAPER, c)),
+    } as Record<string, CanvasPattern[]>
+
+    // ===================== linha do tempo =====================
+    const T_LETRAS = 180
+    const fimLetras = () => T_LETRAS + (glifos.length - 1) * ENTRE_LETRAS + 4 * POSE
+    const T_PLACA = () => fimLetras() + POSE
+    const T_ASTER = () => T_PLACA() + 3 * POSE
+    const T_IMPACTO = () => T_ASTER() + 3 * POSE
+    const T_FIM = () => T_IMPACTO() + 12 * POSE
+
+    /** Pose de uma letra: <0 ainda não entrou; 0..3 caindo em retícula; >=4 pousada. */
+    const poseLetra = (i: number, t: number) => Math.floor((t - T_LETRAS - i * ENTRE_LETRAS) / POSE)
+
+    // ===================== desenho do nome =====================
+    const ENGROSSA = 0.024 // traço da mesma cor em volta da letra: Anton fica mais pesada
+
+    const letra = (c: CanvasRenderingContext2D, g: Glifo, dy: number, estilo: string | CanvasPattern) => {
+      c.fillStyle = estilo
+      c.strokeStyle = estilo
+      c.fillText(g.ch, g.x, capa / 2 + dy)
+      c.strokeText(g.ch, g.x, capa / 2 + dy)
+    }
+
+    const desenhaNome = (c: CanvasRenderingContext2D, cor: string, t: number) => {
+      c.save()
+      c.translate(CX, CY)
+      c.rotate(ANG)
+      c.scale(1, SY)
+      c.font = fonte(S)
+      c.textBaseline = 'alphabetic'
+      c.lineJoin = 'round'
+      c.lineWidth = S * ENGROSSA
+      const queda = capa * 0.3
+      glifos.forEach((g, i) => {
+        const k = poseLetra(i, t)
+        if (k < 0) return
+        if (k >= 4) {
+          letra(c, g, -(QUEDA[Math.min(k, QUEDA.length - 1)] || 0) * queda, cor)
+          return
+        }
+        // fantasmas das duas poses anteriores, mais ralos
+        for (const atras of [2, 1]) {
+          const kk = k - atras
+          if (kk < 0) continue
+          letra(c, g, -QUEDA[kk] * queda, padroes[cor][atras === 2 ? 0 : Math.max(0, kk)])
+        }
+        letra(c, g, -QUEDA[k] * queda, padroes[cor][k + 1])
+      })
+      c.restore()
+    }
+
+    /** Quadro base: fundo creme, área escura acima da linha, nome invertido nos dois lados. */
+    const desenhaBase = (c: CanvasRenderingContext2D, trocado: boolean, t: number) => {
+      const fundo = trocado ? INK : PAPER
+      const topo = trocado ? PAPER : INK
+      c.setTransform(dpr, 0, 0, dpr, 0, 0)
+      c.globalCompositeOperation = 'source-over'
+      c.globalAlpha = 1
+      c.fillStyle = fundo
+      c.fillRect(0, 0, W, H)
+      caminhoEscuro(c)
+      c.fillStyle = topo
+      c.fill()
+
+      c.save()
+      caminhoEscuro(c)
+      c.clip()
+      desenhaNome(c, fundo, t)
+      c.restore()
+
+      c.save()
+      caminhoClaro(c)
+      c.clip()
+      desenhaNome(c, topo, t)
+      c.restore()
+    }
+
+    // ===================== plaquinha =====================
+    const fontePlaca = (px: number) => `${px}px "Permanent Marker", "Comic Sans MS", cursive`
+    let placaW = 0
+    let placaH = 0
+    let placaFonte = 20
+    const medirPlaca = () => {
+      placaH = Math.max(28, capa * SY * (isMobile ? 0.15 : 0.2))
+      placaFonte = placaH * 0.5
+      ctx.font = fontePlaca(placaFonte)
+      placaW = ctx.measureText(placa).width + placaH * 1.1
+      // a plaquinha nunca fica mais larga que ~60% do nome
+      const maxW = larguraNome * 0.62
+      if (placaW > maxW) {
+        const k = maxW / placaW
+        placaH *= k
+        placaFonte *= k
+        placaW = maxW
+      }
+    }
+    // centro da plaquinha: no meio do nome, em cima da linha
+    const placaCentro = () => paraTela(0, -capa / 2 + capa * 0.43)
+
+    /** Halo de retícula em volta da plaquinha (vai para a máscara). */
+    let halo: Array<{ x: number; y: number; r: number }> = []
+    const montaHalo = () => {
+      halo = []
+      const hr = makeRng(23)
+      const passo = Math.max(4, placaH * 0.13)
+      const e = placaH * 1.15
+      const hw = placaW / 2
+      const hh = placaH / 2
+      for (let y = -hh - e; y <= hh + e; y += passo) {
+        for (let x = -hw - e; x <= hw + e; x += passo) {
+          const xx = x + ((Math.round(y / passo) % 2) * passo) / 2
+          const dx = Math.max(0, Math.abs(xx) - hw)
+          const dy = Math.max(0, Math.abs(y) - hh)
+          const dist = Math.hypot(dx, dy)
+          if (dist <= 0) continue
+          const borda = e * (0.55 + 0.45 * Math.sin(xx * 0.03 + y * 0.05) * Math.cos(xx * 0.017))
+          if (dist > borda) continue
+          const q = 1 - dist / borda
+          const r = passo * 0.55 * Math.pow(q, 0.9) * (0.75 + hr.next() * 0.5)
+          if (r < 0.7) continue
+          halo.push({ x: xx, y, r })
+        }
+      }
+    }
+
+    const desenhaPlaca = (c: CanvasRenderingContext2D, escala: number) => {
+      const p = placaCentro()
+      c.save()
+      c.translate(p.x, p.y)
+      c.rotate(ANG)
+      c.scale(escala, escala)
+      const w = placaW
+      const h = placaH
+      c.fillStyle = INK
+      c.fillRect(-w / 2, -h / 2, w, h)
+      c.strokeStyle = PAPER
+      c.lineWidth = Math.max(1.5, h * 0.06)
+      const m = h * 0.14
+      c.strokeRect(-w / 2 + m, -h / 2 + m, w - m * 2, h - m * 2)
+      c.strokeStyle = INK
+      c.lineWidth = Math.max(1, h * 0.04)
+      c.strokeRect(-w / 2, -h / 2, w, h)
+      c.fillStyle = PAPER
+      c.font = fontePlaca(placaFonte)
+      c.textAlign = 'center'
+      c.textBaseline = 'middle'
+      c.fillText(placa, 0, h * 0.04)
+      c.restore()
+    }
+
+    // ===================== asterisco =====================
+    const asteriscoPos = () => {
+      const ultimo = glifos[glifos.length - 1]
+      return paraTela(ultimo.x + ultimo.w * 0.78, -capa / 2 + capa * 0.04)
+    }
+    const desenhaAsterisco = (c: CanvasRenderingContext2D, escala: number) => {
+      const a = asteriscoPos()
+      const R = capa * SY * (isMobile ? 0.2 : 0.16) * escala
+      const bracos = (cc: CanvasRenderingContext2D) => {
+        cc.beginPath()
+        for (let k = 0; k < 3; k++) {
+          const ang = (k * Math.PI) / 3 + 0.3
+          cc.moveTo(-Math.cos(ang) * R, -Math.sin(ang) * R)
+          cc.lineTo(Math.cos(ang) * R, Math.sin(ang) * R)
+        }
+      }
+      c.save()
+      c.translate(a.x, a.y)
+      c.rotate(ANG)
+      c.lineCap = 'round'
+      // sombra dura
+      c.save()
+      c.translate(R * 0.14, R * 0.16)
+      bracos(c)
+      c.strokeStyle = INK
+      c.lineWidth = R * 0.78
+      c.stroke()
+      c.restore()
+      // contorno preto e miolo creme
+      bracos(c)
+      c.strokeStyle = INK
+      c.lineWidth = R * 0.78
+      c.stroke()
+      bracos(c)
+      c.strokeStyle = PAPER
+      c.lineWidth = R * 0.5
+      c.stroke()
+      c.restore()
+    }
+
+    // ===================== tinta (manchas que andam na linha) =====================
+    const manchas: Mancha[] = []
+    const escalaTinta = Math.min(1.25, Math.max(0.6, W / 1300))
+    const montaTinta = () => {
+      manchas.length = 0
+      const tr = makeRng(91)
+      const N = isMobile ? 70 : 140
+      const gauss = () => {
+        let u = 0
+        while (!u) u = tr.next()
+        return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * tr.next())
+      }
+      const nova = (u: number, d: number, r: number, ancora: boolean) =>
+        manchas.push({ u, d, r, vx: tr.range(0.00025, 0.0011), fase: tr.next() * 6.28, ancora, nasce: 0, ox: 0, oy: 0 })
+
+      for (let i = 0; i < N; i++) {
+        const u = tr.next()
+        const d = gauss() * H * 0.06
+        const sorteio = tr.next()
+        const r =
+          (sorteio < 0.62 ? tr.range(1, 2.6) : sorteio < 0.88 ? tr.range(3, 6) : tr.range(7, 13)) * escalaTinta
+        nova(u, d, r, false)
+        // massas grandes têm satélites
+        if (r > 6.5 * escalaTinta) {
+          const n = tr.int(2, 5)
+          for (let j = 0; j < n; j++) {
+            const ang = tr.next() * 6.28
+            const dist = r * tr.range(1.4, 2.7)
+            nova(u + (Math.cos(ang) * dist) / W, d + Math.sin(ang) * dist, r * tr.range(0.22, 0.45), false)
+          }
+        }
+      }
+      // respingo fixo em volta do asterisco e no começo do nome
+      const a = asteriscoPos()
+      const focos = [
+        { x: a.x, y: a.y, n: isMobile ? 10 : 18, raio: capa * SY * 0.5 },
+        { x: W * 0.09, y: yBase(W * 0.09), n: isMobile ? 7 : 12, raio: capa * SY * 0.35 },
+        { x: W * 0.62, y: yBase(W * 0.62), n: isMobile ? 4 : 7, raio: capa * SY * 0.25 },
+      ]
+      for (const f of focos) {
+        for (let i = 0; i < f.n; i++) {
+          const ang = tr.next() * 6.28
+          const dist = Math.pow(tr.next(), 0.7) * f.raio
+          const x = f.x + Math.cos(ang) * dist
+          const y = f.y + Math.sin(ang) * dist
+          const r = (tr.next() < 0.3 ? tr.range(5, 11) : tr.range(1.5, 4)) * escalaTinta
+          nova(x / W, y - yBase(x), r, true)
+        }
+      }
+    }
+
+    /** Quando cada mancha nasce: quando o anel de choque passa por ela. */
+    const marcaNascimentos = () => {
+      const a = asteriscoPos()
+      const t0 = T_IMPACTO()
+      for (const m of manchas) {
+        const x = m.u * W
+        const y = yBase(x) + m.d
+        const dist = Math.hypot(x - a.x, y - a.y) / diag
+        let j = ANEL_R.findIndex((r) => r >= dist)
+        if (j < 0) j = ANEL_R.length - 1
+        m.nasce = t0 + j * POSE
+      }
+    }
+
+    const gotas: Gota[] = []
+    const mouse = { x: -9999, y: -9999 }
+
+    // ===================== pintura de um quadro =====================
+    const pintaMascara = (t: number, tp: number) => {
+      const c = mascCtx
+      c.setTransform(dpr, 0, 0, dpr, 0, 0)
+      c.globalCompositeOperation = 'source-over'
+      c.clearRect(0, 0, W, H)
+      c.fillStyle = '#000'
+
+      // tinta
+      for (const m of manchas) {
+        if (t < m.nasce) continue
+        const idade = (t - m.nasce) / POSE
+        const cresce = idade < 1 ? 0.45 : idade < 2 ? 1.25 : 1
+        const respira = 1 + Math.sin(t * 0.0012 + m.fase) * 0.06
+        const x = m.u * W + m.ox
+        const y = yLinha(m.u * W, false) + m.d + m.oy
+        c.beginPath()
+        c.arc(x, y, m.r * cresce * respira, 0, Math.PI * 2)
+        c.fill()
+      }
+
+      // halo da plaquinha
+      const tPl = tp - T_PLACA()
+      if (tPl >= 0) {
+        const k = Math.min(1, (tPl / POSE + 1) / 4)
+        const p = placaCentro()
+        c.save()
+        c.translate(p.x, p.y)
+        c.rotate(ANG)
+        for (const d of halo) {
+          c.beginPath()
+          c.arc(d.x, d.y, d.r * k, 0, Math.PI * 2)
+          c.fill()
+        }
+        c.restore()
+      }
+
+      // gotas da linha
+      for (const g of gotas) {
+        c.beginPath()
+        c.arc(g.x, g.y, g.r * Math.max(0.2, g.vida), 0, Math.PI * 2)
+        c.fill()
+      }
+
+      // anel de choque
+      const kA = Math.floor((tp - T_IMPACTO()) / POSE)
+      if (kA >= 0 && kA < ANEL_R.length) {
+        const a = asteriscoPos()
+        const r = ANEL_R[kA] * diag
+        const e = Math.min(r, ANEL_E[kA] * diag * 0.12)
+        c.beginPath()
+        c.arc(a.x, a.y, r, 0, Math.PI * 2)
+        if (r - e > 0) c.arc(a.x, a.y, r - e, 0, Math.PI * 2, true)
+        c.fill('evenodd')
+        // rastro em retícula logo atrás do anel
+        const passo = Math.max(5, PASSO * 1.4)
+        for (let j = 1; j <= 3; j++) {
+          const rr = r - e - j * passo * 1.2
+          if (rr <= 0) break
+          const n = Math.floor((2 * Math.PI * rr) / passo)
+          const pr = passo * 0.42 * (1 - j / 4)
+          for (let i = 0; i < n; i++) {
+            const ang = (i / n) * Math.PI * 2 + j * 0.3
+            c.beginPath()
+            c.arc(a.x + Math.cos(ang) * rr, a.y + Math.sin(ang) * rr, pr, 0, Math.PI * 2)
+            c.fill()
+          }
+        }
+      }
+    }
+
+    const pinta = (t: number, poseTremida: number) => {
+      const tp = Math.floor(t / POSE) * POSE // poses seguram 2 quadros
+
+      desenhaBase(ctx, false, tp)
+      desenhaBase(invCtx, true, tp)
+      pintaMascara(t, tp)
+
+      // a versão trocada só onde a máscara tem tinta
+      invCtx.setTransform(1, 0, 0, 1, 0, 0)
+      invCtx.globalCompositeOperation = 'destination-in'
+      invCtx.drawImage(masc, 0, 0)
+      invCtx.globalCompositeOperation = 'source-over'
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.drawImage(inv, 0, 0)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+      // plaquinha
+      const kP = Math.floor((tp - T_PLACA()) / POSE)
+      if (kP >= 0) desenhaPlaca(ctx, [1.4, 1.12, 0.96][kP] ?? 1)
+
+      // asterisco: cai grande e bate
+      const kS = Math.floor((tp - T_ASTER()) / POSE)
+      if (kS >= 0) desenhaAsterisco(ctx, [2.6, 1.6, 0.9][kS] ?? 1)
+
+      // tremida de registro: fatias do quadro deslocadas para os lados
+      if (poseTremida >= 0 && poseTremida < TREMIDA.length) {
+        const amp = TREMIDA[poseTremida] * Math.min(1.4, W / 1100)
+        mascCtx.setTransform(1, 0, 0, 1, 0, 0)
+        mascCtx.globalCompositeOperation = 'copy'
+        mascCtx.drawImage(canvas, 0, 0)
+        mascCtx.globalCompositeOperation = 'source-over'
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        const fr = makeRng(300 + poseTremida)
+        const faixas = 6
+        const topoN = (CY - capa * SY * 0.9) * dpr
+        const altN = capa * SY * 1.8 * dpr
+        for (let f = 0; f < faixas; f++) {
+          if (fr.next() < 0.35) continue
+          const y0 = topoN + (altN * f) / faixas + fr.jitter(altN * 0.05)
+          const h0 = (altN / faixas) * fr.range(0.4, 1)
+          const dx = amp * dpr * (f % 2 ? 1 : -1) * fr.range(0.5, 1)
+          ctx.drawImage(masc, 0, y0, masc.width, h0, dx, y0, masc.width, h0)
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      }
+
+      // granulado
+      if (grao) {
+        ctx.save()
+        ctx.globalAlpha = 0.06
+        ctx.globalCompositeOperation = 'overlay'
+        ctx.fillStyle = grao
+        ctx.translate((Math.floor(t / QUADRO) * 37) % 128, (Math.floor(t / QUADRO) * 53) % 128)
+        ctx.fillRect(-128, -128, W + 256, H + 256)
+        ctx.restore()
+      }
+    }
+
+    // granulado: um ruído só, reaproveitado
     const ruido = document.createElement('canvas')
     ruido.width = ruido.height = 128
     {
       const rc = ruido.getContext('2d')!
       const img = rc.createImageData(128, 128)
+      const nr = makeRng(5)
       for (let i = 0; i < img.data.length; i += 4) {
-        const v = 110 + rng.next() * 145
+        const v = 90 + nr.next() * 165
         img.data[i] = img.data[i + 1] = img.data[i + 2] = v
         img.data[i + 3] = 255
       }
@@ -91,378 +668,167 @@ export function HeroCanvas({ linhas, adesivo, width, height, isMobile, onEntrada
     }
     const grao = ctx.createPattern(ruido, 'repeat')
 
-    // ---- a corda que faz a diagonal ---------------------------------------
-    const yEsq = height * (isMobile ? 0.6 : 0.63)
-    const yDir = height * (isMobile ? 0.4 : 0.36)
-    const base = (i: number) => yEsq + (yDir - yEsq) * (i / (NOS - 1))
+    // ===================== simulação de um quadro (24 fps) =====================
+    const passoSim = (t: number) => {
+      passoLinha()
 
-    const desl = new Float32Array(NOS)
-    const vel = new Float32Array(NOS)
-
-    const empurra = (xNorm: number, forca: number) => {
-      const c = Math.round(xNorm * (NOS - 1))
-      for (let i = -6; i <= 6; i++) {
-        const k = c + i
-        if (k < 1 || k >= NOS - 1) continue
-        vel[k] += forca * Math.exp(-(i * i) / 10)
-      }
-    }
-
-    /** Um passo da mola: cada nó persegue a média dos vizinhos. */
-    const passoCorda = (pose: number) => {
-      for (let i = 1; i < NOS - 1; i++) {
-        vel[i] += ((desl[i - 1] + desl[i + 1]) / 2 - desl[i]) * 0.42
-        vel[i] *= 0.9
-      }
-      for (let i = 1; i < NOS - 1; i++) {
-        // ondulação lenta de fundo, para a linha nunca ficar morta
-        desl[i] += vel[i] + Math.sin(pose * 0.09 + i * 0.26) * 0.22
-      }
-    }
-
-    const yEm = (x: number) => {
-      const f = Math.max(0, Math.min(NOS - 1, (x / width) * (NOS - 1)))
-      const i = Math.min(NOS - 2, Math.floor(f))
-      const t = f - i
-      const a = base(i) + desl[i]
-      const b = base(i + 1) + desl[i + 1]
-      return a + (b - a) * t
-    }
-
-    /** Área acima da linha (o preto) e área abaixo (o creme). */
-    const caminhoEscuro = () => {
-      ctx.beginPath()
-      ctx.moveTo(0, 0)
-      ctx.lineTo(width, 0)
-      ctx.lineTo(width, yEm(width))
-      for (let x = width; x >= 0; x -= width / (NOS - 1)) ctx.lineTo(x, yEm(x))
-      ctx.closePath()
-    }
-    const caminhoClaro = () => {
-      ctx.beginPath()
-      ctx.moveTo(0, height)
-      ctx.lineTo(0, yEm(0))
-      for (let x = 0; x <= width; x += width / (NOS - 1)) ctx.lineTo(x, yEm(x))
-      ctx.lineTo(width, height)
-      ctx.closePath()
-    }
-
-    // ---- tipografia e glifos ----------------------------------------------
-    type Glifo = { ch: string; x: number; y: number; w: number; ordem: number }
-    let glifos: Glifo[] = []
-    let tamanho = 100
-    let alturaLinha = 100
-    let topo = 0
-
-    const fonte = (px: number) => `${px}px Anton, "Arial Narrow", sans-serif`
-
-    const medir = () => {
-      ctx.font = fonte(100)
-      const maior = Math.max(...linhas.map((l) => ctx.measureText(l).width))
-      tamanho = (100 * (width * (isMobile ? 0.92 : 0.94))) / maior
-      alturaLinha = tamanho * 0.82
-      topo = height / 2 - (alturaLinha * linhas.length) / 2
-
-      ctx.font = fonte(tamanho)
-      ctx.textBaseline = 'alphabetic'
-      glifos = []
-      let ordem = 0
-      linhas.forEach((linha, li) => {
-        let x = (width - ctx.measureText(linha).width) / 2
-        const y = topo + alturaLinha * (li + 1)
-        for (const ch of linha) {
-          const w = ctx.measureText(ch).width
-          glifos.push({ ch, x, y, w, ordem: ordem++ })
-          x += w
+      // tranco na linha quando cada letra pousa
+      glifos.forEach((g, i) => {
+        const k = poseLetra(i, t)
+        if (k === 4 && !pousou[i]) {
+          pousou[i] = true
+          const p = paraTela(g.x + g.w / 2, capa / 2)
+          empurra(p.x / W, 4.5)
         }
       })
-    }
 
-    /*
-      Canvas auxiliar da retícula. Não dá para usar clip() com a forma de uma
-      letra, então os pontos são pintados aqui e depois cortados pela silhueta
-      com 'destination-in'. É isso que faz a grade aparecer só dentro do glifo.
-    */
-    const aux = document.createElement('canvas')
-    const auxCtx = aux.getContext('2d')!
-
-    const desenhaLetraEmRetícula = (g: Glifo, p: number, cor: string) => {
-      const padX = tamanho * 0.2
-      const padY = alturaLinha * 0.35
-      const bw = Math.ceil(g.w + padX * 2)
-      const bh = Math.ceil(alturaLinha + padY * 2)
-      if (aux.width !== bw || aux.height !== bh) {
-        aux.width = bw
-        aux.height = bh
+      // impacto do asterisco
+      if (!impactou && t >= T_IMPACTO()) {
+        impactou = true
+        congela = POSE // hit-stop: o quadro do impacto segura uma pose
+        empurra(asteriscoPos().x / W, -16)
+        empurra(0.5, 7)
       }
-      auxCtx.setTransform(1, 0, 0, 1, 0, 0)
-      auxCtx.clearRect(0, 0, bw, bh)
 
-      // 1. a grade de pontos, crescendo
-      const celula = Math.max(4, tamanho * 0.05)
-      const raio = celula * 0.72 * p
-      auxCtx.fillStyle = cor
-      for (let yy = 0; yy < bh + celula; yy += celula) {
-        for (let xx = 0; xx < bw + celula; xx += celula) {
-          auxCtx.beginPath()
-          auxCtx.arc(xx, yy, raio, 0, Math.PI * 2)
-          auxCtx.fill()
+      // gotas que saem da linha
+      if (t > T_IMPACTO() + 6 * POSE && rngSim.next() < 0.22) {
+        const x = rngSim.range(0, W)
+        const sobe = rngSim.next() < 0.5
+        gotas.push({
+          x,
+          y: yLinha(x) + (sobe ? -2 : 2),
+          vy: (sobe ? -1 : 1) * rngSim.range(0.5, 1.6),
+          r: rngSim.range(1.5, 4.2) * escalaTinta,
+          vida: 1,
+        })
+      }
+      for (let i = gotas.length - 1; i >= 0; i--) {
+        const g = gotas[i]
+        g.y += g.vy
+        g.x += 0.6
+        g.vida -= 0.035
+        if (g.vida <= 0) gotas.splice(i, 1)
+      }
+
+      // a tinta anda para a direita e o mouse junta
+      for (const m of manchas) {
+        if (!m.ancora && t > m.nasce) {
+          m.u += m.vx
+          if (m.u > 1.03) m.u -= 1.06
         }
+        const x = m.u * W
+        const y = yLinha(x, false) + m.d
+        const dx = mouse.x - x
+        const dy = mouse.y - y
+        const perto = dx * dx + dy * dy < 160 * 160
+        const alvoX = perto ? dx * 0.45 : 0
+        const alvoY = perto ? dy * 0.45 : 0
+        m.ox += (alvoX - m.ox) * 0.12
+        m.oy += (alvoY - m.oy) * 0.12
       }
-
-      // 2. corta pela silhueta da letra
-      auxCtx.globalCompositeOperation = 'destination-in'
-      auxCtx.font = fonte(tamanho)
-      auxCtx.textBaseline = 'alphabetic'
-      auxCtx.fillStyle = '#000'
-      auxCtx.fillText(g.ch, padX, padY + alturaLinha * 0.84)
-      auxCtx.globalCompositeOperation = 'source-over'
-
-      ctx.drawImage(aux, g.x - padX, g.y - alturaLinha * 0.84 - padY)
     }
 
-    const desenhaNome = (t: number, cor: string, dx = 0, dy = 0) => {
-      ctx.save()
-      ctx.translate(dx, dy)
-      ctx.font = fonte(tamanho)
-      ctx.textBaseline = 'alphabetic'
-      ctx.fillStyle = cor
-      for (const g of glifos) {
-        const p = Math.max(0, Math.min(1, (t - g.ordem * ENTRE_LETRAS) / LETRA_MS))
-        if (p <= 0) continue
-        if (p >= 1) ctx.fillText(g.ch, g.x, g.y)
-        else desenhaLetraEmRetícula(g, p, cor)
-      }
-      ctx.restore()
-    }
-
-    const desenhaAdesivo = (p: number) => {
-      if (p <= 0) return
-      const q = Math.min(1, p)
-      const x = width * (isMobile ? 0.3 : 0.2)
-      const yFim = topo + alturaLinha * linhas.length + tamanho * 0.2
-      const y = yFim - (1 - q) * height * 0.3
-      const giro = (1 - q) * -0.8 - 0.09
-
-      const px = Math.max(14, tamanho * 0.16)
-      ctx.save()
-      ctx.translate(x, y)
-      ctx.rotate(giro)
-      ctx.font = fonte(px)
-      ctx.textBaseline = 'alphabetic'
-      const w = ctx.measureText(adesivo).width
-      ctx.fillStyle = RED
-      ctx.fillRect(-px * 0.5, -px * 1.05, w + px, px * 1.45)
-      ctx.fillStyle = INK
-      ctx.fillText(adesivo, 0, 0)
-      ctx.restore()
-    }
-
-    // ---- partículas --------------------------------------------------------
-    const QTD = isMobile ? 75 : 150
-    const faiscas: Faisca[] = Array.from({ length: QTD }, () => {
-      const x = rng.range(0, width)
-      return {
-        x,
-        y: base(Math.round((x / width) * (NOS - 1))) + rng.jitter(110),
-        vx: rng.range(0.6, 2.2),
-        vy: rng.jitter(0.25),
-        forte: rng.next() > 0.5,
-      }
-    })
-    const gotas: Gota[] = []
-    const aneis: Anel[] = []
-
-    const mouse = { x: -9999, y: -9999 }
-    const moveu = (e: PointerEvent) => {
-      const r = canvas.getBoundingClientRect()
-      mouse.x = e.clientX - r.left
-      mouse.y = e.clientY - r.top
-    }
-    window.addEventListener('pointermove', moveu, { passive: true })
-
-    // ---- linha do tempo ----------------------------------------------------
-    const entradaFim = () => (glifos.length - 1) * ENTRE_LETRAS + LETRA_MS
-    let relogio = 0 // tempo da animação, só avança quando a pose vira
-    let anterior = 0
+    // ===================== laço =====================
+    const pousou: boolean[] = []
+    let impactou = false
     let congela = 0
-    let ultimaPousada = -1
+    let relogio = 0
+    let anterior = 0
+    let ultimoQuadro = -1
     let avisou = false
-    let pose = 0
+    let visivel = true
+    const rngSim = makeRng(77)
+
+    const io = new IntersectionObserver(([e]) => {
+      visivel = e.isIntersecting
+    })
+    io.observe(canvas)
 
     const quadro = (agora: number) => {
       if (!rodando) return
       raf = requestAnimationFrame(quadro)
-      if (document.hidden) {
-        anterior = agora // aba escondida: congela sem acumular salto
+      if (document.hidden || !visivel) {
+        anterior = agora
         return
       }
       if (!anterior) anterior = agora
-      const dt = agora - anterior
+      const dt = Math.min(100, agora - anterior)
       anterior = agora
 
       if (congela > 0) {
-        congela -= dt // hit-stop: o quadro do impacto segura
-        return
+        congela -= dt
+        return // hit-stop: nada anda, o quadro do impacto fica na tela
       }
-
       relogio += dt
-      const novaPose = Math.floor(relogio / POSE)
-      if (novaPose === pose) return
-      pose = novaPose
-      const t = pose * POSE
+      const q = Math.floor(relogio / QUADRO)
+      if (q === ultimoQuadro) return // 24 fps
+      ultimoQuadro = q
 
-      passoCorda(pose)
+      passoSim(relogio)
+      const poseTremida = Math.floor((relogio - T_IMPACTO()) / POSE) - 1
+      pinta(relogio, poseTremida)
 
-      // tranco na linha a cada letra que pousa
-      const pousadas = Math.floor((t - LETRA_MS) / ENTRE_LETRAS)
-      if (pousadas > ultimaPousada && pousadas >= 0 && pousadas < glifos.length) {
-        ultimaPousada = pousadas
-        const g = glifos[pousadas]
-        empurra((g.x + g.w / 2) / width, 5.5)
-        for (let i = 0; i < 3; i++) {
-          const gx = g.x + rng.range(0, g.w)
-          gotas.push({ x: gx, y: yEm(gx), vy: rng.range(0.7, 2.2), vida: 1, sobe: rng.next() > 0.5 })
-        }
-      }
-
-      const quedaIni = entradaFim() + 60
-      const queda = (t - quedaIni) / QUEDA_MS
-      const impacto = quedaIni + QUEDA_MS
-
-      if (t >= impacto && aneis.length === 0) {
-        congela = POSE
-        const ax = width * (isMobile ? 0.3 : 0.2)
-        const ay = topo + alturaLinha * linhas.length
-        for (let i = 0; i < 3; i++) aneis.push({ x: ax, y: ay, nasceu: t + i * POSE })
-        empurra(ax / width, 18)
-      }
-
-      const posesPos = Math.floor((t - impacto - POSE) / POSE)
-      const tremendo = posesPos >= 0 && posesPos < TREMIDA_POSES
-      const desvio = tremendo ? (TREMIDA_POSES - posesPos) * 3.4 : 0
-      const sinal = posesPos % 2 === 0 ? 1 : -1
-
-      if (!avisou && t > impacto + TREMIDA_POSES * POSE) {
+      if (!avisou && relogio > T_FIM()) {
         avisou = true
+        aberturaTocou = true
         fimRef.current?.()
-      }
-
-      // ===================== pintura =====================
-      ctx.clearRect(0, 0, width, height)
-      ctx.fillStyle = PAPER
-      ctx.fillRect(0, 0, width, height)
-      caminhoEscuro()
-      ctx.fillStyle = INK
-      ctx.fill()
-
-      // placas desalinhadas da tremida
-      if (tremendo) {
-        ctx.save()
-        ctx.globalCompositeOperation = 'lighter'
-        desenhaNome(t, CIANO, -desvio * sinal, 0)
-        desenhaNome(t, RED, desvio * sinal, 0)
-        ctx.restore()
-      }
-
-      ctx.save()
-      caminhoEscuro()
-      ctx.clip()
-      desenhaNome(t, PAPER)
-      ctx.restore()
-
-      ctx.save()
-      caminhoClaro()
-      ctx.clip()
-      desenhaNome(t, INK)
-      ctx.restore()
-
-      desenhaAdesivo(queda)
-
-      // anéis de choque, invertendo o que estiver embaixo
-      if (aneis.length) {
-        ctx.save()
-        ctx.globalCompositeOperation = 'difference'
-        ctx.strokeStyle = '#ffffff'
-        for (const a of aneis) {
-          const idade = t - a.nasceu
-          if (idade < 0 || idade > ANEL_MS) continue
-          ctx.lineWidth = Math.max(1, 14 * (1 - idade / ANEL_MS))
-          ctx.beginPath()
-          ctx.arc(a.x, a.y, (idade / ANEL_MS) * Math.max(width, height) * 0.55, 0, Math.PI * 2)
-          ctx.stroke()
-        }
-        ctx.restore()
-      }
-
-      // faíscas andando para a direita, atraídas pelo mouse
-      for (const f of faiscas) {
-        f.x += f.vx
-        f.y += (yEm(f.x) - f.y) * 0.04 + f.vy
-        const dx = mouse.x - f.x
-        const dy = mouse.y - f.y
-        if (dx * dx + dy * dy < 170 * 170) {
-          f.x += dx * 0.035
-          f.y += dy * 0.035
-        }
-        if (f.x > width + 10) {
-          f.x = -10
-          f.y = yEm(0) + rng.jitter(110)
-        }
-        // a cor segue o lado: claro no escuro, escuro no claro
-        ctx.fillStyle = f.y < yEm(f.x) ? PAPER : INK
-        ctx.globalAlpha = f.forte ? 0.8 : 0.45
-        ctx.fillRect(Math.round(f.x), Math.round(f.y), 2, 2)
-      }
-      ctx.globalAlpha = 1
-
-      // gotas saindo da linha
-      for (let i = gotas.length - 1; i >= 0; i--) {
-        const g = gotas[i]
-        g.y += g.sobe ? -g.vy : g.vy
-        g.vida -= 0.045
-        if (g.vida <= 0) {
-          gotas.splice(i, 1)
-          continue
-        }
-        ctx.globalAlpha = g.vida
-        ctx.fillStyle = g.sobe ? PAPER : INK
-        ctx.beginPath()
-        ctx.arc(g.x, g.y, 1.6 + g.vida * 1.6, 0, Math.PI * 2)
-        ctx.fill()
-      }
-      ctx.globalAlpha = 1
-
-      // granulado por cima
-      if (grao) {
-        ctx.save()
-        ctx.globalAlpha = 0.07
-        ctx.globalCompositeOperation = 'overlay'
-        ctx.fillStyle = grao
-        // desloca o padrão a cada pose, senão o grão parece congelado
-        ctx.translate((pose * 7) % 128, (pose * 11) % 128)
-        ctx.fillRect(-128, -128, width + 256, height + 256)
-        ctx.restore()
       }
     }
 
-    // espera a Anton: medir antes dá a métrica da fonte substituta
+    const mover = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect()
+      mouse.x = e.clientX - r.left
+      mouse.y = e.clientY - r.top
+    }
+    const sair = () => {
+      mouse.x = mouse.y = -9999
+    }
+
     let cancelado = false
     const comecar = () => {
       if (cancelado) return
       medir()
+      atualizaLinha()
+      medirPlaca()
+      montaHalo()
+      montaTinta()
+      marcaNascimentos()
+
+      if (reduced) {
+        // parado: só o quadro final, sem tremida
+        const t = T_FIM() + 1000
+        glifos.forEach((_, i) => (pousou[i] = true))
+        pinta(t, -1)
+        fimRef.current?.()
+        return
+      }
+      if (aberturaTocou) {
+        // já tocou nesta visita (ex.: redimensionou): começa em repouso
+        relogio = T_FIM()
+        impactou = true
+        avisou = true
+        glifos.forEach((_, i) => (pousou[i] = true))
+        for (const m of manchas) m.nasce = 0
+      }
+      window.addEventListener('pointermove', mover, { passive: true })
+      window.addEventListener('pointerleave', sair)
       raf = requestAnimationFrame(quadro)
     }
-    if (document.fonts?.load) document.fonts.load('400 100px Anton').then(comecar, comecar)
-    else comecar()
+
+    Promise.all([
+      document.fonts?.load?.(`400 100px Anton`),
+      document.fonts?.load?.(`400 40px "Permanent Marker"`),
+    ]).then(comecar, comecar)
 
     return () => {
       rodando = false
       cancelado = true
       cancelAnimationFrame(raf)
-      window.removeEventListener('pointermove', moveu)
+      io.disconnect()
+      window.removeEventListener('pointermove', mover)
+      window.removeEventListener('pointerleave', sair)
     }
-  }, [linhas, adesivo, width, height, isMobile])
+  }, [nome, placa, width, height, isMobile, reduced])
 
   return (
     <canvas
