@@ -55,8 +55,9 @@ async function scrollShots(page, id) {
   }
 }
 
+const only = (process.env.TARGETS || '').split(',').filter(Boolean)
 const browser = await chromium.launch()
-for (const t of targets) {
+for (const t of targets.filter((x) => !only.length || only.includes(x.id))) {
   const timeout = t.slow ? 120000 : 45000
   try {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, locale: 'pt-BR' })

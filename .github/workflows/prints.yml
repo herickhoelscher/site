@@ -49,9 +49,9 @@ jobs:
         run: |
           export AUTH_SECRET=$(openssl rand -base64 32)
           cd /tmp/ecommerce
-          npm ci --no-audit --no-fund > /tmp/ecom-install.log 2>&1
-          npx prisma migrate deploy
-          npm run db:seed
+          npm install --no-audit --no-fund > /tmp/ecom-install.log 2>&1
+          npx prisma migrate deploy >> /tmp/ecom-install.log 2>&1
+          npm run db:seed >> /tmp/ecom-install.log 2>&1
           nohup npx next dev -p 3001 > /tmp/ecom.log 2>&1 &
           sleep 10
       - name: Maqcenter novo (dev)
@@ -62,9 +62,9 @@ jobs:
         run: |
           export SESSION_SECRET=$(openssl rand -base64 32)
           cd /tmp/Maqcenter/site
-          npm ci --no-audit --no-fund > /tmp/maq-install.log 2>&1
-          npx prisma migrate deploy
-          npx prisma db seed || npx tsx prisma/seed.ts
+          npm install --no-audit --no-fund > /tmp/maq-install.log 2>&1
+          npx prisma migrate deploy >> /tmp/maq-install.log 2>&1
+          (npx prisma db seed || npx tsx prisma/seed.ts) >> /tmp/maq-install.log 2>&1
           nohup npx next dev -p 3002 > /tmp/maq.log 2>&1 &
           sleep 10
       - name: Leitor RCO (Tkinter)
@@ -75,18 +75,21 @@ jobs:
           Xvfb :99 -screen 0 1020x720x24 > /dev/null 2>&1 &
           sleep 2
           cd /tmp/leitor_pdf_rco
+          sed -i 's/self.root.iconbitmap(icone)/pass/' core/interface.py
           DISPLAY=:99 nohup python3 run.py > /tmp/rco.log 2>&1 &
           sleep 6
           DISPLAY=:99 import -window root /tmp/out/rco-app.png
       - name: Screenshots
         env:
           AGRO_HTML: /tmp/Yolo-agent-llm/templates/index.html
+          TARGETS: ecommerce,maq-novo
         run: cd /tmp/shot && node shot.mjs
       - name: Commit
         if: always()
         run: |
           mkdir -p prints/logs
           cp /tmp/out/* prints/ 2>/dev/null || true
+          rm -f prints/logs/*
           for f in /tmp/ecom.log /tmp/maq.log /tmp/rco.log /tmp/ecom-install.log /tmp/maq-install.log; do [ -f $f ] && tail -c 20000 $f > prints/logs/$(basename $f) || true; done
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
