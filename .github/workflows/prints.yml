@@ -1,0 +1,94 @@
+name: prints
+on:
+  push:
+    branches: [prints]
+permissions:
+  contents: write
+jobs:
+  prints:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ecommerce
+          POSTGRES_PASSWORD: ecommerce
+          POSTGRES_DB: ecommerce
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ecommerce" --health-interval 5s --health-timeout 5s --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Playwright
+        run: |
+          mkdir -p /tmp/shot && cp shot.mjs /tmp/shot/ && cd /tmp/shot
+          npm init -y > /dev/null && npm i playwright@1.49.1
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-color-emoji python3-tk xvfb imagemagick > /dev/null
+      - name: Clone projects
+        run: |
+          cd /tmp
+          for r in Lp_Ship Lp_Dradriano Yolo-agent-llm ecommerce Maqcenter leitor_pdf_rco; do
+            git clone -q --depth 1 https://github.com/herickhoelscher/$r
+          done
+      - name: Static landing pages
+        run: |
+          cd /tmp/Lp_Ship && nohup python3 -m http.server 8101 > /dev/null 2>&1 &
+          cd /tmp/Lp_Dradriano && nohup python3 -m http.server 8102 > /dev/null 2>&1 &
+          sleep 1
+      - name: E-commerce (dev)
+        continue-on-error: true
+        env:
+          DATABASE_URL: postgresql://ecommerce:ecommerce@localhost:5432/ecommerce?schema=public
+          AUTH_TRUST_HOST: 'true'
+          NEXT_PUBLIC_APP_URL: http://localhost:3001
+        run: |
+          export AUTH_SECRET=$(openssl rand -base64 32)
+          cd /tmp/ecommerce
+          npm ci --no-audit --no-fund > /tmp/ecom-install.log 2>&1
+          npx prisma migrate deploy
+          npm run db:seed
+          nohup npx next dev -p 3001 > /tmp/ecom.log 2>&1 &
+          sleep 10
+      - name: Maqcenter novo (dev)
+        continue-on-error: true
+        env:
+          DATABASE_URL: file:/tmp/maq.db
+          NEXT_PUBLIC_SITE_URL: http://localhost:3002
+        run: |
+          export SESSION_SECRET=$(openssl rand -base64 32)
+          cd /tmp/Maqcenter/site
+          npm ci --no-audit --no-fund > /tmp/maq-install.log 2>&1
+          npx prisma migrate deploy
+          npx prisma db seed || npx tsx prisma/seed.ts
+          nohup npx next dev -p 3002 > /tmp/maq.log 2>&1 &
+          sleep 10
+      - name: Leitor RCO (Tkinter)
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/out
+          pip install -q pdfplumber openpyxl
+          Xvfb :99 -screen 0 1020x720x24 > /dev/null 2>&1 &
+          sleep 2
+          cd /tmp/leitor_pdf_rco
+          DISPLAY=:99 nohup python3 run.py > /tmp/rco.log 2>&1 &
+          sleep 6
+          DISPLAY=:99 import -window root /tmp/out/rco-app.png
+      - name: Screenshots
+        env:
+          AGRO_HTML: /tmp/Yolo-agent-llm/templates/index.html
+        run: cd /tmp/shot && node shot.mjs
+      - name: Commit
+        if: always()
+        run: |
+          mkdir -p prints/logs
+          cp /tmp/out/* prints/ 2>/dev/null || true
+          for f in /tmp/ecom.log /tmp/maq.log /tmp/rco.log /tmp/ecom-install.log /tmp/maq-install.log; do [ -f $f ] && tail -c 20000 $f > prints/logs/$(basename $f) || true; done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prints
+          git commit -q -m "prints gerados" && git push
