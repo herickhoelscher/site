@@ -10,17 +10,17 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
       - name: Baixar fotos (Unsplash License)
         run: |
-          npm init -y > /dev/null && npm i playwright@1.49.1 > /dev/null
-          npx playwright install --with-deps chromium > /dev/null
-          node baixa.mjs
+          mkdir -p fotos
+          while read nome foto; do
+            [ -z "$nome" ] && continue
+            curl -sSfL -o "fotos/$nome.jpg" "https://images.unsplash.com/$foto?fm=jpg&q=86&w=1800&fit=max" || echo "falhou $nome"
+            echo "$nome $(stat -c %s fotos/$nome.jpg 2>/dev/null) $(file -b fotos/$nome.jpg | cut -c1-30)"
+          done < lista.txt
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add fotos && rm -rf node_modules package.json package-lock.json
+          git add fotos
           git commit -q -m "fotos baixadas" && git push
