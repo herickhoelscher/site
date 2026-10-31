@@ -20,11 +20,12 @@ jobs:
       - name: Garimpo 2
         run: |
           rm -rf garimpo/pins garimpo/videos
-          node garimpo2.cjs > garimpo/log2.txt 2>&1 || true
-          for id in x4ztgjvfU60 ax5YUmkWf_Y urV5GzXcXsQ Iwr1aLEDpe4 eXjbk-4ljgc MUCN-JwUvbY XuCfkgaaa08 qNMfF9TYETM aR-KAldshAE ZHhqwBwmRkI fnd71bqiiW0; do
+          node garimpo3.cjs > garimpo/log3.txt 2>&1 || true
+          curl -sSL -A 'Mozilla/5.0' https://open.spotify.com/embed/playlist/75846hymUhaSBfAmvwGdp3 | grep -o '<script id="__NEXT_DATA__"[^>]*>.*</script>' | sed 's/<[^>]*script[^>]*>//g' > garimpo/herickfy.json || true
+          for id in dhihVoP_6gw CMxAmnyYDLE DEgG-SfV_ko d1EnW4kn1kg 25XGPHY1TMM; do
             o=$(curl -sS "https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=$id&format=json" | head -c 400)
             mx=$(curl -s -o /dev/null -w "%{http_code}" "https://i.ytimg.com/vi/$id/maxresdefault.jpg")
-            echo "$id max=$mx $o" >> garimpo/oembed.txt
+            echo "$id max=$mx $o" >> garimpo/oembed2.txt
           done
       - name: Commit
         run: |
