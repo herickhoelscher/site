@@ -29,9 +29,17 @@ jobs:
           curl -sSL -A "Mozilla/5.0" "https://br.pinterest.com/herickneumann4/feed.rss" -o garimpo/pinterest-feed.rss || true
           curl -sSL -A "Mozilla/5.0" -G "https://br.pinterest.com/resource/BoardsResource/get/" --data-urlencode 'data={"options":{"username":"herickneumann4","page_size":50,"privacy_filter":"public","field_set_key":"profile_grid_item"}}' -o garimpo/pinterest-boards.json || true
           ls -la garimpo
+      - name: Videos Mixkit (Free License)
+        run: |
+          mkdir -p garimpo/videos
+          for id in 50989 50990 20064 99864 99872 31029; do
+            curl -sSfL -o garimpo/videos/$id.mp4 "https://assets.mixkit.co/videos/$id/$id-720.mp4" || echo "falhou $id" >> garimpo/log.txt
+            curl -sSfL -o garimpo/videos/$id.jpg "https://assets.mixkit.co/videos/$id/$id-thumb-720-0.jpg" || true
+          done
+          ls -la garimpo/videos >> garimpo/log.txt
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add garimpo garimpo/pins
+          git add -f garimpo
           git commit -q -m "garimpo" && git push
