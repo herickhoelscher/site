@@ -17,29 +17,18 @@ jobs:
           npm i playwright@1.49.1 > garimpo/npm.log 2>&1
           npx playwright install --with-deps chromium >> garimpo/npm.log 2>&1
           tail -5 garimpo/npm.log
-      - name: Garimpo
+      - name: Garimpo 2
         run: |
-          mkdir -p garimpo
-          node garimpo.cjs > garimpo/log.txt 2>&1 || true
-          # miniaturas dos pins do feed
-          mkdir -p garimpo/pins
-          grep -o 'https://i.pinimg.com/236x/[^"&]*' garimpo/pinterest-feed.rss | sort -u | while read u; do curl -sSfL -o "garimpo/pins/feed-$(basename $u)" "${u/236x/474x}" || true; done
-          for f in garimpo/pinterest-*.json; do grep -o 'https://i.pinimg.com/[0-9]*x/[^"]*' "$f" | sed 's#/[0-9]*x/#/474x/#' | sort -u | head -40 | while read u; do curl -sSfL -o "garimpo/pins/$(basename $f .json)-$(basename $u)" "$u" || true; done; done
-          # Pinterest: RSS e pastas pela API pública
-          curl -sSL -A "Mozilla/5.0" "https://br.pinterest.com/herickneumann4/feed.rss" -o garimpo/pinterest-feed.rss || true
-          curl -sSL -A "Mozilla/5.0" -G "https://br.pinterest.com/resource/BoardsResource/get/" --data-urlencode 'data={"options":{"username":"herickneumann4","page_size":50,"privacy_filter":"public","field_set_key":"profile_grid_item"}}' -o garimpo/pinterest-boards.json || true
-          ls -la garimpo
-      - name: Videos Mixkit (Free License)
-        run: |
-          mkdir -p garimpo/videos
-          for id in 50989 50990 20064 99864 99872 31029; do
-            curl -sSfL -o garimpo/videos/$id.mp4 "https://assets.mixkit.co/videos/$id/$id-720.mp4" || echo "falhou $id" >> garimpo/log.txt
-            curl -sSfL -o garimpo/videos/$id.jpg "https://assets.mixkit.co/videos/$id/$id-thumb-720-0.jpg" || true
+          rm -rf garimpo/pins garimpo/videos
+          node garimpo2.cjs > garimpo/log2.txt 2>&1 || true
+          for id in x4ztgjvfU60 ax5YUmkWf_Y urV5GzXcXsQ Iwr1aLEDpe4 eXjbk-4ljgc MUCN-JwUvbY XuCfkgaaa08 qNMfF9TYETM aR-KAldshAE ZHhqwBwmRkI fnd71bqiiW0; do
+            o=$(curl -sS "https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=$id&format=json" | head -c 400)
+            mx=$(curl -s -o /dev/null -w "%{http_code}" "https://i.ytimg.com/vi/$id/maxresdefault.jpg")
+            echo "$id max=$mx $o" >> garimpo/oembed.txt
           done
-          ls -la garimpo/videos >> garimpo/log.txt
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f garimpo
-          git commit -q -m "garimpo" && git push
+          git add -A garimpo
+          git commit -q -m "garimpo 2" && git push
