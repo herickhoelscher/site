@@ -17,14 +17,18 @@ jobs:
           npm i playwright@1.49.1 > garimpo/npm.log 2>&1
           npx playwright install --with-deps chromium >> garimpo/npm.log 2>&1
           tail -5 garimpo/npm.log
-      - name: Videos (Mixkit Free License)
+      - name: Spotify oEmbed
         run: |
-          rm -rf garimpo/videos; mkdir -p garimpo/videos
-          for u in 99864/1717182517/99864 99868/1717182750/99868 99872/1717184136/99872; do
-            id=${u##*/}
-            curl -sSfL -o garimpo/videos/$id.mp4 "https://assets.mixkit.co/active_storage/video_items/$u-video-720.mp4" || echo "falhou $id" >> garimpo/log4.txt
-          done
-          ls -la garimpo/videos >> garimpo/log4.txt
+          rm -rf garimpo/videos
+          : > garimpo/spotify-oembed.txt
+          while read id; do
+            [ -z "$id" ] && continue
+            echo "$id $(curl -sS "https://open.spotify.com/oembed?url=https://open.spotify.com/track/$id")" >> garimpo/spotify-oembed.txt
+          done < spotify-ids.txt
+          if [ -s spotify-playlist.txt ]; then
+            pl=$(cat spotify-playlist.txt)
+            curl -sSL -A 'Mozilla/5.0' "https://open.spotify.com/embed/playlist/$pl" | grep -o '<script id="__NEXT_DATA__"[^>]*>.*</script>' | sed 's/<[^>]*script[^>]*>//g' > garimpo/playlist.json || true
+          fi
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
