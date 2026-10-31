@@ -4,11 +4,10 @@ import { Link } from 'react-router-dom'
 import { useContent } from '@/content'
 import { LangToggle } from '@/components/LangToggle'
 import { Mixtape } from '@/components/sections/Mixtape'
-import { VhsShelf } from '@/components/sections/VhsShelf'
 import { Cartridges } from '@/components/sections/Cartridges'
 import { Discoteca } from '@/components/sections/Discoteca'
-import { Cyberpunk } from '@/components/sections/Cyberpunk'
-import { TvAnime } from '@/components/sections/TvAnime'
+import { Edgerunners } from '@/components/sections/Edgerunners'
+import { Telao } from '@/components/sections/Telao'
 import { FotoCard } from '@/components/sections/FotoCard'
 import { TeamBadges } from '@/components/sections/TeamBadges'
 import { PinterestMural } from '@/components/sections/PinterestMural'
@@ -70,7 +69,7 @@ export default function LadoB() {
 
           <div className="-mx-4 mb-14 zine:-mx-6">
             <Faixas
-              a={[...ladob.vhs.fitas.map((f) => f.nome), ladob.cyber.titulo, ...ladob.jogos.cartuchos.map((c) => c.nome)]}
+              a={ladob.posters.map((p) => p.nome)}
               b={[...ladob.chips, ...ladob.musicas.map((m) => m.artista)]}
             />
           </div>
@@ -104,23 +103,9 @@ export default function LadoB() {
             </div>
           </section>
 
-          <Cyberpunk t={t} />
+          <Edgerunners t={t} />
 
-          <section className="mb-20">
-            <header className="mb-10 flex flex-wrap items-center gap-3 border-b-4 border-ink pb-4">
-              <h2 data-fx="wipe" className="border-2 border-ink bg-lav px-3 py-1 text-xl leading-tight text-ink shadow-zine-sm zine:text-2xl" style={{ fontFamily: 'var(--font-display)' }}>{ladob.tv.titulo}</h2>
-              <p className="text-base text-paper zine:text-lg" style={{ fontFamily: 'var(--font-marker)' }}>{ladob.tv.kicker}</p>
-            </header>
-            <div className="grid grid-cols-1 items-center gap-12 zine:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-              <div data-fx="slide-l" className="min-w-0">
-                <TvAnime t={t} />
-                <p className="mx-auto mt-8 max-w-[52ch] text-center text-sm text-paper/85" style={{ fontFamily: 'var(--font-marker)' }}>{ladob.tv.texto}</p>
-              </div>
-              <div data-fx="slide-r" className="min-w-0">
-                <VhsShelf t={t} />
-              </div>
-            </div>
-          </section>
+          <Telao t={t} />
 
           <section className="mb-20">
             <header className="mx-auto mb-10 max-w-2xl text-center text-paper">

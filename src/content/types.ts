@@ -83,17 +83,11 @@ export type Song = {
   spotifyId: string
   /** Impressa no rótulo da fita, como no design. */
   duracao: string
-}
-
-/** Uma fita VHS da estante de animes. */
-export type Tape = {
-  /** "TAPE VOL. 01 · HI-FI STEREO" */
-  vol: string
-  nome: string
-  /** O adesivo: REBOBINADA, FAVORITA, OVERDRIVE. */
-  selo: string
-  /** Clima que a fita aplica na seção ao passar o mouse. */
-  mood: 'red' | 'lav' | 'neon'
+  /** Gaveta da discoteca: ROCK, MPB, POP, J-ROCK... */
+  genero: string
+  album: string
+  /** Capa oficial do álbum, servida pelo Spotify (i.scdn.co). */
+  capa: string
 }
 
 /** Um cartucho de jogo. */
@@ -123,23 +117,33 @@ export type Manager = {
   selo: string
 }
 
-/** Um pin do mural do Pinterest. */
-export type Pin = {
-  /** Linha pequena acima do título, quando existe. */
-  kicker?: string
-  titulo: string
-  sub: string
-  /** Terceira linha, quando o pin tem. */
-  extra?: string
-  /** "PIN #01 // ARCHITECTURE" */
-  pin: string
-  texto: string
-  tom: 'ink' | 'red' | 'paper' | 'brown'
-  /** Foto livre (Unsplash) tratada nas cores do site. */
-  foto?: string
+/**
+ * Um anime, desenho ou jogo da parede de pôsteres. A imagem e o vídeo vêm do
+ * trailer oficial no YouTube (miniatura e player do próprio YouTube).
+ */
+export type Poster = {
+  nome: string
+  /** "MADHOUSE · 2023" */
+  meta: string
+  tipo: 'anime' | 'desenho' | 'jogo'
+  /** ID do vídeo oficial no YouTube. */
+  yt: string
+  /** Canal oficial que publicou o vídeo. */
+  canal: string
+  /** Comentário do Herick, em letra de marcador. */
+  nota: string
 }
 
-/** Uma foto do bloco cyberpunk: onde foi tirada e de quem é. */
+/** Um tema que aparece nas pastas do Pinterest do Herick. */
+export type Tema = {
+  titulo: string
+  texto: string
+  /** Rabisco próprio que ilustra o tema. */
+  rabisco: 'mago' | 'caveira' | 'gato' | 'flash' | 'tenis' | 'opart'
+  tom: 'ink' | 'red' | 'paper' | 'lav'
+}
+
+/** Uma foto livre do bloco do Edgerunners: onde foi tirada e de quem é. */
 export type FotoLugar = { src: string; lugar: string; autor: string }
 
 export type Content = {
@@ -238,14 +242,6 @@ export type Content = {
       nota: string
     }
     musicas: Song[]
-    vhs: {
-      kicker: string
-      titulo: string
-      modo: string
-      texto: string
-      nota: string
-      fitas: Tape[]
-    }
     jogos: {
       kicker: string
       titulo: string
@@ -255,27 +251,64 @@ export type Content = {
       nota: string
       cartuchos: Cartridge[]
     }
-    xadrez: {
+    discoteca: {
       kicker: string
       titulo: string
-      modo: string
-      statusLabel: string
-      rating: string
-      nome: string
-      desc: string
-      notaTitulo: string
-      notaTexto: string
+      nota: string
+      escolha: string
+      legenda: string
+      /** Rótulo das gavetas de gênero. */
+      gavetas: string
+      ouvir: string
+      fonte: string
     }
-    discoteca: { kicker: string; titulo: string; nota: string; escolha: string; legenda: string }
-    cyber: { kicker: string; titulo: string; kana: string; texto: string; fotos: FotoLugar[]; credito: string }
-    tv: { kicker: string; titulo: string; texto: string; canal: string; trocar: string; legendas: string[] }
+    /** Bloco do Cyberpunk: Edgerunners, com vídeo de fundo e trailer oficial. */
+    edge: {
+      kicker: string
+      titulo: string
+      sub: string
+      kana: string
+      texto: string
+      fatos: string[]
+      trailers: { rotulo: string; yt: string; canal: string }[]
+      assistir: string
+      fotosTitulo: string
+      fotos: FotoLugar[]
+      credito: string
+    }
+    /** TV de tubo + parede de pôsteres. */
+    telao: {
+      kicker: string
+      titulo: string
+      sub: string
+      noAr: string
+      canal: string
+      trocar: string
+      assistir: string
+      desligar: string
+      dica: string
+      tipos: Record<Poster['tipo'], string>
+      fonte: string
+    }
+    posters: Poster[]
     dado: { kicker: string; titulo: string; texto: string }
     vitrola: { kicker: string; titulo: string; texto: string }
     /** Créditos das fotos livres, no rodapé do Lado B. */
     creditos: string
     equipe: { kicker: string; titulo: string; sub: string }
     gerentes: Manager[]
-    mural: { titulo: string; tags: string; pins: Pin[] }
+    mural: {
+      kicker: string
+      titulo: string
+      analise: string
+      tags: string
+      temas: Tema[]
+      /** Título do widget oficial com os pins de verdade. */
+      widget: string
+      abrir: string
+      perfil: string
+      pasta: string
+    }
     fim: {
       kicker: string
       titulo: string
