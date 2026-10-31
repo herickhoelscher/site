@@ -1,0 +1,13 @@
+falhou 99864
+falhou 99872
+total 16768
+drwxr-xr-x 2 runner runner    4096 Oct 31 06:03 .
+drwxr-xr-x 4 runner runner    4096 Oct 31 06:03 ..
+-rw-r--r-- 1 runner runner  224334 Oct 31 06:03 20064.jpg
+-rw-r--r-- 1 runner runner 2467566 Oct 31 06:03 20064.mp4
+-rw-r--r-- 1 runner runner  197840 Oct 31 06:03 31029.jpg
+-rw-r--r-- 1 runner runner 2770524 Oct 31 06:03 31029.mp4
+-rw-r--r-- 1 runner runner   69257 Oct 31 06:03 50989.jpg
+-rw-r--r-- 1 runner runner 6362823 Oct 31 06:03 50989.mp4
+-rw-r--r-- 1 runner runner   53754 Oct 31 06:03 50990.jpg
+-rw-r--r-- 1 runner runner 4998409 Oct 31 06:03 50990.mp4
