@@ -1,0 +1,29 @@
+d {"larg":1425,"imgsQuebradas":[],"miniaturas":["25XGPHY1TMM/maxresdefault.jpg 1280","dhihVoP_6gw/maxresdefault.jpg 1280","eXjbk-4ljgc/maxresdefault.jpg 1280","MUCN-JwUvbY/maxresdefault.jpg 1280","dhihVoP_6gw/maxresdefault.jpg 1280","25XGPHY1TMM/maxresdefault.jpg 1280","CMxAmnyYDLE/maxresdefault.jpg 1280","d1EnW4kn1kg/maxresdefault.jpg 1280","XuCfkgaaa08/maxresdefault.jpg 1280","qNMfF9TYETM/maxresdefault.jpg 1280","aR-KAldshAE/maxresdefault.jpg 1280","fnd71bqiiW0/maxresdefault.jpg 1280"],"capas":[640,640],"iframes":["https://open.spotify.com/embed/track/5HNCy40Ni5BZJFw1TKzRsC?theme=0","https://open.spotify.com/embed/track/5HNCy40Ni5BZJFw1TKzRsC","https://open.spotify.com/embed/track/07q0QVgO56EorrSGHC48y3","https://open.spotify.com/embed/track/5S8jc9sCle880PjbwnEzsY"],"pinterest":36,"video":{"src":"http://localhost:4173/assets/ladob/night-city.mp4","pronto":0,"pausado":true}}
+m {"larg":390,"imgsQuebradas":[],"miniaturas":["25XGPHY1TMM/maxresdefault.jpg 1280","dhihVoP_6gw/maxresdefault.jpg 1280","eXjbk-4ljgc/maxresdefault.jpg 1280","MUCN-JwUvbY/maxresdefault.jpg 1280","dhihVoP_6gw/maxresdefault.jpg 1280","25XGPHY1TMM/maxresdefault.jpg 1280","CMxAmnyYDLE/maxresdefault.jpg 1280","d1EnW4kn1kg/maxresdefault.jpg 1280","XuCfkgaaa08/maxresdefault.jpg 1280","qNMfF9TYETM/maxresdefault.jpg 1280","aR-KAldshAE/maxresdefault.jpg 1280","fnd71bqiiW0/maxresdefault.jpg 1280"],"capas":[640,640],"iframes":["https://open.spotify.com/embed/track/5HNCy40Ni5BZJFw1TKzRsC?theme=0","https://open.spotify.com/embed/track/5HNCy40Ni5BZJFw1TKzRsC","https://open.spotify.com/embed/track/07q0QVgO56EorrSGHC48y3","https://open.spotify.com/embed/track/5S8jc9sCle880PjbwnEzsY"],"pinterest":30,"video":{"src":"http://localhost:4173/assets/ladob/night-city.mp4","pronto":0,"pausado":true}}
+erros [
+ "d RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "d A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "d Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+ "d RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "d A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "d Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+ "d RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "d A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "d Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+ "d RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "d A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "d Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+ "m RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "m A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "m Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+ "m RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "m A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "m Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+ "m RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "m A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "m Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.",
+ "m RangeError: Incorrect locale information provided\n    at new Locale (<anonymous>)\n    at https://embed-cdn.spotifycdn.com/_next/static/chunks/4504-4b74a5cd0335a",
+ "m A client-side exception has occurred, see here for more info: https://nextjs.org/docs/messages/client-side-exception-occurred",
+ "m Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings."
+]
+cf57be0 Lado B: Edgerunners com video, TV com trailers oficiais, posteres, discoteca com capas do Spotify e mural do Pinterest
