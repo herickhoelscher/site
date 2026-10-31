@@ -6,7 +6,10 @@ import { LangToggle } from '@/components/LangToggle'
 import { Mixtape } from '@/components/sections/Mixtape'
 import { VhsShelf } from '@/components/sections/VhsShelf'
 import { Cartridges } from '@/components/sections/Cartridges'
-import { ChessCard } from '@/components/sections/ChessCard'
+import { Discoteca } from '@/components/sections/Discoteca'
+import { Cyberpunk } from '@/components/sections/Cyberpunk'
+import { TvAnime } from '@/components/sections/TvAnime'
+import { FotoCard } from '@/components/sections/FotoCard'
 import { TeamBadges } from '@/components/sections/TeamBadges'
 import { PinterestMural } from '@/components/sections/PinterestMural'
 
@@ -67,10 +70,12 @@ export default function LadoB() {
 
           <div className="-mx-4 mb-14 zine:-mx-6">
             <Faixas
-              a={[...ladob.vhs.fitas.map((f) => f.nome), ...ladob.jogos.cartuchos.map((c) => c.nome)]}
+              a={[...ladob.vhs.fitas.map((f) => f.nome), ladob.cyber.titulo, ...ladob.jogos.cartuchos.map((c) => c.nome)]}
               b={[...ladob.chips, ...ladob.musicas.map((m) => m.artista)]}
             />
           </div>
+
+          <Discoteca t={t} />
 
           <section className="mb-20">
             <header className="mb-8 flex flex-wrap items-center gap-3 border-b-4 border-ink pb-4">
@@ -79,9 +84,41 @@ export default function LadoB() {
             </header>
             <div data-fx="stagger" data-fx-child="rise" className="grid grid-cols-1 items-start gap-8 zine:grid-cols-2">
               <Mixtape t={t} />
-              <VhsShelf t={t} />
               <Cartridges t={t} />
-              <ChessCard t={t} />
+              <FotoCard
+                src="/assets/ladob/d20.webp"
+                alt="Dado de vinte lados mostrando o 20"
+                kicker={ladob.dado.kicker}
+                titulo={ladob.dado.titulo}
+                texto={ladob.dado.texto}
+                selo="D20"
+              />
+              <FotoCard
+                src="/assets/ladob/vitrola-xerox.webp"
+                alt="Agulha da vitrola sobre o disco"
+                kicker={ladob.vitrola.kicker}
+                titulo={ladob.vitrola.titulo}
+                texto={ladob.vitrola.texto}
+                selo="33⅓"
+              />
+            </div>
+          </section>
+
+          <Cyberpunk t={t} />
+
+          <section className="mb-20">
+            <header className="mb-10 flex flex-wrap items-center gap-3 border-b-4 border-ink pb-4">
+              <h2 data-fx="wipe" className="border-2 border-ink bg-lav px-3 py-1 text-xl leading-tight text-ink shadow-zine-sm zine:text-2xl" style={{ fontFamily: 'var(--font-display)' }}>{ladob.tv.titulo}</h2>
+              <p className="text-base text-paper zine:text-lg" style={{ fontFamily: 'var(--font-marker)' }}>{ladob.tv.kicker}</p>
+            </header>
+            <div className="grid grid-cols-1 items-center gap-12 zine:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+              <div data-fx="slide-l" className="min-w-0">
+                <TvAnime t={t} />
+                <p className="mx-auto mt-8 max-w-[52ch] text-center text-sm text-paper/85" style={{ fontFamily: 'var(--font-marker)' }}>{ladob.tv.texto}</p>
+              </div>
+              <div data-fx="slide-r" className="min-w-0">
+                <VhsShelf t={t} />
+              </div>
             </div>
           </section>
 
@@ -113,7 +150,10 @@ export default function LadoB() {
         <footer className="border-t-4 border-ink bg-ink px-4 py-8 text-paper/70 zine:px-6">
           <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-3 text-center text-[10px] zine:flex-row zine:text-left" style={{ fontFamily: 'var(--font-mono)' }}>
             <div className="flex flex-wrap items-center justify-center gap-3 font-bold"><span className="text-paper">{ladob.rodape.marca}</span><span className="text-red">{ladob.rodape.sub}</span></div>
-            <p className="max-w-xl zine:text-right">{ladob.rodape.texto}</p>
+            <div className="max-w-xl space-y-1 zine:text-right">
+              <p>{ladob.rodape.texto}</p>
+              <p className="text-paper/45">{ladob.creditos}</p>
+            </div>
           </div>
         </footer>
       </div>

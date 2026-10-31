@@ -33,7 +33,17 @@ export function PinterestMural({ t }: Props) {
             return (
               <li key={pin.pin} className="relative min-w-0 border-[3px] border-ink bg-white p-3 shadow-zine-sm transition-transform hover:-translate-y-1">
                 <span aria-hidden="true" className="absolute -top-2 left-1/2 z-10 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-ink bg-red shadow-[2px_2px_0_#141414]" />
-                <div className={`flex ${HEIGHTS[index % HEIGHTS.length]} min-w-0 flex-col justify-between border border-ink p-3 text-center ${tone.surface}`}>
+                {pin.foto ? (
+                  <div className="group mb-3 overflow-hidden border border-ink">
+                    <img
+                      src={pin.foto}
+                      alt={pin.titulo}
+                      loading="lazy"
+                      className={`block w-full object-cover transition-[scale] duration-500 group-hover:scale-105 ${index % 2 ? 'aspect-[7/9]' : 'aspect-[7/8]'}`}
+                    />
+                  </div>
+                ) : null}
+                <div className={`flex ${pin.foto ? 'min-h-28' : HEIGHTS[index % HEIGHTS.length]} min-w-0 flex-col justify-between border border-ink p-3 text-center ${tone.surface}`}>
                   {pin.kicker ? <span className={`block break-words text-[10px] font-bold tracking-wider ${tone.detail}`} style={{ fontFamily: 'var(--font-mono)' }}>{pin.kicker}</span> : <span />}
                   <div className="min-w-0">
                     <p className={`break-words text-[clamp(1.25rem,3vw,2rem)] leading-tight ${tone.title}`} style={{ fontFamily: 'var(--font-display)' }}>{pin.titulo}</p>

@@ -516,6 +516,52 @@ export const en: Content = {
       notaTexto: 'Knocked the opponent king over on move 14. Win by feline walkover.',
     },
 
+    discoteca: {
+      kicker: 'NEEDLE DOWN // VOLUME UP',
+      titulo: 'BEDSIDE RECORD SHELF',
+      nota: 'now playing in my head',
+      escolha: 'pick a record ↓',
+      legenda: 'red vinyl · 33⅓ rpm',
+    },
+    cyber: {
+      kicker: 'NEON // RAIN // 2:00 AM',
+      titulo: 'CYBERPUNK',
+      kana: 'サイバーパンク',
+      texto:
+        "Neon, rain and a city wide awake at 2 a.m. An aesthetic I think is really cool, from Edgerunners to Tokyo's back alleys.",
+      fotos: [
+        { src: '/assets/ladob/neon-shibuya.webp', lugar: 'SHIBUYA · TOKYO', autor: 'mos design' },
+        { src: '/assets/ladob/neon-beco.webp', lugar: 'ALLEY · AKIHABARA', autor: 'Valentin Beauvais' },
+        { src: '/assets/ladob/neon-avenida.webp', lugar: 'LATE NIGHT · TOKYO', autor: 'Sérgio Rola' },
+        { src: '/assets/ladob/neon-rua.webp', lugar: 'NARROW STREET · AKIHABARA', autor: 'mos design' },
+      ],
+      credito: 'free photos from Unsplash, treated in the site colors',
+    },
+    tv: {
+      kicker: 'CHANNEL 03 // BINGE',
+      titulo: 'ANIME ON A CRT TV',
+      texto: 'Rewound tape, low volume and just one more episode before bed.',
+      canal: 'CH',
+      trocar: 'change channel',
+      legendas: [
+        'the journey goes on after the end',
+        'beyond the wall, the dawn',
+        'neon, rain and one more episode',
+        'just one more before bed',
+      ],
+    },
+    dado: {
+      kicker: 'RPG // ROLL FOR INITIATIVE',
+      titulo: 'NATURAL CRIT',
+      texto: "For Baldur's Gate 3 nights: the plan is good, but the d20 decides.",
+    },
+    vitrola: {
+      kicker: 'ANALOG // 33⅓ RPM',
+      titulo: 'NEEDLE DOWN',
+      texto: 'The vinyl crackle before the first track is worth the record.',
+    },
+    creditos:
+      'Free photos from Unsplash: mos design, Sérgio Rola, Valentin Beauvais, Andras Vas, Stephen Harlan, Volodymyr Hryshchenko, Timothy Dykes, Jacob Padilla, Filip Kvasnak, Gavin Phillips, Jamie Long and Rowan Heuvel.',
     equipe: {
       kicker: 'BACKSTAGE // HIGHEST AUTHORITY',
       titulo: 'THE REAL MANAGERS',
@@ -560,6 +606,7 @@ export const en: Content = {
           pin: 'PIN #01 // ARCHITECTURE',
           texto: 'Solid shapes, hard shadows and zero unnecessary decoration.',
           tom: 'ink',
+          foto: '/assets/ladob/pin-concreto.webp',
         },
         {
           kicker: 'OSAKA PRINT EXPO',
@@ -569,6 +616,7 @@ export const en: Content = {
           pin: 'PIN #02 // GRAPHIC DESIGN',
           texto: 'Vertical compositions and block type inspire every visual detail.',
           tom: 'red',
+          foto: '/assets/ladob/pin-neon.webp',
         },
         {
           kicker: 'CHERRY MX BLUE',
@@ -577,6 +625,7 @@ export const en: Content = {
           pin: 'PIN #03 // HARDWARE',
           texto: 'Tactile noise that gives rhythm to logical thinking.',
           tom: 'paper',
+          foto: '/assets/ladob/pin-teclado.webp',
         },
         {
           kicker: 'HARIO V60 // 30g',
@@ -586,6 +635,7 @@ export const en: Content = {
           pin: 'PIN #04 // RITUALS',
           texto: 'The one non-negotiable ritual before any line of code or any record.',
           tom: 'brown',
+          foto: '/assets/ladob/pin-cafe.webp',
         },
       ],
     },

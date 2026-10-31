@@ -135,7 +135,12 @@ export type Pin = {
   pin: string
   texto: string
   tom: 'ink' | 'red' | 'paper' | 'brown'
+  /** Foto livre (Unsplash) tratada nas cores do site. */
+  foto?: string
 }
+
+/** Uma foto do bloco cyberpunk: onde foi tirada e de quem é. */
+export type FotoLugar = { src: string; lugar: string; autor: string }
 
 export type Content = {
   lang: 'pt' | 'en'
@@ -261,6 +266,13 @@ export type Content = {
       notaTitulo: string
       notaTexto: string
     }
+    discoteca: { kicker: string; titulo: string; nota: string; escolha: string; legenda: string }
+    cyber: { kicker: string; titulo: string; kana: string; texto: string; fotos: FotoLugar[]; credito: string }
+    tv: { kicker: string; titulo: string; texto: string; canal: string; trocar: string; legendas: string[] }
+    dado: { kicker: string; titulo: string; texto: string }
+    vitrola: { kicker: string; titulo: string; texto: string }
+    /** Créditos das fotos livres, no rodapé do Lado B. */
+    creditos: string
     equipe: { kicker: string; titulo: string; sub: string }
     gerentes: Manager[]
     mural: { titulo: string; tags: string; pins: Pin[] }

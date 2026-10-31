@@ -523,6 +523,52 @@ export const pt: Content = {
       notaTexto: 'Derrubou o rei adversário no lance 14. Vitória por W.O. felino.',
     },
 
+    discoteca: {
+      kicker: 'AGULHA NO DISCO // VOLUME NO TALO',
+      titulo: 'DISCOTECA DE CABECEIRA',
+      nota: 'tocando agora na minha cabeça',
+      escolha: 'escolha um disco ↓',
+      legenda: 'vinil vermelho · 33⅓ rpm',
+    },
+    cyber: {
+      kicker: 'NEON // CHUVA // 02:00 AM',
+      titulo: 'CYBERPUNK',
+      kana: 'サイバーパンク',
+      texto:
+        'Neon, chuva e cidade acordada às duas da manhã. Uma estética que eu acho muito legal, de Edgerunners às ruelas de Tóquio.',
+      fotos: [
+        { src: '/assets/ladob/neon-shibuya.webp', lugar: 'SHIBUYA · TÓQUIO', autor: 'mos design' },
+        { src: '/assets/ladob/neon-beco.webp', lugar: 'BECO · AKIHABARA', autor: 'Valentin Beauvais' },
+        { src: '/assets/ladob/neon-avenida.webp', lugar: 'MADRUGADA · TÓQUIO', autor: 'Sérgio Rola' },
+        { src: '/assets/ladob/neon-rua.webp', lugar: 'RUA ESTREITA · AKIHABARA', autor: 'mos design' },
+      ],
+      credito: 'fotos livres do Unsplash, tratadas nas cores do site',
+    },
+    tv: {
+      kicker: 'CANAL 03 // MARATONA',
+      titulo: 'ANIME NA TV DE TUBO',
+      texto: 'Fita rebobinada, volume baixo e só mais um episódio antes de dormir.',
+      canal: 'CH',
+      trocar: 'trocar de canal',
+      legendas: [
+        'a jornada continua depois do fim',
+        'além da muralha, o amanhecer',
+        'neon, chuva e mais um episódio',
+        'só mais um antes de dormir',
+      ],
+    },
+    dado: {
+      kicker: 'RPG // ROLAGEM DE INICIATIVA',
+      titulo: 'CRÍTICO NATURAL',
+      texto: "Para as noites de Baldur's Gate 3: o plano é bom, mas quem decide é o d20.",
+    },
+    vitrola: {
+      kicker: 'ANALÓGICO // 33⅓ RPM',
+      titulo: 'AGULHA NO DISCO',
+      texto: 'O chiado do vinil antes da primeira faixa já vale o disco.',
+    },
+    creditos:
+      'Fotos livres do Unsplash: mos design, Sérgio Rola, Valentin Beauvais, Andras Vas, Stephen Harlan, Volodymyr Hryshchenko, Timothy Dykes, Jacob Padilla, Filip Kvasnak, Gavin Phillips, Jamie Long e Rowan Heuvel.',
     equipe: {
       kicker: 'BACKSTAGE // AUTORIDADE MÁXIMA',
       titulo: 'OS VERDADEIROS GERENTES',
@@ -567,6 +613,7 @@ export const pt: Content = {
           pin: 'PIN #01 // ARCHITECTURE',
           texto: 'Formas sólidas, sombras duras e zero enfeite desnecessário.',
           tom: 'ink',
+          foto: '/assets/ladob/pin-concreto.webp',
         },
         {
           kicker: 'OSAKA PRINT EXPO',
@@ -576,6 +623,7 @@ export const pt: Content = {
           pin: 'PIN #02 // GRAPHIC DESIGN',
           texto: 'Composições verticais e tipografia em bloco inspiram cada detalhe visual.',
           tom: 'red',
+          foto: '/assets/ladob/pin-neon.webp',
         },
         {
           kicker: 'CHERRY MX BLUE',
@@ -584,6 +632,7 @@ export const pt: Content = {
           pin: 'PIN #03 // HARDWARE',
           texto: 'Barulho tátil que dá ritmo ao raciocínio lógico.',
           tom: 'paper',
+          foto: '/assets/ladob/pin-teclado.webp',
         },
         {
           kicker: 'HARIO V60 // 30g',
@@ -593,6 +642,7 @@ export const pt: Content = {
           pin: 'PIN #04 // RITUAIS',
           texto: 'O único ritual não negociável antes de qualquer linha ou disco.',
           tom: 'brown',
+          foto: '/assets/ladob/pin-cafe.webp',
         },
       ],
     },
