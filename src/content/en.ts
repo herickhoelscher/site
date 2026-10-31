@@ -397,7 +397,7 @@ export const en: Content = {
     tag: 'TRACK TRANSITION',
     titulo: 'THAT WAS SIDE A.',
     texto:
-      'Want to meet Herick after hours? Music, anime, games, what I save on Pinterest and the real managers of the house.',
+      'Want to meet Herick after hours? Music, anime, games and the real managers of the house.',
     botao: 'FLIP THE RECORD → SIDE B',
     capa: {
       lados: 'SIDE A / SIDE B',
@@ -586,26 +586,6 @@ export const en: Content = {
         selo: '● MERGE BLOCKED',
       },
     ],
-
-    mural: {
-      kicker: 'PINTEREST // @herickneumann4 · SUPER NERD',
-      titulo: 'BOARD · what I save on Pinterest',
-      analise:
-        'Six boards and one pattern that keeps coming back: flat illustration in purple and coral, star-hat wizards, skulls with headphones, black cats and lots of tattoo ideas. In between, fan art of The Summer Hikaru Died, Adventure Time and Avatar. The doodles below are mine, drawn from those themes; the real pins come right after.',
-      tags: 'TATTOO IDEAS // REFERENCES // HIKARU // ADVENTURE TIME // RANDOM TATTOOS',
-      temas: [
-        { titulo: 'STAR-HAT WIZARDS', texto: 'Pointy hats full of stars show up board after board. No wonder Missi wears one.', rabisco: 'mago', tom: 'lav' },
-        { titulo: 'SKULLS WITH HEADPHONES', texto: 'Hoodie skeletons with headphones on. Mike, in red headphones, approves.', rabisco: 'caveira', tom: 'red' },
-        { titulo: 'BLACK CATS', texto: 'Half the illustrations have a black cat. Missi, a Siamese, pretends not to notice.', rabisco: 'gato', tom: 'paper' },
-        { titulo: 'TATTOO FLASH', texto: '32 pins of tattoo ideas alone: fine lines, red ink, daggers, dragons and stars.', rabisco: 'flash', tom: 'ink' },
-        { titulo: 'STREETWEAR & SNEAKERS', texto: 'Baggy pants, loud jackets and chunky sneakers. The sneakers hanging on Side A are there for a reason.', rabisco: 'tenis', tom: 'lav' },
-        { titulo: 'PSYCHEDELIC OP ART', texto: 'Black and white stripes that bend your eyes. Hypnosis in poster form.', rabisco: 'opart', tom: 'paper' },
-      ],
-      widget: 'THE "REFERÊNCIAS" BOARD, STRAIGHT FROM PINTEREST',
-      abrir: 'open my Pinterest',
-      perfil: 'https://br.pinterest.com/herickneumann4/',
-      pasta: 'https://br.pinterest.com/herickneumann4/refer%C3%AAncias/',
-    },
 
     fim: {
       kicker: '// END OF PLAYBACK //',

@@ -1,8 +1,10 @@
-import type { Tema } from '@/content/types'
+
+export type RabiscoTipo = 'mago' | 'caveira' | 'gato' | 'flash' | 'tenis' | 'opart'
 
 /**
- * Rabiscos próprios para os temas do Pinterest do Herick. Desenho original,
- * traço grosso e as cores do site: nada copiado dos pins, só o assunto.
+ * Rabiscos próprios, com o Pinterest do Herick como referência de assunto:
+ * mago de chapéu estrelado, caveira de fone, gato preto, tattoo flash, tênis
+ * e op-art. Desenho original, traço grosso e as cores do site.
  */
 const TINTA = '#141414'
 const PAPEL = '#EFE9DA'
@@ -27,7 +29,7 @@ const ANEIS = Array.from({ length: 8 }, (_, i) => ({ d: onda(54 - i * 6.6, i * 0
 
 const traco = { stroke: TINTA, strokeWidth: 3.5, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const }
 
-export function Rabisco({ tipo, className = '' }: { tipo: Tema['rabisco']; className?: string }) {
+export function Rabisco({ tipo, className = '' }: { tipo: RabiscoTipo; className?: string }) {
   return (
     <svg viewBox="0 0 120 120" aria-hidden="true" className={className}>
       {tipo === 'mago' && (

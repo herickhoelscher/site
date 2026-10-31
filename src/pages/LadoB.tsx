@@ -10,7 +10,8 @@ import { Edgerunners } from '@/components/sections/Edgerunners'
 import { Telao } from '@/components/sections/Telao'
 import { FotoCard } from '@/components/sections/FotoCard'
 import { TeamBadges } from '@/components/sections/TeamBadges'
-import { PinterestMural } from '@/components/sections/PinterestMural'
+import { Adesivo } from '@/components/sections/Adesivo'
+import { VideoFundo } from '@/components/sections/VideoFundo'
 
 export default function LadoB() {
   const { t, prefix } = useContent()
@@ -47,6 +48,7 @@ export default function LadoB() {
               </ul>
             </div>
             <div data-fx="slide-r" className="relative mx-auto flex w-full max-w-[430px] items-center justify-center pb-10 zine:pb-4">
+              <Adesivo tipo="mago" giro={14} className="-top-6 right-0 size-24 zine:-right-6 zine:size-36" />
               <div className="flex aspect-square w-[min(74vw,390px)] items-center justify-center rounded-full border-4 border-ink shadow-[8px_8px_0_#141414] zine:w-full" style={{ background: 'radial-gradient(circle,#1c1c1c 20%,#292929 21%,#171717 35%,#242424 36%,#141414 48%,#222 49%,#121212 60%,#2b2b2b 61%,#111 75%,#1f1f1f 76%,#0d0d0d 100%)' }}>
                 {/* só o rótulo gira: os sulcos são círculos e não mostrariam o giro */}
                 <div className="fx-spin-slow relative flex aspect-square w-[42%] flex-col items-center justify-center rounded-full border-4 border-ink bg-paper p-2 text-center text-ink" style={{ animationDuration: '9s' }}>
@@ -80,6 +82,7 @@ export default function LadoB() {
             <header className="mb-8 flex flex-wrap items-center gap-3 border-b-4 border-ink pb-4">
               <h2 data-fx="wipe" className="border-2 border-ink bg-red px-3 py-1 text-xl leading-tight text-paper shadow-zine-sm zine:text-2xl" style={{ fontFamily: 'var(--font-display)' }}>{ladob.colecao.titulo}</h2>
               <p className="text-base text-paper zine:text-lg" style={{ fontFamily: 'var(--font-marker)' }}>{ladob.colecao.sub}</p>
+              <span className="relative ml-auto hidden size-20 zine:block"><Adesivo tipo="flash" giro={-10} mexe="swing" className="inset-0 -top-6" /></span>
             </header>
             <div data-fx="stagger" data-fx-child="rise" className="grid grid-cols-1 items-start gap-8 zine:grid-cols-2">
               <Mixtape t={t} />
@@ -108,7 +111,9 @@ export default function LadoB() {
           <Telao t={t} />
 
           <section className="mb-20">
-            <header className="mx-auto mb-10 max-w-2xl text-center text-paper">
+            <header className="relative mx-auto mb-10 max-w-2xl text-center text-paper">
+              <Adesivo tipo="tenis" giro={-8} mexe="float-2" className="-left-24 top-2 hidden size-28 zine:block" />
+              <Adesivo tipo="caveira" giro={10} className="-right-24 top-10 hidden size-24 zine:block" />
               <p className="inline-block -rotate-1 bg-paper px-4 py-1 text-xs font-bold tracking-widest text-ink" style={{ fontFamily: 'var(--font-mono)' }}>{ladob.equipe.kicker}</p>
               <h2 data-fx="slam" className="mt-3 text-4xl leading-tight drop-shadow-[3px_3px_0_#141414] zine:text-5xl" style={{ fontFamily: 'var(--font-display)' }}>{ladob.equipe.titulo}</h2>
               <p className="mt-2 text-sm leading-relaxed zine:text-base">{ladob.equipe.sub}</p>
@@ -118,9 +123,9 @@ export default function LadoB() {
             </div>
           </section>
 
-          <div data-fx="rise" className="mb-20"><PinterestMural t={t} /></div>
-
           <section data-fx="drop" className="relative mx-auto max-w-3xl overflow-hidden rounded-xl border-4 border-ink bg-ink p-7 text-center text-paper shadow-zine zine:p-12">
+            <VideoFundo src="/assets/ladob/opart.mp4" webm="/assets/ladob/opart.webm" poster="/assets/ladob/opart.webp" className="absolute inset-0 h-full w-full opacity-45" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse at center, rgba(20,20,20,.88) 30%, rgba(20,20,20,.55) 75%, rgba(20,20,20,.35) 100%)' }} />
             <span aria-hidden="true" className="pointer-events-none absolute -right-6 -bottom-8 text-[8rem] leading-none text-paper/10 zine:text-[10rem]" style={{ fontFamily: 'var(--font-display)' }}>{ladob.fim.marca}</span>
             <div className="relative space-y-5">
               <p className="text-xs font-bold tracking-[.25em] text-paper" style={{ fontFamily: 'var(--font-mono)' }}>{ladob.fim.kicker}</p>

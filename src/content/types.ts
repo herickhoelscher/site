@@ -134,15 +134,6 @@ export type Poster = {
   nota: string
 }
 
-/** Um tema que aparece nas pastas do Pinterest do Herick. */
-export type Tema = {
-  titulo: string
-  texto: string
-  /** Rabisco próprio que ilustra o tema. */
-  rabisco: 'mago' | 'caveira' | 'gato' | 'flash' | 'tenis' | 'opart'
-  tom: 'ink' | 'red' | 'paper' | 'lav'
-}
-
 /** Uma foto livre do bloco do Edgerunners: onde foi tirada e de quem é. */
 export type FotoLugar = { src: string; lugar: string; autor: string }
 
@@ -297,18 +288,6 @@ export type Content = {
     creditos: string
     equipe: { kicker: string; titulo: string; sub: string }
     gerentes: Manager[]
-    mural: {
-      kicker: string
-      titulo: string
-      analise: string
-      tags: string
-      temas: Tema[]
-      /** Título do widget oficial com os pins de verdade. */
-      widget: string
-      abrir: string
-      perfil: string
-      pasta: string
-    }
     fim: {
       kicker: string
       titulo: string

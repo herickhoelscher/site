@@ -4,6 +4,7 @@ import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
 import { seededTilt } from '@/lib/rng'
 import { player } from '@/lib/youtube'
 import { Miniatura } from './Miniatura'
+import { Adesivo } from './Adesivo'
 
 const COR_TIPO = {
   anime: 'bg-red text-paper',
@@ -65,6 +66,7 @@ export function Telao({ t }: { t: Content }) {
       <div className="grid grid-cols-1 items-center gap-10 zine:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] zine:gap-14">
         {/* a TV */}
         <div ref={tv} data-fx="slide-l" className="relative mx-auto w-full max-w-[620px] scroll-mt-24 pt-12">
+          <Adesivo tipo="gato" giro={6} mexe="float-2" className="-top-4 right-[6%] size-24 zine:size-28" />
           <span aria-hidden="true" className="absolute left-1/2 top-0 h-14 w-[3px] origin-bottom -translate-x-1/2 -rotate-[30deg] bg-ink" />
           <span aria-hidden="true" className="absolute left-1/2 top-0 h-14 w-[3px] origin-bottom -translate-x-1/2 rotate-[24deg] bg-ink" />
           <span aria-hidden="true" className="absolute left-1/2 top-11 h-4 w-12 -translate-x-1/2 rounded-t-full border-[3px] border-ink bg-zinc-600" />

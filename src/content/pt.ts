@@ -404,7 +404,7 @@ export const pt: Content = {
     tag: 'TRANSIÇÃO DE FAIXA',
     titulo: 'ISSO FOI O LADO A.',
     texto:
-      'Quer conhecer o Herick fora do expediente? Música, animes, jogos, o que eu salvo no Pinterest e os verdadeiros gerentes da casa.',
+      'Quer conhecer o Herick fora do expediente? Música, animes, jogos e os verdadeiros gerentes da casa.',
     botao: 'VIRAR O DISCO → LADO B',
     capa: {
       lados: 'LADO A / LADO B',
@@ -593,26 +593,6 @@ export const pt: Content = {
         selo: '● MERGE BLOQUEADO',
       },
     ],
-
-    mural: {
-      kicker: 'PINTEREST // @herickneumann4 · SUPER NERD',
-      titulo: 'MURAL · o que eu salvo no Pinterest',
-      analise:
-        'Seis pastas e um padrão que se repete: ilustração chapada em roxo e coral, magos de chapéu estrelado, caveiras de fone, gatos pretos e muita ideia de tattoo. No meio disso, fan art de O Verão em que Hikaru Morreu, Hora de Aventura e Avatar. Os rabiscos abaixo são meus, feitos a partir desses temas; os pins de verdade vêm logo depois.',
-      tags: 'IDEIAS DE TATTOOS // REFERÊNCIAS // HIKARU // ADVENTURE TIME // TATUAGENS ALEATÓRIAS',
-      temas: [
-        { titulo: 'MAGOS DE CHAPÉU ESTRELADO', texto: 'Chapéu pontudo cheio de estrela aparece em pasta atrás de pasta. Não é à toa que a Missi usa um.', rabisco: 'mago', tom: 'lav' },
-        { titulo: 'CAVEIRAS DE FONE', texto: 'Esqueleto de moletom e fone no ouvido. O Mike, de fone vermelho, aprova.', rabisco: 'caveira', tom: 'red' },
-        { titulo: 'GATOS PRETOS', texto: 'Tem gato preto em metade das ilustrações. A Missi, siamesa, finge que não viu.', rabisco: 'gato', tom: 'paper' },
-        { titulo: 'TATTOO FLASH', texto: '32 pins só de ideias de tatuagem: traço fino, vermelho, adaga, dragão e estrela.', rabisco: 'flash', tom: 'ink' },
-        { titulo: 'STREETWEAR & TÊNIS', texto: 'Calça larga, jaqueta colorida e tênis grande. Os tênis pendurados no Lado A não estão lá por acaso.', rabisco: 'tenis', tom: 'lav' },
-        { titulo: 'OP-ART PSICODÉLICO', texto: 'Listra preta e branca que entorta a vista. Hipnose em forma de pôster.', rabisco: 'opart', tom: 'paper' },
-      ],
-      widget: 'PASTA "REFERÊNCIAS", DIRETO DO PINTEREST',
-      abrir: 'abrir meu Pinterest',
-      perfil: 'https://br.pinterest.com/herickneumann4/',
-      pasta: 'https://br.pinterest.com/herickneumann4/refer%C3%AAncias/',
-    },
 
     fim: {
       kicker: '// FIM DA REPRODUÇÃO //',
