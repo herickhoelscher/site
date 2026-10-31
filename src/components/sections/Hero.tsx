@@ -45,7 +45,7 @@ export function Hero({ t }: Props) {
         />
       )}
 
-      <h1 className="sr-only">Herick Hoelscher · {t.hero.tagline}</h1>
+      <h1 className="sr-only">Herick Hoelscher · {t.hero.descricao}</h1>
 
       <div className={`absolute top-5 right-5 z-10 zine:top-7 zine:right-8 ${aparece}`}>
         <LangToggle className="text-paper" />
@@ -55,13 +55,7 @@ export function Hero({ t }: Props) {
       <div
         className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-4 px-5 pb-6 zine:flex-row zine:items-end zine:justify-between zine:px-10 zine:pb-8 ${aparece}`}
       >
-        <p
-          className="max-w-[26ch] text-[clamp(1.15rem,2vw,2.2rem)] leading-[1.1] text-ink zine:max-w-none"
-          style={{ fontFamily: 'var(--font-body)' }}
-        >
-          {t.hero.tagline}
-        </p>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-5 zine:ml-auto">
           {t.hero.links.map((l) => (
             <a
               key={l.label}

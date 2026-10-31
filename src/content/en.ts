@@ -17,7 +17,7 @@ export const en: Content = {
   hero: {
     name: 'HERICK',
     sticker: '*HERICK HOELSCHER',
-    tagline: 'full-stack dev who walked out of the server room',
+    descricao: "Herick Hoelscher's portfolio: IT, websites, systems and automation.",
     scroll: 'SCROLL ↓',
     links: [
       { label: 'Email', href: 'mailto:herickneumann4@gmail.com' },

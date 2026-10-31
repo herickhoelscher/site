@@ -20,15 +20,15 @@ export default function LadoA() {
       <Helmet>
         <html lang={t.htmlLang} />
         {/* uma expressão só: o helmet ignora o título quando recebe mais de um filho */}
-        <title>{`Herick Hoelscher · ${t.hero.tagline}`}</title>
-        <meta name="description" content={t.hero.tagline} />
+        <title>Herick Hoelscher</title>
+        <meta name="description" content={t.hero.descricao} />
         <link rel="canonical" href={canonical} />
         <link rel="alternate" hrefLang="pt-BR" href={`${SITE}/`} />
         <link rel="alternate" hrefLang="en" href={`${SITE}/en`} />
         <link rel="alternate" hrefLang="x-default" href={`${SITE}/`} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`Herick Hoelscher · ${t.hero.tagline}`} />
-        <meta property="og:description" content={t.hero.tagline} />
+        <meta property="og:title" content="Herick Hoelscher" />
+        <meta property="og:description" content={t.hero.descricao} />
         <meta property="og:url" content={canonical} />
         <meta property="og:image" content={`${SITE}/og.jpg`} />
         <meta name="twitter:card" content="summary_large_image" />

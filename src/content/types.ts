@@ -151,7 +151,8 @@ export type Content = {
   hero: {
     name: string
     sticker: string
-    tagline: string
+    /** Descrição do site: só para buscadores e leitores de tela, não aparece na página. */
+    descricao: string
     scroll: string
     links: { label: string; href: string }[]
   }
