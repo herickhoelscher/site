@@ -20,6 +20,7 @@ export function Edgerunners({ t }: { t: Content }) {
     <section className="relative mb-20 overflow-hidden rounded-xl border-4 border-ink bg-ink p-5 text-paper shadow-zine zine:p-10">
       <VideoFundo
         src="/assets/ladob/night-city.mp4"
+        webm="/assets/ladob/night-city.webm"
         poster="/assets/ladob/night-city.webp"
         className="absolute inset-0 h-full w-full opacity-55"
       />
