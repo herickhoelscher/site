@@ -1,4 +1,4 @@
-import { NetworkCable } from '@/components/collage'
+import { Doodle, NetworkCable, Splat, Stamp } from '@/components/collage'
 import type { Content } from '@/content'
 import { ClientLineup } from './ClientLineup'
 import { IssueCard } from './IssueCard'
@@ -24,6 +24,21 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
         pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
       />
 
+      {/* rabiscos e tinta no fundo, em profundidades diferentes */}
+      <span data-fx-speed="0.4" className="absolute left-[3%] top-[22%] hidden zine:block">
+        <span className="fx-spin-slow block">
+          <Doodle kind="star" seed="issues-star-bg" size={70} color="#A68BE6" />
+        </span>
+      </span>
+      <span data-fx-speed="-0.3" className="absolute right-[7%] top-[46%] hidden zine:block">
+        <span className="fx-float block">
+          <Doodle kind="swirl" seed="issues-swirl" size={90} color="#E8432E" />
+        </span>
+      </span>
+      <span data-fx-speed="0.2" aria-hidden="true" className="pointer-events-none absolute bottom-[8%] left-[1%] block h-52 w-72 opacity-40">
+        <Splat seed="issues-splat" color="#765BA7" className="h-full w-full" />
+      </span>
+
       <div className="relative z-[3] mx-auto max-w-[1200px]">
         <header className="px-6 zine:px-10">
           <span
@@ -39,6 +54,7 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
               Anton sólido, não o spray pingando: na referência o título é um
               bloco compacto e limpo, com uma leve sombra deslocada.
             */}
+            <div className="relative inline-block self-start">
             <h2
               data-fx="slam"
               className="origin-left text-[clamp(3rem,7.5vw,5.5rem)] leading-[0.85] text-paper"
@@ -49,6 +65,12 @@ export function IssuesWall({ t, prefix }: { t: Content; prefix: string }) {
             >
               {t.issues.titulo}
             </h2>
+            <span data-fx="pop" className="absolute left-full top-1 ml-4 whitespace-nowrap">
+              <Stamp tone="red" seed="issues-edicoes" className="bg-ink">
+                {t.quem.carimbos.edicoes}
+              </Stamp>
+            </span>
+            </div>
 
             <p
               data-fx="rise"

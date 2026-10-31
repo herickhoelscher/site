@@ -46,6 +46,17 @@ export const pt: Content = {
       missi: 'essa é a Missi. ela reprova PRs.',
       mike: 'o Mike aprova tudo',
     },
+    faixa: [
+      'DEV FULL-STACK',
+      'LANDING PAGES',
+      'LOJAS VIRTUAIS',
+      'SISTEMAS',
+      'AUTOMAÇÃO COM N8N',
+      'AGENTES DE IA',
+      'LINUX · DOCKER · INTUNE',
+      'OESTE DO PARANÁ',
+    ],
+    carimbos: { desde: 'DESDE OS 14', edicoes: '06 EDIÇÕES', aoVivo: 'AO VIVO' },
   },
 
   issues: {

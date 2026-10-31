@@ -1,5 +1,6 @@
-import { Doodle, NetworkCable, RansomTitle, Tape, TornPaper } from '@/components/collage'
+import { Doodle, NetworkCable, RansomTitle, Splat, Stamp, Tape, TornPaper } from '@/components/collage'
 import type { Content } from '@/content'
+import { Faixas } from './Faixas'
 
 const chipPositions = [
   'left-[1%] top-[3%]',
@@ -20,17 +21,23 @@ const chipColors = [
 
 export function About({ t }: { t: Content }) {
   return (
-    <section id="quem" className="tex-vermelha relative overflow-hidden px-6 py-24 zine:px-10 zine:py-32">
+    <section id="quem" className="tex-vermelha relative overflow-hidden px-6 pb-24 zine:px-10 zine:pb-32">
+      {/* fitas cruzadas logo abaixo do hero */}
+      <Faixas a={t.quem.faixa} b={t.quem.stack} className="-mx-6 mb-10 zine:-mx-10 zine:mb-14" />
+      {/* respingo preto atrás do retrato, andando devagar com a rolagem */}
+      <span data-fx-speed="0.25" aria-hidden="true" className="pointer-events-none absolute left-[3%] top-[34%] block h-64 w-80 opacity-70">
+        <Splat seed="about-splat-ink" color="#141414" className="h-full w-full" />
+      </span>
+      <span data-fx-speed="-0.35" className="absolute bottom-[6%] left-[46%] hidden zine:block">
+        <span className="fx-float-2 block">
+          <Doodle kind="swirl" seed="about-swirl" size={84} color="#141414" />
+        </span>
+      </span>
       <NetworkCable
         path=".9,-.02;.95,.22;.975,.52;.94,.82;.9,1.02"
         pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
       />
-      <span data-fx="pop" className="absolute left-[47%] top-[9%] hidden zine:block">
-        <span className="fx-float block">
-          <Doodle kind="star" seed="about-star" size={70} color="#F6F2E8" />
-        </span>
-      </span>
-      <span data-fx="pop" className="absolute right-[7%] top-[8%]">
+      <span data-fx="pop" className="absolute bottom-[5%] right-[6%]">
         <span className="fx-float-2 block">
           <Doodle kind="crown" seed="about-crown" size={62} color="#141414" />
         </span>
@@ -38,6 +45,11 @@ export function About({ t }: { t: Content }) {
 
       <div className="relative z-[3] mx-auto grid max-w-[1360px] items-center gap-14 zine:grid-cols-[1fr_1.08fr] zine:gap-[5vw]">
         <div data-fx="slide-l" className="relative mx-auto w-[82%] max-w-[540px] zine:w-[88%]">
+          <span data-fx="pop" className="absolute right-[-7%] top-[10%] z-[7]">
+            <Stamp tone="ink" shape="round" seed="about-desde" className="bg-paper/85 text-[10px] zine:text-[12px]">
+              {t.quem.carimbos.desde}
+            </Stamp>
+          </span>
           <img
             src="/assets/herick-xerox.png"
             alt="Retrato do Herick em halftone"

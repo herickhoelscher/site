@@ -161,6 +161,10 @@ export type Content = {
     stack: string[]
     infra: string
     notas: { comecei: string; missi: string; mike: string }
+    /** Fita preta que corre embaixo do hero: o que o Herick faz. */
+    faixa: string[]
+    /** Carimbos espalhados pelo Lado A. */
+    carimbos: { desde: string; edicoes: string; aoVivo: string }
   }
   issues: {
     /** "ZINE CATALOG // DISPATCHED WORKS" */

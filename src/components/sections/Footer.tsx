@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Barcode } from '@/components/collage'
 import type { Content } from '@/content'
 
 export function Footer({ t }: { t: Content }) {
@@ -8,9 +9,12 @@ export function Footer({ t }: { t: Content }) {
   return (
     <footer className="bg-ink px-6 py-7 text-paper zine:px-10">
       <div data-fx="rise" className="mx-auto flex max-w-[1440px] flex-col gap-5 zine:flex-row zine:items-start zine:justify-between">
-        <p className="text-xs leading-relaxed" style={{ fontFamily: 'var(--font-mono)' }}>
-          {t.footer.left}
-        </p>
+        <div className="flex flex-col gap-3">
+          <p className="text-xs leading-relaxed" style={{ fontFamily: 'var(--font-mono)' }}>
+            {t.footer.left}
+          </p>
+          <Barcode code="HERICK-2026-LADO-A" width={120} height={28} color="#EFE9DA" />
+        </div>
         <div className="flex flex-col gap-4 zine:items-end">
           <p className="text-xs" style={{ fontFamily: 'var(--font-mono)' }}>
             {t.footer.right}

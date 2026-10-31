@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async'
+import { Faixas } from '@/components/sections/Faixas'
 import { Link } from 'react-router-dom'
 import { useContent } from '@/content'
 import { LangToggle } from '@/components/LangToggle'
@@ -63,6 +64,13 @@ export default function LadoB() {
               </div>
             </div>
           </section>
+
+          <div className="-mx-4 mb-14 zine:-mx-6">
+            <Faixas
+              a={[...ladob.vhs.fitas.map((f) => f.nome), ...ladob.jogos.cartuchos.map((c) => c.nome)]}
+              b={[...ladob.chips, ...ladob.musicas.map((m) => m.artista)]}
+            />
+          </div>
 
           <section className="mb-20">
             <header className="mb-8 flex flex-wrap items-center gap-3 border-b-4 border-ink pb-4">

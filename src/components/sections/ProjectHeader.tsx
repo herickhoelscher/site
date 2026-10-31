@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Doodle, NetworkCable, Stamp, StickerImg, Tape, TornPaper } from '@/components/collage'
 import type { Content, Issue } from '@/content'
 import { LangToggle } from '@/components/LangToggle'
+import { Fita } from './Faixas'
 
 type Props = { issue: Issue; t: Content; prefix: string }
 
@@ -106,6 +107,10 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
               </a>
             ) : null}
           </div>
+        </div>
+        {/* a stack do projeto correndo numa fita vermelha */}
+        <div className="relative z-[2] h-[64px] overflow-hidden">
+          <Fita itens={issue.stack} marca="text-paper" className="top-3 -rotate-1 bg-red text-ink" />
         </div>
       </header>
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { NetworkCable } from '@/components/collage'
+import { Doodle, NetworkCable } from '@/components/collage'
 import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
 import type { Content } from '@/content'
 
@@ -22,6 +22,22 @@ export function FlipRecord({ t, prefix }: Props) {
         path=".9,-.02;.955,.3;.985,.62;.955,.88;.9,1.02"
         pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
       />
+
+      <span data-fx-speed="0.4" className="absolute left-[4%] top-[12%]">
+        <span className="fx-spin-slow block">
+          <Doodle kind="star" seed="flip-star-a" size={52} color="#F6F2E8" />
+        </span>
+      </span>
+      <span data-fx-speed="-0.3" className="absolute bottom-[10%] left-[40%] hidden zine:block">
+        <span className="fx-float block">
+          <Doodle kind="star" seed="flip-star-b" size={38} color="#141414" />
+        </span>
+      </span>
+      <span data-fx-speed="0.25" className="absolute right-[14%] top-[14%] hidden zine:block">
+        <span className="fx-float-2 block">
+          <Doodle kind="crown" seed="flip-crown" size={60} color="#E8432E" />
+        </span>
+      </span>
 
       <div className="relative z-[3] mx-auto grid max-w-[1200px] items-center gap-12 px-6 zine:grid-cols-[minmax(0,420px)_1fr] zine:gap-16 zine:px-10">
         {/* capa + vinil */}
@@ -108,6 +124,11 @@ export function FlipRecord({ t, prefix }: Props) {
             {t.flip.texto}
           </p>
 
+          <span aria-hidden="true" className="mt-6 hidden w-fit rotate-[25deg] zine:block">
+            <span className="fx-float block">
+              <Doodle kind="arrow" seed="flip-arrow" size={64} color="#F6F2E8" />
+            </span>
+          </span>
           <Link
             to={`${prefix}/lado-b`}
             className="fx-jelly mt-8 inline-block bg-paper px-6 py-3 text-[clamp(0.95rem,1.6vw,1.2rem)] text-ink shadow-[6px_6px_0_var(--color-ink)] transition-transform hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-[3px_3px_0_var(--color-ink)]"

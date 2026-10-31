@@ -38,10 +38,6 @@ const TEXTURAS = {
 }
 const TEX_PX = 420
 
-type Fundo = string | CanvasPattern
-/** Cores de um quadro: fundo de cada lado da linha e a letra de cada lado. */
-type Paleta = { fundo: Fundo; topo: Fundo; letraTopo: string; letraFundo: string }
-
 const carregaImagem = (src: string) =>
   new Promise<HTMLImageElement | null>((ok) => {
     const img = new Image()
@@ -50,22 +46,31 @@ const carregaImagem = (src: string) =>
     img.src = src
   })
 
-/** Relógio de desenho animado: 24 quadros por segundo, poses seguradas por 2 quadros. */
-const QUADRO = 1000 / 24
-const POSE = QUADRO * 2
+/**
+ * Unidade das velocidades da simulação. Os números (mola, tinta, partículas)
+ * foram afinados para 24 passos por segundo; a cada quadro a simulação anda
+ * dt / PASSO_MS desses passos, então roda igual a 60, 120 ou 144 Hz.
+ */
+const PASSO_MS = 1000 / 24
 
-/** Quanto da letra a retícula cobre em cada pose da entrada, antes de fechar. */
-const COBERTURA = [0.3, 0.46, 0.6, 0.7]
-/** Queda de cada letra, em frações da altura de queda, pose a pose (com um repique no fim). */
-const QUEDA = [1.14, 0.74, 0.38, 0.1, -0.05, 0.015, 0]
-const ENTRE_LETRAS = 42
+// ===================== linha do tempo, em ms =====================
+const T_LETRAS = 140
+const ENTRE_LETRAS = 55
+const DUR_QUEDA = 520
+const DUR_PLACA = 420
+const DUR_ASTER = 300
+const DUR_ANEL = 720
+const DUR_TREMIDA = 420
 
-/** Anel de choque: raio e espessura por pose, em frações da diagonal da tela. */
-const ANEL_R = [0.08, 0.17, 0.3, 0.45, 0.62, 0.8, 0.98]
-const ANEL_E = [1, 0.3, 0.22, 0.16, 0.11, 0.08, 0.05]
+/** Quanto da letra a retícula cobre enquanto cai, antes de fechar em sólida. */
+const NIVEIS = [0.16, 0.3, 0.46, 0.6, 0.7]
 
-/** Tremida de registro: deslocamento das fatias, pose a pose. */
-const TREMIDA = [16, -10, 6, -3, 1]
+const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x)
+const easeOutCubic = (x: number) => 1 - (1 - x) ** 3
+const easeInCubic = (x: number) => x * x * x
+const easeOutBack = (x: number, s = 1.70158) => 1 + (s + 1) * (x - 1) ** 3 + s * (x - 1) ** 2
+/** Altura da letra durante a queda: 1 no alto, passa um pouco do chão e assenta em 0. */
+const quedaLetra = (p: number) => 1 - easeOutBack(clamp01(p), 2.2)
 
 /** A abertura só toca uma vez por visita, mesmo se o componente remontar. */
 let aberturaTocou = false
@@ -79,12 +84,12 @@ type Particula = {
   vy: number
   s: number // tamanho
   ang: number
-  va: number // giro por quadro
+  va: number // giro por passo
   forma: number // 0 ponto, 1 quadrado, 2 cruz, 3 triângulo, 4 asterisco
   tom: number // índice em TONS_TOPO / TONS_FUNDO
   z: number // profundidade: mais perto, maior e mais rápida
   vida: number // 1 → 0; a poeira do fundo fica sempre em 1
-  queda: number // gravidade por quadro
+  queda: number // gravidade por passo
 }
 type Gota = { x: number; y: number; vy: number; r: number; vida: number }
 type Mancha = {
@@ -100,7 +105,7 @@ type Mancha = {
 }
 
 /**
- * Abertura do hero em canvas 2D.
+ * Abertura do hero em canvas 2D, a 60 quadros por segundo (ou o que a tela der).
  *
  * Composição: o nome inteiro inclinado (-7°) e cortado por uma linha paralela
  * a ele, que passa pelo meio das letras. Acima da linha o fundo é roxo e a
@@ -108,18 +113,21 @@ type Mancha = {
  * as mesmas das seções do site.
  *
  * Tudo o que é tinta (manchas, anel de choque, halo da plaquinha, gotas da
- * linha) é pintado numa máscara. O quadro é desenhado duas vezes, normal e na
- * paleta da tinta (vermelho com a letra creme), e a segunda versão só aparece
- * onde a máscara tem tinta. Assim a tinta é vermelha dos dois lados da linha e,
- * sobre uma letra preta, a letra vira creme.
+ * linha) vira um único caminho de recorte. Dentro dele o quadro é pintado de
+ * novo na paleta da tinta: fundo vermelho e letra creme.
  *
- * Linha do tempo (no relógio de poses de 83 ms):
- *   1. as letras caem uma a uma, com fantasmas, em retícula que fecha até sólida;
- *   2. a plaquinha entra;
- *   3. o asterisco bate: o quadro do impacto congela uma pose (hit-stop), sai o
- *      anel de choque e a tinta nasce por onde o anel passa;
- *   4. tremida de registro (fatias deslocadas) por 5 poses;
- *   5. repouso: a linha ondula, solta gotas, a tinta anda e o mouse junta.
+ * Desempenho: os fundos com textura e o nome já pousado são desenhados uma vez
+ * em telas fora da página e só copiados a cada quadro; o quadro todo são três
+ * cópias, alguns recortes e as partículas.
+ *
+ * Linha do tempo:
+ *   1. as letras caem uma a uma, com rastro, em retícula que fecha até sólida;
+ *   2. a plaquinha entra crescendo;
+ *   3. o asterisco cai e bate: sai o anel de choque, as faíscas, e a tinta
+ *      nasce por onde o anel passa;
+ *   4. tremida de registro que vai sumindo;
+ *   5. repouso: a linha ondula, solta gotas, a tinta e a poeira andam e o mouse
+ *      mexe em tudo.
  */
 export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEntradaFim }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -134,21 +142,22 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
 
     const W = width
     const H = height
-    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 1.5)
+    // telas grandes em resolução um pouco menor: o custo cresce com a área
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 2 : W * H > 1.1e6 ? 1.25 : 1.5)
+    const PW = Math.round(W * dpr)
+    const PH = Math.round(H * dpr)
     const novoCanvas = () => {
       const c = document.createElement('canvas')
-      c.width = Math.round(W * dpr)
-      c.height = Math.round(H * dpr)
+      c.width = PW
+      c.height = PH
       return c
     }
-    canvas.width = Math.round(W * dpr)
-    canvas.height = Math.round(H * dpr)
+    canvas.width = PW
+    canvas.height = PH
 
-    // quadro com as cores trocadas e a máscara de inversão
-    const inv = novoCanvas()
-    const invCtx = inv.getContext('2d')!
-    const masc = novoCanvas()
-    const mascCtx = masc.getContext('2d')!
+    // cópia do quadro, só para a tremida de registro
+    const copia = novoCanvas()
+    const copiaCtx = copia.getContext('2d')!
 
     const rng = makeRng(7)
     let rodando = true
@@ -218,13 +227,15 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
     }
     const yBase = (x: number) => linhaY0 + x * Math.tan(ANG)
 
-    const yLinha = (x: number, comDente = true) => {
+    const molaEm = (x: number) => {
       const f = Math.max(0, Math.min(NOS - 1, (x / W) * (NOS - 1)))
       const i = Math.min(NOS - 2, Math.floor(f))
       const t = f - i
-      const m = desl[i] + (desl[i + 1] - desl[i]) * t
-      const dn = comDente ? dente[Math.min(DEGRAUS - 1, Math.floor((x / W) * DEGRAUS))] : 0
-      return yBase(x) + m + dn
+      return desl[i] + (desl[i + 1] - desl[i]) * t
+    }
+    const yLinha = (x: number, comDente = true) => {
+      const dn = comDente ? dente[Math.min(DEGRAUS - 1, Math.max(0, Math.floor((x / W) * DEGRAUS)))] : 0
+      return yBase(x) + molaEm(x) + dn
     }
 
     const empurra = (xn: number, forca: number) => {
@@ -237,33 +248,40 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
     }
 
     let mare = 0
-    const passoLinha = () => {
-      mare += 1
+    /** Um passo da mola, escalado: `f` = quantos passos de 24 Hz couberam no quadro. */
+    const passoLinha = (f: number) => {
+      mare += f
+      const amortece = Math.pow(0.88, f)
       for (let i = 1; i < NOS - 1; i++) {
-        vel[i] += ((desl[i - 1] + desl[i + 1]) / 2 - desl[i]) * 0.5 - desl[i] * 0.02
-        vel[i] *= 0.88
+        vel[i] += (((desl[i - 1] + desl[i + 1]) / 2 - desl[i]) * 0.5 - desl[i] * 0.02) * f
+        vel[i] *= amortece
       }
       for (let i = 1; i < NOS - 1; i++) {
         // maré: uma onda lenta que anda para a direita
-        desl[i] += vel[i] + Math.sin(mare * 0.11 - i * 0.35) * 0.06
+        desl[i] += (vel[i] + Math.sin(mare * 0.11 - i * 0.35) * 0.06) * f
       }
     }
 
-    /** Pontos do contorno da linha, da direita para a esquerda, com os degraus. */
+    /** Pontos do contorno da linha, com os degraus. */
     const contornoLinha = (c: CanvasRenderingContext2D, daDireita: boolean) => {
       const passo = W / DEGRAUS
-      const pts: Array<[number, number]> = []
-      for (let s = 0; s < DEGRAUS; s++) {
-        const x0 = s * passo
-        for (let j = 0; j <= 4; j++) {
-          const x = x0 + (passo * j) / 4
-          pts.push([x, yBase(x) + molaEm(x) + dente[s]])
+      if (daDireita) {
+        for (let s = DEGRAUS - 1; s >= 0; s--) {
+          for (let j = 4; j >= 0; j--) {
+            const x = s * passo + (passo * j) / 4
+            c.lineTo(x, yBase(x) + molaEm(x) + dente[s])
+          }
+        }
+      } else {
+        for (let s = 0; s < DEGRAUS; s++) {
+          for (let j = 0; j <= 4; j++) {
+            const x = s * passo + (passo * j) / 4
+            c.lineTo(x, yBase(x) + molaEm(x) + dente[s])
+          }
         }
       }
-      if (daDireita) pts.reverse()
-      for (const [x, y] of pts) c.lineTo(x, y)
     }
-    /** Região escura: acima da linha. */
+    /** Região de cima da linha. */
     const caminhoEscuro = (c: CanvasRenderingContext2D) => {
       c.beginPath()
       c.moveTo(0, -2)
@@ -271,7 +289,7 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       contornoLinha(c, true)
       c.closePath()
     }
-    /** Região clara: abaixo da linha. */
+    /** Região de baixo da linha. */
     const caminhoClaro = (c: CanvasRenderingContext2D) => {
       c.beginPath()
       c.moveTo(0, H + 2)
@@ -279,17 +297,11 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       c.lineTo(W, H + 2)
       c.closePath()
     }
-    const molaEm = (x: number) => {
-      const f = Math.max(0, Math.min(NOS - 1, (x / W) * (NOS - 1)))
-      const i = Math.min(NOS - 2, Math.floor(f))
-      const t = f - i
-      return desl[i] + (desl[i + 1] - desl[i]) * t
-    }
 
     // ===================== retícula =====================
     const PASSO = Math.max(4, Math.round(Math.min(W, 1600) * (isMobile ? 0.012 : 0.0062)))
     /** Ladrilho com pontos a 45° (cantos + centro) que cobre `cob` da área. */
-    const ladrilho = (cor: string, cob: number) => {
+    const ladrilho = (cor: string, cob: number): HTMLCanvasElement => {
       const c = document.createElement('canvas')
       c.width = c.height = PASSO * 2
       const g = c.getContext('2d')!
@@ -307,45 +319,71 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         g.arc(x, y, r, 0, Math.PI * 2)
         g.fill()
       }
-      return ctx.createPattern(c, 'repeat')!
+      return c
     }
-    const NIVEIS = [0.16, ...COBERTURA]
-    const padroes = {
+    const ladrilhos: Record<string, HTMLCanvasElement[]> = {
       [INK]: NIVEIS.map((c) => ladrilho(INK, c)),
       [PAPER]: NIVEIS.map((c) => ladrilho(PAPER, c)),
-    } as Record<string, CanvasPattern[]>
-
-    // ===================== paletas =====================
-    // começam lisas; viram textura quando as imagens carregam (em comecar)
-    let NORMAL: Paleta = { fundo: PAPER, topo: ROXO, letraTopo: PAPER, letraFundo: INK }
-    let TINTA: Paleta = { fundo: RED, topo: RED, letraTopo: PAPER, letraFundo: PAPER }
-    const textura = (img: HTMLImageElement | null, cor: string): Fundo => {
-      if (!img) return cor
-      const p = ctx.createPattern(img, 'repeat')
-      if (!p) return cor
-      p.setTransform(new DOMMatrix().scale(TEX_PX / img.width))
-      return p
     }
 
     // ===================== linha do tempo =====================
-    const T_LETRAS = 180
-    const fimLetras = () => T_LETRAS + (glifos.length - 1) * ENTRE_LETRAS + 4 * POSE
-    const T_PLACA = () => fimLetras() + POSE
-    const T_ASTER = () => T_PLACA() + 3 * POSE
-    const T_IMPACTO = () => T_ASTER() + 3 * POSE
-    const T_FIM = () => T_IMPACTO() + 12 * POSE
+    const fimLetras = () => T_LETRAS + (glifos.length - 1) * ENTRE_LETRAS + DUR_QUEDA
+    // a plaquinha começa enquanto a última letra ainda assenta: sem pausa entre os atos
+    const T_PLACA = () => fimLetras() - 140
+    const T_ASTER = () => T_PLACA() + DUR_PLACA * 0.55
+    const T_IMPACTO = () => T_ASTER() + DUR_ASTER
+    const T_FIM = () => T_IMPACTO() + DUR_ANEL + 160
 
-    /** Pose de uma letra: <0 ainda não entrou; 0..3 caindo em retícula; >=4 pousada. */
-    const poseLetra = (i: number, t: number) => Math.floor((t - T_LETRAS - i * ENTRE_LETRAS) / POSE)
+    /** Progresso da queda da letra i: <0 ainda não entrou, >=1 pousada. */
+    const progLetra = (i: number, t: number) => (t - T_LETRAS - i * ENTRE_LETRAS) / DUR_QUEDA
 
     // ===================== desenho do nome =====================
     const ENGROSSA = 0.024 // traço da mesma cor em volta da letra: Anton fica mais pesada
 
-    const letra = (c: CanvasRenderingContext2D, g: Glifo, dy: number, estilo: string | CanvasPattern) => {
+    /*
+     * Cada letra, em cada cor e em cada nível de retícula, é desenhada uma vez
+     * numa tela pequena (sprite). Durante a queda o quadro só copia sprites:
+     * escrever texto grande com contorno a cada quadro era o que travava a
+     * entrada. Os sprites são descartados quando a última letra pousa.
+     */
+    const SOLIDO = NIVEIS.length
+    let margem = 0 // folga em volta da letra, cobre o contorno
+    let baseSprite = 0 // linha de base dentro do sprite
+    let alturaSprite = 0 // altura do sprite no espaço da palavra (antes do SY)
+    const sprites = new Map<string, HTMLCanvasElement>()
+    const medirSprites = () => {
+      margem = S * ENGROSSA + 6
+      baseSprite = margem + capa * 1.25
+      alturaSprite = baseSprite + capa * 0.25 + margem
+    }
+    const sprite = (i: number, cor: string, nivel: number) => {
+      const chave = `${i}|${cor}|${nivel}`
+      const pronto = sprites.get(chave)
+      if (pronto) return pronto
+      const g = glifos[i]
+      // a letra caindo pode ser um pouco mais macia: 75% da resolução, metade da memória
+      const k = dpr * 0.75
+      const s = document.createElement('canvas')
+      s.width = Math.ceil((g.w + margem * 2) * k)
+      s.height = Math.ceil(alturaSprite * k * SY)
+      const c = s.getContext('2d')!
+      // já esticado no SY, para a cópia sair nítida no celular
+      c.setTransform(k, 0, 0, k * SY, 0, 0)
+      c.font = fonte(S)
+      c.textBaseline = 'alphabetic'
+      c.lineJoin = 'round'
+      c.lineWidth = S * ENGROSSA
+      const estilo = nivel >= SOLIDO ? cor : (c.createPattern(ladrilhos[cor][nivel], 'repeat') ?? cor)
       c.fillStyle = estilo
       c.strokeStyle = estilo
-      c.fillText(g.ch, g.x, capa / 2 + dy)
-      c.strokeText(g.ch, g.x, capa / 2 + dy)
+      c.fillText(g.ch, margem, baseSprite)
+      c.strokeText(g.ch, margem, baseSprite)
+      sprites.set(chave, s)
+      return s
+    }
+    const preparaSprites = () => {
+      for (let i = 0; i < glifos.length; i++)
+        for (const cor of [PAPER, INK]) for (let n = 0; n <= SOLIDO; n++) sprite(i, cor, n)
     }
 
     const desenhaNome = (c: CanvasRenderingContext2D, cor: string, t: number) => {
@@ -353,51 +391,84 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       c.translate(CX, CY)
       c.rotate(ANG)
       c.scale(1, SY)
-      c.font = fonte(S)
-      c.textBaseline = 'alphabetic'
-      c.lineJoin = 'round'
-      c.lineWidth = S * ENGROSSA
       const queda = capa * 0.3
       glifos.forEach((g, i) => {
-        const k = poseLetra(i, t)
-        if (k < 0) return
-        if (k >= 4) {
-          letra(c, g, -(QUEDA[Math.min(k, QUEDA.length - 1)] || 0) * queda, cor)
+        const p = progLetra(i, t)
+        if (p < 0) return
+        const poe = (dy: number, nivel: number) =>
+          c.drawImage(sprite(i, cor, nivel), g.x - margem, capa / 2 + dy - baseSprite, g.w + margem * 2, alturaSprite)
+        if (p >= 1) {
+          poe(0, SOLIDO)
           return
         }
-        // fantasmas das duas poses anteriores, mais ralos
-        for (const atras of [2, 1]) {
-          const kk = k - atras
-          if (kk < 0) continue
-          letra(c, g, -QUEDA[kk] * queda, padroes[cor][atras === 2 ? 0 : Math.max(0, kk)])
-        }
-        letra(c, g, -QUEDA[k] * queda, padroes[cor][k + 1])
+        // rastro: a mesma letra um pouco antes, em retícula rala
+        const pg = p - 0.16
+        if (pg >= 0) poe(-quedaLetra(pg) * queda, 0)
+        // a retícula fecha enquanto cai e vira sólida no fim
+        poe(-quedaLetra(p) * queda, Math.min(SOLIDO, Math.floor(p * 5) + 1))
       })
       c.restore()
     }
 
-    /** Quadro base: papel embaixo, roxo acima da linha, a letra de cada lado na sua cor. */
-    const desenhaBase = (c: CanvasRenderingContext2D, pal: Paleta, t: number) => {
-      c.setTransform(dpr, 0, 0, dpr, 0, 0)
-      c.globalCompositeOperation = 'source-over'
-      c.globalAlpha = 1
-      c.fillStyle = pal.fundo
-      c.fillRect(0, 0, W, H)
-      caminhoEscuro(c)
-      c.fillStyle = pal.topo
-      c.fill()
+    // ===================== camadas prontas (desenhadas uma vez) =====================
+    let fundoCreme: HTMLCanvasElement | null = null
+    let fundoRoxo: HTMLCanvasElement | null = null
+    let fundoVermelho: HTMLCanvasElement | null = null
+    const nomePronto: Record<string, HTMLCanvasElement> = {}
 
-      c.save()
-      caminhoEscuro(c)
-      c.clip()
-      desenhaNome(c, pal.letraTopo, t)
-      c.restore()
-
-      c.save()
-      caminhoClaro(c)
-      c.clip()
-      desenhaNome(c, pal.letraFundo, t)
-      c.restore()
+    const camadaLisa = (desenha: (g: CanvasRenderingContext2D) => void) => {
+      const c = novoCanvas()
+      const g = c.getContext('2d')!
+      g.setTransform(dpr, 0, 0, dpr, 0, 0)
+      desenha(g)
+      return c
+    }
+    const camadaTextura = (img: HTMLImageElement | null, cor: string) =>
+      camadaLisa((g) => {
+        g.fillStyle = cor
+        g.fillRect(0, 0, W, H)
+        if (!img) return
+        const p = g.createPattern(img, 'repeat')
+        if (!p) return
+        p.setTransform(new DOMMatrix().scale(TEX_PX / img.width))
+        g.fillStyle = p
+        g.fillRect(0, 0, W, H)
+      })
+    const montaCamadas = (creme: HTMLImageElement | null, roxa: HTMLImageElement | null, vermelha: HTMLImageElement | null) => {
+      fundoCreme = camadaTextura(creme, PAPER)
+      fundoRoxo = camadaTextura(roxa, ROXO)
+      fundoVermelho = camadaTextura(vermelha, RED)
+      // o nome já pousado, nas duas cores, escrito direto (nítido, na resolução cheia)
+      for (const cor of [PAPER, INK])
+        nomePronto[cor] = camadaLisa((g) => {
+          g.translate(CX, CY)
+          g.rotate(ANG)
+          g.scale(1, SY)
+          g.font = fonte(S)
+          g.textBaseline = 'alphabetic'
+          g.lineJoin = 'round'
+          g.lineWidth = S * ENGROSSA
+          g.fillStyle = cor
+          g.strokeStyle = cor
+          for (const gl of glifos) {
+            g.fillText(gl.ch, gl.x, capa / 2)
+            g.strokeText(gl.ch, gl.x, capa / 2)
+          }
+        })
+    }
+    const cobre = (c: CanvasRenderingContext2D, camada: HTMLCanvasElement | null, cor: string) => {
+      if (camada) c.drawImage(camada, 0, 0, W, H)
+      else {
+        c.fillStyle = cor
+        c.fillRect(0, 0, W, H)
+      }
+    }
+    const nome2 = (c: CanvasRenderingContext2D, cor: string, t: number) => {
+      // depois que todas pousaram, só copia a camada pronta
+      if (t >= fimLetras() && nomePronto[cor]) {
+        if (sprites.size) sprites.clear()
+        c.drawImage(nomePronto[cor], 0, 0, W, H)
+      } else desenhaNome(c, cor, t)
     }
 
     // ===================== plaquinha =====================
@@ -422,7 +493,7 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
     // centro da plaquinha: no meio do nome, em cima da linha
     const placaCentro = () => paraTela(0, -capa / 2 + capa * 0.43)
 
-    /** Halo de retícula em volta da plaquinha (vai para a máscara). */
+    /** Halo de retícula em volta da plaquinha (vira tinta). */
     let halo: Array<{ x: number; y: number; r: number }> = []
     const montaHalo = () => {
       halo = []
@@ -482,7 +553,7 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       const ultimo = glifos[glifos.length - 1]
       return paraTela(ultimo.x + ultimo.w * 0.78, -capa / 2 + capa * 0.04)
     }
-    const desenhaAsterisco = (c: CanvasRenderingContext2D, escala: number) => {
+    const desenhaAsterisco = (c: CanvasRenderingContext2D, escala: number, giro: number) => {
       const a = asteriscoPos()
       const R = capa * SY * (isMobile ? 0.2 : 0.16) * escala
       const bracos = (cc: CanvasRenderingContext2D) => {
@@ -495,7 +566,7 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       }
       c.save()
       c.translate(a.x, a.y)
-      c.rotate(ANG)
+      c.rotate(ANG + giro)
       c.lineCap = 'round'
       // sombra dura
       c.save()
@@ -549,7 +620,7 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
           }
         }
       }
-      // respingo fixo em volta do asterisco e no começo do nome
+      // respingo fixo em volta do asterisco e ao longo do nome
       const a = asteriscoPos()
       const focos = [
         { x: a.x, y: a.y, n: isMobile ? 16 : 28, raio: capa * SY * 0.55 },
@@ -569,7 +640,9 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       }
     }
 
-    /** Quando cada mancha nasce: quando o anel de choque passa por ela. */
+    /** Raio do anel de choque, em frações da diagonal, no progresso q (0..1). */
+    const raioAnel = (q: number) => 0.05 + 0.95 * easeOutCubic(q)
+    /** Cada mancha nasce quando o anel de choque passa por ela. */
     const marcaNascimentos = () => {
       const a = asteriscoPos()
       const t0 = T_IMPACTO()
@@ -577,14 +650,90 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         const x = m.u * W
         const y = yBase(x) + m.d
         const dist = Math.hypot(x - a.x, y - a.y) / diag
-        let j = ANEL_R.findIndex((r) => r >= dist)
-        if (j < 0) j = ANEL_R.length - 1
-        m.nasce = t0 + j * POSE
+        // inverso de raioAnel: em que momento o anel chega nessa distância
+        const v = clamp01((dist - 0.05) / 0.95)
+        const q = 1 - Math.cbrt(1 - v)
+        m.nasce = t0 + q * DUR_ANEL
       }
     }
 
     const gotas: Gota[] = []
     const mouse = { x: -9999, y: -9999 }
+
+    let haloPronto: Path2D | null = null
+    /** Tudo o que é tinta neste instante, num caminho só, para recortar. */
+    const caminhoTinta = (t: number) => {
+      const p = new Path2D()
+      let tem = false
+      const circulo = (x: number, y: number, r: number) => {
+        if (r <= 0.25) return
+        p.moveTo(x + r, y)
+        p.arc(x, y, r, 0, TAU)
+        tem = true
+      }
+
+      for (const m of manchas) {
+        const idade = t - m.nasce
+        if (idade < 0) continue
+        const cresce = idade >= 260 ? 1 : easeOutBack(idade / 260, 2.4)
+        const respira = 1 + Math.sin(t * 0.0012 + m.fase) * 0.06
+        circulo(m.u * W + m.ox, yLinha(m.u * W, false) + m.d + m.oy, m.r * cresce * respira)
+      }
+
+      // halo da plaquinha (depois de crescer ele não muda: vira um caminho pronto)
+      if (t >= T_PLACA()) {
+        const k = easeOutCubic(clamp01((t - T_PLACA()) / DUR_PLACA))
+        if (k >= 1) {
+          if (!haloPronto) {
+            haloPronto = new Path2D()
+            const c = placaCentro()
+            for (const d of halo) {
+              const x = c.x + d.x * cos - d.y * sin
+              const y = c.y + d.x * sin + d.y * cos
+              haloPronto.moveTo(x + d.r, y)
+              haloPronto.arc(x, y, d.r, 0, TAU)
+            }
+          }
+          p.addPath(haloPronto)
+          tem = true
+        } else {
+          const c = placaCentro()
+          for (const d of halo) circulo(c.x + d.x * cos - d.y * sin, c.y + d.x * sin + d.y * cos, d.r * k)
+        }
+      }
+
+      // gotas da linha
+      for (const g of gotas) circulo(g.x, g.y, g.r * Math.max(0.2, g.vida))
+
+      // anel de choque, com um rastro de retícula logo atrás
+      const dA = t - T_IMPACTO()
+      if (dA >= 0 && dA < DUR_ANEL) {
+        const q = dA / DUR_ANEL
+        const a = asteriscoPos()
+        const r = raioAnel(q) * diag
+        const e = Math.min(r, diag * 0.12 * (q < 0.05 ? 1 : 0.3 * (1 - q) + 0.03))
+        p.moveTo(a.x + r, a.y)
+        p.arc(a.x, a.y, r, 0, TAU)
+        if (r - e > 0) {
+          // volta ao contrário: vira furo
+          p.moveTo(a.x + r - e, a.y)
+          p.arc(a.x, a.y, r - e, 0, TAU, true)
+        }
+        tem = true
+        const passo = Math.max(5, PASSO * 1.4)
+        for (let j = 1; j <= 3; j++) {
+          const rr = r - e - j * passo * 1.2
+          if (rr <= 0) break
+          const n = Math.min(260, Math.floor((TAU * rr) / passo))
+          const pr = passo * 0.42 * (1 - j / 4)
+          for (let i = 0; i < n; i++) {
+            const ang = (i / n) * TAU + j * 0.3
+            circulo(a.x + Math.cos(ang) * rr, a.y + Math.sin(ang) * rr, pr)
+          }
+        }
+      }
+      return tem ? p : null
+    }
 
     // ===================== partículas =====================
     const poeira: Particula[] = []
@@ -647,9 +796,10 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       c.globalAlpha = alfa
       c.fillStyle = cor
       c.strokeStyle = cor
-      c.save()
-      c.translate(p.x, p.y)
-      c.rotate(p.ang)
+      // posição e giro numa matriz só, sem save/restore por partícula
+      const co = Math.cos(p.ang) * dpr
+      const si = Math.sin(p.ang) * dpr
+      c.setTransform(co, si, -si, co, p.x * dpr, p.y * dpr)
       switch (p.forma) {
         case 0:
           c.beginPath()
@@ -679,7 +829,6 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         default:
           // asterisco pequeno, eco do grande
           c.lineWidth = Math.max(1.1, s * 0.45)
-          c.lineCap = 'round'
           c.beginPath()
           for (let k = 0; k < 3; k++) {
             const a = (k * Math.PI) / 3
@@ -688,177 +837,114 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
           }
           c.stroke()
       }
-      c.restore()
     }
 
     const desenhaParticulas = (t: number) => {
+      ctx.lineCap = 'round'
       // a poeira aparece junto com a tinta, depois do impacto
-      const k = Math.max(0, Math.min(1, (t - T_IMPACTO()) / (8 * POSE)))
+      const k = clamp01((t - T_IMPACTO()) / 600)
       if (k > 0) for (const p of poeira) desenhaParticula(ctx, p, k * (0.65 + 0.35 * p.z))
       for (const f of faiscas) desenhaParticula(ctx, f, Math.min(1, f.vida * 1.6))
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.globalAlpha = 1
     }
 
     // ===================== pintura de um quadro =====================
-    const pintaMascara = (t: number, tp: number) => {
-      const c = mascCtx
-      c.setTransform(dpr, 0, 0, dpr, 0, 0)
-      c.globalCompositeOperation = 'source-over'
-      c.clearRect(0, 0, W, H)
-      c.fillStyle = '#000'
+    const tremidaRng = makeRng(300)
+    const fatias = Array.from({ length: 6 }, () => ({
+      pula: tremidaRng.next() < 0.3,
+      jit: tremidaRng.next(),
+      alt: tremidaRng.range(0.4, 1),
+      fase: tremidaRng.next() * TAU,
+    }))
 
-      // tinta
-      for (const m of manchas) {
-        if (t < m.nasce) continue
-        const idade = (t - m.nasce) / POSE
-        const cresce = idade < 1 ? 0.45 : idade < 2 ? 1.25 : 1
-        const respira = 1 + Math.sin(t * 0.0012 + m.fase) * 0.06
-        const x = m.u * W + m.ox
-        const y = yLinha(m.u * W, false) + m.d + m.oy
-        c.beginPath()
-        c.arc(x, y, m.r * cresce * respira, 0, Math.PI * 2)
-        c.fill()
-      }
-
-      // halo da plaquinha
-      const tPl = tp - T_PLACA()
-      if (tPl >= 0) {
-        const k = Math.min(1, (tPl / POSE + 1) / 4)
-        const p = placaCentro()
-        c.save()
-        c.translate(p.x, p.y)
-        c.rotate(ANG)
-        for (const d of halo) {
-          c.beginPath()
-          c.arc(d.x, d.y, d.r * k, 0, Math.PI * 2)
-          c.fill()
-        }
-        c.restore()
-      }
-
-      // gotas da linha
-      for (const g of gotas) {
-        c.beginPath()
-        c.arc(g.x, g.y, g.r * Math.max(0.2, g.vida), 0, Math.PI * 2)
-        c.fill()
-      }
-
-      // anel de choque
-      const kA = Math.floor((tp - T_IMPACTO()) / POSE)
-      if (kA >= 0 && kA < ANEL_R.length) {
-        const a = asteriscoPos()
-        const r = ANEL_R[kA] * diag
-        const e = Math.min(r, ANEL_E[kA] * diag * 0.12)
-        c.beginPath()
-        c.arc(a.x, a.y, r, 0, Math.PI * 2)
-        if (r - e > 0) c.arc(a.x, a.y, r - e, 0, Math.PI * 2, true)
-        c.fill('evenodd')
-        // rastro em retícula logo atrás do anel
-        const passo = Math.max(5, PASSO * 1.4)
-        for (let j = 1; j <= 3; j++) {
-          const rr = r - e - j * passo * 1.2
-          if (rr <= 0) break
-          const n = Math.floor((2 * Math.PI * rr) / passo)
-          const pr = passo * 0.42 * (1 - j / 4)
-          for (let i = 0; i < n; i++) {
-            const ang = (i / n) * Math.PI * 2 + j * 0.3
-            c.beginPath()
-            c.arc(a.x + Math.cos(ang) * rr, a.y + Math.sin(ang) * rr, pr, 0, Math.PI * 2)
-            c.fill()
-          }
-        }
-      }
-    }
-
-    const pinta = (t: number, poseTremida: number) => {
-      const tp = Math.floor(t / POSE) * POSE // poses seguram 2 quadros
-
-      desenhaBase(ctx, NORMAL, tp)
-      desenhaBase(invCtx, TINTA, tp)
-      pintaMascara(t, tp)
-
-      // a versão trocada só onde a máscara tem tinta
-      invCtx.setTransform(1, 0, 0, 1, 0, 0)
-      invCtx.globalCompositeOperation = 'destination-in'
-      invCtx.drawImage(masc, 0, 0)
-      invCtx.globalCompositeOperation = 'source-over'
-      ctx.setTransform(1, 0, 0, 1, 0, 0)
-      ctx.drawImage(inv, 0, 0)
+    const pinta = (t: number) => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.globalCompositeOperation = 'source-over'
+      ctx.globalAlpha = 1
+
+      // papel embaixo, roxo em cima, a letra de cada lado na sua cor
+      cobre(ctx, fundoCreme, PAPER)
+      ctx.save()
+      caminhoEscuro(ctx)
+      ctx.clip()
+      cobre(ctx, fundoRoxo, ROXO)
+      nome2(ctx, PAPER, t)
+      ctx.restore()
+      ctx.save()
+      caminhoClaro(ctx)
+      ctx.clip()
+      nome2(ctx, INK, t)
+      ctx.restore()
+
+      // tinta: vermelho com a letra creme, só dentro do recorte
+      const tinta = caminhoTinta(t)
+      if (tinta) {
+        ctx.save()
+        ctx.clip(tinta)
+        cobre(ctx, fundoVermelho, RED)
+        nome2(ctx, PAPER, t)
+        ctx.restore()
+      }
 
       // partículas por cima do nome e embaixo da plaquinha e do asterisco
       desenhaParticulas(t)
 
-      // plaquinha
-      const kP = Math.floor((tp - T_PLACA()) / POSE)
-      if (kP >= 0) desenhaPlaca(ctx, [1.4, 1.12, 0.96][kP] ?? 1)
+      // plaquinha: entra grande e assenta com um repique
+      if (t >= T_PLACA()) {
+        const q = clamp01((t - T_PLACA()) / DUR_PLACA)
+        desenhaPlaca(ctx, 1.45 - 0.45 * easeOutBack(q, 2))
+      }
 
-      // asterisco: cai grande e bate
-      const kS = Math.floor((tp - T_ASTER()) / POSE)
-      if (kS >= 0) desenhaAsterisco(ctx, [2.6, 1.6, 0.9][kS] ?? 1)
-
-      // tremida de registro: fatias do quadro deslocadas para os lados
-      if (poseTremida >= 0 && poseTremida < TREMIDA.length) {
-        const amp = TREMIDA[poseTremida] * Math.min(1.4, W / 1100)
-        mascCtx.setTransform(1, 0, 0, 1, 0, 0)
-        mascCtx.globalCompositeOperation = 'copy'
-        mascCtx.drawImage(canvas, 0, 0)
-        mascCtx.globalCompositeOperation = 'source-over'
-        ctx.setTransform(1, 0, 0, 1, 0, 0)
-        const fr = makeRng(300 + poseTremida)
-        const faixas = 6
-        const topoN = (CY - capa * SY * 0.9) * dpr
-        const altN = capa * SY * 1.8 * dpr
-        for (let f = 0; f < faixas; f++) {
-          if (fr.next() < 0.35) continue
-          const y0 = topoN + (altN * f) / faixas + fr.jitter(altN * 0.05)
-          const h0 = (altN / faixas) * fr.range(0.4, 1)
-          const dx = amp * dpr * (f % 2 ? 1 : -1) * fr.range(0.5, 1)
-          ctx.drawImage(masc, 0, y0, masc.width, h0, dx, y0, masc.width, h0)
+      // asterisco: cai grande girando, bate e balança
+      if (t >= T_ASTER()) {
+        const dI = t - T_IMPACTO()
+        if (dI < 0) {
+          const q = clamp01((t - T_ASTER()) / DUR_ASTER)
+          desenhaAsterisco(ctx, 2.6 - 1.6 * easeInCubic(q), (1 - q) * 0.7)
+        } else {
+          desenhaAsterisco(ctx, 1 + 0.2 * Math.exp(-dI / 110) * Math.cos(dI / 38), 0)
         }
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       }
 
-      // granulado
-      if (grao) {
-        ctx.save()
-        ctx.globalAlpha = 0.06
-        ctx.globalCompositeOperation = 'overlay'
-        ctx.fillStyle = grao
-        ctx.translate((Math.floor(t / QUADRO) * 37) % 128, (Math.floor(t / QUADRO) * 53) % 128)
-        ctx.fillRect(-128, -128, W + 256, H + 256)
-        ctx.restore()
+      // tremida de registro: fatias do quadro deslocadas, sumindo aos poucos
+      const dT = t - T_IMPACTO()
+      if (dT > 0 && dT < DUR_TREMIDA) {
+        const amp = 16 * Math.min(1.4, W / 1100) * Math.exp(-dT / 120)
+        if (amp > 0.6) {
+          copiaCtx.setTransform(1, 0, 0, 1, 0, 0)
+          copiaCtx.globalCompositeOperation = 'copy'
+          copiaCtx.drawImage(canvas, 0, 0)
+          copiaCtx.globalCompositeOperation = 'source-over'
+          ctx.setTransform(1, 0, 0, 1, 0, 0)
+          const topoN = (CY - capa * SY * 0.9) * dpr
+          const altN = capa * SY * 1.8 * dpr
+          fatias.forEach((f, i) => {
+            if (f.pula) return
+            const y0 = topoN + (altN * i) / fatias.length + (f.jit - 0.5) * altN * 0.1
+            const h0 = (altN / fatias.length) * f.alt
+            const dx = amp * dpr * Math.sin(dT / 26 + f.fase) * (i % 2 ? 1 : -1)
+            ctx.drawImage(copia, 0, y0, PW, h0, dx, y0, PW, h0)
+          })
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        }
       }
     }
 
-    // granulado: um ruído só, reaproveitado
-    const ruido = document.createElement('canvas')
-    ruido.width = ruido.height = 128
-    {
-      const rc = ruido.getContext('2d')!
-      const img = rc.createImageData(128, 128)
-      const nr = makeRng(5)
-      for (let i = 0; i < img.data.length; i += 4) {
-        const v = 90 + nr.next() * 165
-        img.data[i] = img.data[i + 1] = img.data[i + 2] = v
-        img.data[i + 3] = 255
-      }
-      rc.putImageData(img, 0, 0)
-    }
-    const grao = ctx.createPattern(ruido, 'repeat')
+    // ===================== simulação (escalada pelo tempo do quadro) =====================
+    const pousou: boolean[] = []
+    let impactou = false
+    const rngSim = makeRng(77)
 
-    // ===================== simulação de um quadro (24 fps) =====================
-    const passoSim = (t: number) => {
-      passoLinha()
+    const passoSim = (t: number, f: number) => {
+      passoLinha(f)
 
-      // tranco na linha quando cada letra pousa
+      // tranco na linha e poeira quando cada letra pousa
       glifos.forEach((g, i) => {
-        const k = poseLetra(i, t)
-        if (k === 4 && !pousou[i]) {
+        if (!pousou[i] && progLetra(i, t) >= 1) {
           pousou[i] = true
           const p = paraTela(g.x + g.w / 2, capa / 2)
           empurra(p.x / W, 4.5)
-          // poeira levantando do pé da letra
           estoura(p.x, p.y, isMobile ? 7 : 14, 4.5, 0.2)
         }
       })
@@ -866,15 +952,14 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       // impacto do asterisco
       if (!impactou && t >= T_IMPACTO()) {
         impactou = true
-        congela = POSE // hit-stop: o quadro do impacto segura uma pose
-        empurra(asteriscoPos().x / W, -16)
-        empurra(0.5, 7)
         const a = asteriscoPos()
+        empurra(a.x / W, -16)
+        empurra(0.5, 7)
         estoura(a.x, a.y, isMobile ? 70 : 150, 20, 0.34)
       }
 
       // gotas que saem da linha
-      if (t > T_IMPACTO() + 6 * POSE && rngSim.next() < 0.32) {
+      if (t > T_IMPACTO() + 500 && rngSim.next() < 0.32 * f) {
         const x = rngSim.range(0, W)
         const sobe = rngSim.next() < 0.5
         gotas.push({
@@ -887,9 +972,9 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       }
       for (let i = gotas.length - 1; i >= 0; i--) {
         const g = gotas[i]
-        g.y += g.vy
-        g.x += 0.6
-        g.vida -= 0.035
+        g.y += g.vy * f
+        g.x += 0.6 * f
+        g.vida -= 0.035 * f
         if (g.vida <= 0) gotas.splice(i, 1)
       }
 
@@ -897,18 +982,18 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
       const solta = t > T_IMPACTO()
       for (const p of poeira) {
         if (solta) {
-          p.x += p.vx
-          p.y += p.vy + Math.sin(t * 0.0021 + p.ang) * 0.3 * p.z
-          p.ang += p.va
+          p.x += p.vx * f
+          p.y += (p.vy + Math.sin(t * 0.0021 + p.ang) * 0.3 * p.z) * f
+          p.ang += p.va * f
         }
         const dx = p.x - mouse.x
         const dy = p.y - mouse.y
         const d2 = dx * dx + dy * dy
         if (d2 < 140 * 140 && d2 > 0.01) {
           const d = Math.sqrt(d2)
-          const f = ((140 - d) / 140) * 3.2
-          p.x += (dx / d) * f
-          p.y += (dy / d) * f
+          const fo = ((140 - d) / 140) * 3.2 * f
+          p.x += (dx / d) * fo
+          p.y += (dy / d) * fo
         }
         if (p.x > W + 12) {
           p.x = -12
@@ -918,21 +1003,23 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         else if (p.y > H + 12) p.y = -12
       }
       // faíscas: freiam, caem e somem
+      const freio = Math.pow(0.94, f)
       for (let i = faiscas.length - 1; i >= 0; i--) {
-        const f = faiscas[i]
-        f.vx *= 0.94
-        f.vy = f.vy * 0.94 + f.queda
-        f.x += f.vx
-        f.y += f.vy
-        f.ang += f.va
-        f.vida -= 0.028
-        if (f.vida <= 0) faiscas.splice(i, 1)
+        const s = faiscas[i]
+        s.vx *= freio
+        s.vy = s.vy * freio + s.queda * f
+        s.x += s.vx * f
+        s.y += s.vy * f
+        s.ang += s.va * f
+        s.vida -= 0.028 * f
+        if (s.vida <= 0) faiscas.splice(i, 1)
       }
 
       // a tinta anda para a direita e o mouse junta
+      const segue = 1 - Math.pow(0.88, f)
       for (const m of manchas) {
         if (!m.ancora && t > m.nasce) {
-          m.u += m.vx
+          m.u += m.vx * f
           if (m.u > 1.03) m.u -= 1.06
         }
         const x = m.u * W
@@ -940,23 +1027,16 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         const dx = mouse.x - x
         const dy = mouse.y - y
         const perto = dx * dx + dy * dy < 160 * 160
-        const alvoX = perto ? dx * 0.45 : 0
-        const alvoY = perto ? dy * 0.45 : 0
-        m.ox += (alvoX - m.ox) * 0.12
-        m.oy += (alvoY - m.oy) * 0.12
+        m.ox += ((perto ? dx * 0.45 : 0) - m.ox) * segue
+        m.oy += ((perto ? dy * 0.45 : 0) - m.oy) * segue
       }
     }
 
     // ===================== laço =====================
-    const pousou: boolean[] = []
-    let impactou = false
-    let congela = 0
     let relogio = 0
     let anterior = 0
-    let ultimoQuadro = -1
     let avisou = false
     let visivel = true
-    const rngSim = makeRng(77)
 
     const io = new IntersectionObserver(([e]) => {
       visivel = e.isIntersecting
@@ -971,21 +1051,12 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         return
       }
       if (!anterior) anterior = agora
-      const dt = Math.min(100, agora - anterior)
+      // teto de 50 ms: uma aba que travou não faz tudo pular de uma vez
+      const dt = Math.min(50, agora - anterior)
       anterior = agora
-
-      if (congela > 0) {
-        congela -= dt
-        return // hit-stop: nada anda, o quadro do impacto fica na tela
-      }
       relogio += dt
-      const q = Math.floor(relogio / QUADRO)
-      if (q === ultimoQuadro) return // 24 fps
-      ultimoQuadro = q
-
-      passoSim(relogio)
-      const poseTremida = Math.floor((relogio - T_IMPACTO()) / POSE) - 1
-      pinta(relogio, poseTremida)
+      passoSim(relogio, dt / PASSO_MS)
+      pinta(relogio)
 
       if (!avisou && relogio > T_FIM()) {
         avisou = true
@@ -1011,21 +1082,26 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
     }
 
     let cancelado = false
-    const comecar = () => {
-      if (cancelado) return
+    let comecou = false
+    const comecar = (creme: HTMLImageElement | null, roxa: HTMLImageElement | null, vermelha: HTMLImageElement | null) => {
+      if (cancelado || comecou) return
+      comecou = true
       medir()
+      medirSprites()
       atualizaLinha()
       medirPlaca()
       montaHalo()
       montaTinta()
       marcaNascimentos()
       montaPoeira()
+      preparaSprites()
+      montaCamadas(creme, roxa, vermelha)
 
       if (reduced) {
         // parado: só o quadro final, sem tremida
         const t = T_FIM() + 1000
         glifos.forEach((_, i) => (pousou[i] = true))
-        pinta(t, -1)
+        pinta(t)
         fimRef.current?.()
         return
       }
@@ -1037,23 +1113,38 @@ export function HeroCanvas({ nome, placa, width, height, isMobile, reduced, onEn
         glifos.forEach((_, i) => (pousou[i] = true))
         for (const m of manchas) m.nasce = 0
       }
+      pinta(relogio)
       window.addEventListener('pointermove', mover, { passive: true })
       window.addEventListener('pointerleave', sair)
       raf = requestAnimationFrame(quadro)
     }
 
-    Promise.all([
+    // As fontes são obrigatórias (o nome é medido com elas). As texturas não:
+    // se demorarem mais que 450 ms, a abertura começa com as cores lisas e as
+    // texturas entram quando chegarem.
+    const texturas = Promise.all([
       carregaImagem(TEXTURAS.creme),
       carregaImagem(TEXTURAS.roxa),
       carregaImagem(TEXTURAS.vermelha),
+    ])
+    const fontes = Promise.all([
       document.fonts?.load?.(`400 100px Anton`),
       document.fonts?.load?.(`400 40px "Permanent Marker"`),
-    ]).then(([creme, roxa, vermelha]) => {
-      const tRed = textura(vermelha, RED)
-      NORMAL = { ...NORMAL, fundo: textura(creme, PAPER), topo: textura(roxa, ROXO) }
-      TINTA = { ...TINTA, fundo: tRed, topo: tRed }
-      comecar()
-    }, comecar)
+    ]).catch(() => null)
+    const limite = new Promise<null>((ok) => window.setTimeout(() => ok(null), 450))
+    fontes.then(() => Promise.race([texturas, limite])).then((imgs) => {
+      if (imgs) comecar(...imgs)
+      else {
+        comecar(null, null, null)
+        texturas.then(([creme, roxa, vermelha]) => {
+          if (cancelado) return
+          fundoCreme = camadaTextura(creme, PAPER)
+          fundoRoxo = camadaTextura(roxa, ROXO)
+          fundoVermelho = camadaTextura(vermelha, RED)
+          if (reduced) pinta(T_FIM() + 1000)
+        })
+      }
+    })
 
     return () => {
       rodando = false

@@ -43,6 +43,17 @@ export const en: Content = {
       missi: "that's Missi. she rejects PRs.",
       mike: 'Mike approves everything',
     },
+    faixa: [
+      'FULL-STACK DEV',
+      'LANDING PAGES',
+      'ONLINE STORES',
+      'SYSTEMS',
+      'N8N AUTOMATION',
+      'AI AGENTS',
+      'LINUX · DOCKER · INTUNE',
+      'WESTERN PARANÁ, BRAZIL',
+    ],
+    carimbos: { desde: 'SINCE 14', edicoes: '06 ISSUES', aoVivo: 'LIVE' },
   },
 
   issues: {

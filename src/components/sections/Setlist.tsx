@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Doodle, NetworkCable, StickerImg, Tape, TornPaper } from '@/components/collage'
+import { Doodle, NetworkCable, Stamp, StickerImg, Tape, TornPaper } from '@/components/collage'
 import type { Content } from '@/content'
 
 export function Setlist({ t }: { t: Content }) {
@@ -19,6 +19,17 @@ export function Setlist({ t }: { t: Content }) {
       <span data-fx="pop" className="absolute left-[6%] top-16 z-[4]">
         <span className="fx-spin-slow block">
           <Doodle kind="star" seed="setlist-star" size={60} color="#E8432E" />
+        </span>
+      </span>
+
+      <span data-fx-speed="-0.3" className="absolute bottom-[5%] left-[2%] hidden zine:block">
+        <span className="fx-float-2 block">
+          <Doodle kind="swirl" seed="setlist-swirl" size={80} color="#A68BE6" />
+        </span>
+      </span>
+      <span data-fx-speed="0.35" className="absolute right-[12%] top-[10%] hidden zine:block">
+        <span className="fx-float block">
+          <Doodle kind="crown" seed="setlist-crown" size={56} color="#E8432E" />
         </span>
       </span>
 
@@ -83,6 +94,11 @@ export function Setlist({ t }: { t: Content }) {
           >
             {t.setlist.nota}
           </p>
+          <span data-fx="pop" className="absolute right-[4%] top-[22%] z-[5] zine:top-[16%]">
+            <Stamp tone="red" shape="round" seed="setlist-aovivo" className="bg-paper text-[12px]">
+              {t.quem.carimbos.aoVivo}
+            </Stamp>
+          </span>
           <div data-fx="drop" className="absolute right-0 bottom-0 h-[150px] w-[170px] rounded border-[6px] border-[#2a2a2a] bg-[#1d1d1d] shadow-zine zine:h-[230px] zine:w-[260px]">
             <div className="absolute inset-x-3 top-3 flex gap-2" aria-hidden="true">
               {[0, 1, 2].map((i) => <i key={i} className="size-3 rounded-full bg-paper" />)}

@@ -314,3 +314,19 @@ html {
     rotate: 6deg;
   }
 }
+
+/* Fitas de texto correndo (components/sections/Faixas). */
+@media (prefers-reduced-motion: no-preference) {
+  .fx-marquee {
+    animation: fx-marquee 38s linear infinite;
+  }
+  .fx-marquee-rev {
+    animation-duration: 30s;
+    animation-direction: reverse;
+  }
+}
+@keyframes fx-marquee {
+  to {
+    translate: -50% 0;
+  }
+}

@@ -3,6 +3,7 @@ import { ScrollToTop } from '@/components/ScrollToTop'
 import { RecordTransition } from '@/components/RecordTransition'
 import { EasterEggs } from '@/components/EasterEggs'
 import { Fx } from '@/components/Fx'
+import { Progresso } from '@/components/Progresso'
 import LadoA from '@/pages/LadoA'
 import LadoB from '@/pages/LadoB'
 import ProjectPage from '@/pages/ProjectPage'
@@ -23,6 +24,7 @@ export default function App() {
       <RecordTransition />
       <EasterEggs />
       <Fx />
+      <Progresso />
       <Routes>
         {/* PT */}
         <Route path="/" element={<LadoA />} />

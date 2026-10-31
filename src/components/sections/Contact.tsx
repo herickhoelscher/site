@@ -16,6 +16,19 @@ export function Contact({ t }: { t: Content }) {
           <Doodle kind="star" seed="contact-star" size={64} color="#E8432E" />
         </span>
       </span>
+      <span data-fx-speed="-0.3" className="absolute bottom-[10%] left-[5%] hidden zine:block">
+        <span className="fx-float-2 block">
+          <Doodle kind="swirl" seed="contact-swirl" size={86} color="#765BA7" />
+        </span>
+      </span>
+      <span data-fx-speed="0.3" aria-hidden="true" className="pointer-events-none absolute bottom-[4%] right-[12%] block h-40 w-56 opacity-70">
+        <Splat seed="contact-splat-roxo" color="#A68BE6" className="h-full w-full" />
+      </span>
+      <span aria-hidden="true" className="absolute left-[16%] top-[64%] z-[6] hidden rotate-[-18deg] zine:block">
+        <span className="fx-float block">
+          <Doodle kind="arrow" seed="contact-arrow" size={80} color="#E8432E" />
+        </span>
+      </span>
       <span data-fx="pop" className="absolute right-[30%] top-12 hidden zine:block">
         <span className="fx-float-2 block">
           <Doodle kind="crown" seed="contact-crown" size={58} color="#765BA7" />
