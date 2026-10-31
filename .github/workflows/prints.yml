@@ -17,16 +17,14 @@ jobs:
           npm i playwright@1.49.1 > garimpo/npm.log 2>&1
           npx playwright install --with-deps chromium >> garimpo/npm.log 2>&1
           tail -5 garimpo/npm.log
-      - name: Garimpo 2
+      - name: Videos (Mixkit Free License)
         run: |
-          rm -rf garimpo/pins garimpo/videos
-          node garimpo3.cjs > garimpo/log3.txt 2>&1 || true
-          curl -sSL -A 'Mozilla/5.0' https://open.spotify.com/embed/playlist/75846hymUhaSBfAmvwGdp3 | grep -o '<script id="__NEXT_DATA__"[^>]*>.*</script>' | sed 's/<[^>]*script[^>]*>//g' > garimpo/herickfy.json || true
-          for id in dhihVoP_6gw CMxAmnyYDLE DEgG-SfV_ko d1EnW4kn1kg 25XGPHY1TMM; do
-            o=$(curl -sS "https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=$id&format=json" | head -c 400)
-            mx=$(curl -s -o /dev/null -w "%{http_code}" "https://i.ytimg.com/vi/$id/maxresdefault.jpg")
-            echo "$id max=$mx $o" >> garimpo/oembed2.txt
+          rm -rf garimpo/videos; mkdir -p garimpo/videos
+          for u in 99864/1717182517/99864 99868/1717182750/99868 99872/1717184136/99872; do
+            id=${u##*/}
+            curl -sSfL -o garimpo/videos/$id.mp4 "https://assets.mixkit.co/active_storage/video_items/$u-video-720.mp4" || echo "falhou $id" >> garimpo/log4.txt
           done
+          ls -la garimpo/videos >> garimpo/log4.txt
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
