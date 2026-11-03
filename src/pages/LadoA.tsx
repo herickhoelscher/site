@@ -1,16 +1,16 @@
 import { Helmet } from 'react-helmet-async'
 import { useContent } from '@/content'
 import { Hero } from '@/components/sections/Hero'
-import { About } from '@/components/sections/About'
+import { Servicos } from '@/components/sections/Servicos'
+import { Processo } from '@/components/sections/Processo'
 import { IssuesWall } from '@/components/sections/IssuesWall'
-import { Setlist } from '@/components/sections/Setlist'
 import { FlipRecord } from '@/components/sections/FlipRecord'
 import { Contact } from '@/components/sections/Contact'
 import { Footer } from '@/components/sections/Footer'
 
 const SITE = 'https://herickhoelscher.dev'
 
-/** Lado A, o lado profissional. A ordem é a da especificação § 0. */
+/** Lado A, o lado de quem quer contratar: o que eu faço, o que já fiz, como funciona e contato. */
 export default function LadoA() {
   const { t, prefix } = useContent()
   const canonical = `${SITE}${prefix || '/'}`
@@ -35,9 +35,9 @@ export default function LadoA() {
       </Helmet>
 
       <Hero t={t} />
-      <About t={t} />
+      <Servicos t={t} />
       <IssuesWall t={t} prefix={prefix} />
-      <Setlist t={t} />
+      <Processo t={t} />
       <FlipRecord t={t} prefix={prefix} />
       <Contact t={t} />
       <Footer t={t} />

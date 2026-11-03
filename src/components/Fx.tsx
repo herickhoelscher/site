@@ -21,6 +21,7 @@ gsap.registerPlugin(ScrollTrigger)
  *   stagger   os filhos entram em cascata; o tipo vem de data-fx-child
  *   letters   as letras de um RansomTitle caem uma a uma, fora de ordem
  *   data-fx-speed="0.2"  parallax preso à rolagem
+ *   data-fx-x="0.3"      parallax de lado, preso à rolagem
  *
  * O que entra na tela junto entra em cascata (ScrollTrigger.batch). Cada
  * animação toca uma vez e depois devolve o elemento ao CSS (clearProps), para
@@ -147,6 +148,20 @@ export function Fx() {
               scrub: true,
             },
           })
+        }
+
+        // parallax de lado: palavras gigantes que correm com a rolagem
+        for (const el of gsap.utils.toArray<HTMLElement>('[data-fx-x]')) {
+          const v = Number(el.dataset.fxX) || 0.2
+          gsap.fromTo(
+            el,
+            { xPercent: (-v * 100) / 2 },
+            {
+              xPercent: (v * 100) / 2,
+              ease: 'none',
+              scrollTrigger: { trigger: el.closest('section') ?? el, start: 'top bottom', end: 'bottom top', scrub: true },
+            },
+          )
         }
 
         ScrollTrigger.refresh()

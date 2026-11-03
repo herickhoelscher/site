@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Doodle, NetworkCable, Stamp, StickerImg, Tape, TornPaper } from '@/components/collage'
+import { Doodle, Stamp, StickerImg, Tape, TornPaper } from '@/components/collage'
 import type { Content, Issue } from '@/content'
 import { LangToggle } from '@/components/LangToggle'
 import { Fita } from './Faixas'
@@ -12,11 +12,6 @@ export function ProjectHeader({ issue, t, prefix }: Props) {
   return (
     <>
       <header className="tex-preta relative overflow-hidden text-paper">
-        <NetworkCable
-          path=".9,.12;.96,.4;.985,.75;.92,1.02"
-          pathMobile=".95,.2;.99,.6;.95,1.02"
-          scrub={false}
-        />
         <nav className="relative z-[3] mx-auto flex max-w-[1360px] items-center justify-between gap-4 px-6 py-6 zine:px-10">
           <Link
             to={`${prefix}/`}

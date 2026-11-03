@@ -1,6 +1,5 @@
-import { Doodle, NetworkCable, RansomTitle, Splat, Stamp, Tape, TornPaper } from '@/components/collage'
+import { Doodle, RansomTitle, Splat, Stamp, Tape, TornPaper } from '@/components/collage'
 import type { Content } from '@/content'
-import { Faixas } from './Faixas'
 
 const chipPositions = [
   'left-[1%] top-[3%]',
@@ -21,9 +20,7 @@ const chipColors = [
 
 export function About({ t }: { t: Content }) {
   return (
-    <section id="quem" className="tex-vermelha relative overflow-hidden px-6 pb-24 zine:px-10 zine:pb-32">
-      {/* fitas cruzadas logo abaixo do hero */}
-      <Faixas a={t.quem.faixa} b={t.quem.stack} className="-mx-6 mb-10 zine:-mx-10 zine:mb-14" />
+    <section id="quem" className="tex-vermelha relative overflow-hidden px-6 py-20 zine:px-10 zine:py-28">
       {/* respingo preto atrás do retrato, andando devagar com a rolagem */}
       <span data-fx-speed="0.25" aria-hidden="true" className="pointer-events-none absolute left-[3%] top-[34%] block h-64 w-80 opacity-70">
         <Splat seed="about-splat-ink" color="#141414" className="h-full w-full" />
@@ -33,10 +30,6 @@ export function About({ t }: { t: Content }) {
           <Doodle kind="swirl" seed="about-swirl" size={84} color="#141414" />
         </span>
       </span>
-      <NetworkCable
-        path=".9,-.02;.95,.22;.975,.52;.94,.82;.9,1.02"
-        pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
-      />
       <span data-fx="pop" className="absolute bottom-[5%] right-[6%]">
         <span className="fx-float-2 block">
           <Doodle kind="crown" seed="about-crown" size={62} color="#141414" />

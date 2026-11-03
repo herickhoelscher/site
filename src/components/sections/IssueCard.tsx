@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { StickerImg, Tape } from '@/components/collage'
+import { StickerImg } from '@/components/collage'
 import type { Content, Issue } from '@/content'
 import { BrowserShot } from './BrowserShot'
 
@@ -47,8 +47,6 @@ export function IssueCard({ issue, t, prefix, featured = false }: Props) {
         style={{ backgroundColor: acento.cor }}
       />
 
-      <Tape seed={`tape-${issue.slug}`} at="top" width={86} height={18} />
-
       <div className="relative flex h-full min-w-0 flex-col border-2 border-ink bg-paper p-4 text-ink transition-transform duration-150 group-hover:-translate-x-[2px] group-hover:-translate-y-[2px] zine:p-5">
         {/* topo: número, carimbo preenchido e a linha técnica */}
         <header className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
@@ -95,14 +93,15 @@ export function IssueCard({ issue, t, prefix, featured = false }: Props) {
               rel="noreferrer"
               tabIndex={-1}
               aria-hidden="true"
-              className="mb-4 block transition-transform duration-300 group-hover:scale-[1.03] group-hover:-rotate-1"
+              className="mb-4 block transition-transform duration-300 group-hover:scale-[1.02]"
             >
               <BrowserShot
                 src={issue.foto}
                 alt={`${t.projeto.print}: ${issue.titulo}`}
                 url={fora}
                 seed={`capa-${issue.slug}`}
-                height={featured ? 215 : 150}
+                height={featured ? 215 : 160}
+                tilt={0}
               />
             </a>
           ) : (

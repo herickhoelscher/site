@@ -4,7 +4,7 @@ import type { Content } from '@/content'
 
 export function Footer({ t }: { t: Content }) {
   const prefix = t.lang === 'en' ? '/en' : ''
-  const targets = ['#quem', '#issues', '#setlist', '#contato', `${prefix}/lado-b`]
+  const targets = ['#servicos', '#issues', '#processo', '#contato', `${prefix}/lado-b`]
 
   return (
     <footer className="bg-ink px-6 py-7 text-paper zine:px-10">

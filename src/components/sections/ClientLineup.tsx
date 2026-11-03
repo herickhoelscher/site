@@ -1,4 +1,3 @@
-import { Tape } from '@/components/collage'
 import type { Content, Issue } from '@/content'
 import { BrowserShot } from './BrowserShot'
 
@@ -10,7 +9,6 @@ import { BrowserShot } from './BrowserShot'
 export function ClientLineup({ issue, t }: { issue: Issue; t: Content }) {
   return (
     <article className="tex-vermelha relative min-w-0 border-2 border-ink p-4 text-paper shadow-zine zine:p-5">
-      <Tape seed={`lineup-${issue.slug}`} at="top" width={100} height={20} />
       <span
         className="inline-block bg-ink px-2 py-1 text-[10px] font-bold tracking-wide text-paper"
         style={{ fontFamily: 'var(--font-mono)' }}
@@ -51,7 +49,7 @@ export function ClientLineup({ issue, t }: { issue: Issue; t: Content }) {
                   alt={`${t.projeto.print}: ${cliente.nome}`}
                   url={href}
                   seed={`cliente-${cliente.nome}`}
-                  tilt={0.8}
+                  tilt={0}
                 />
                 <span
                   className="mt-2.5 text-[14px] leading-tight"

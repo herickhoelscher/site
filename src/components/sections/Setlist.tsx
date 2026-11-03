@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Doodle, NetworkCable, Stamp, StickerImg, Tape, TornPaper } from '@/components/collage'
+import { Doodle, Stamp, StickerImg, Tape, TornPaper } from '@/components/collage'
 import type { Content } from '@/content'
 
 export function Setlist({ t }: { t: Content }) {
@@ -7,10 +7,6 @@ export function Setlist({ t }: { t: Content }) {
 
   return (
     <section id="setlist" className="tex-preta relative overflow-hidden px-5 py-24 zine:px-10 zine:py-32">
-      <NetworkCable
-        path=".9,-.02;.95,.22;.975,.52;.94,.82;.9,1.02"
-        pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
-      />
       <div
         className="fx-flicker pointer-events-none absolute inset-y-0 left-[18%] w-[52%]"
         style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 0%, rgba(255,236,190,.20), rgba(255,236,190,.06) 55%, transparent 75%)', clipPath: 'polygon(38% 0,62% 0,100% 100%,0 100%)' }}

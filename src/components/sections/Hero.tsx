@@ -7,6 +7,7 @@ import { useContent } from '@/content'
 import type { Content } from '@/content'
 import { HeroCanvas } from './HeroCanvas'
 import { LangToggle } from '@/components/LangToggle'
+import { linkOrcamento } from '@/lib/orcamento'
 
 type Props = { t: Content }
 
@@ -55,7 +56,21 @@ export function Hero({ t }: Props) {
       <div
         className={`absolute inset-x-0 bottom-0 z-10 flex flex-col gap-4 px-5 pb-6 zine:flex-row zine:items-end zine:justify-between zine:px-10 zine:pb-8 ${aparece}`}
       >
-        <div className="flex items-center gap-5 zine:ml-auto">
+        <div className="flex max-w-[34rem] flex-col items-start gap-3">
+          <p className="text-[clamp(1.1rem,1.7vw,1.6rem)] leading-[1.15] text-ink" style={{ fontFamily: 'var(--font-body)' }}>
+            {t.hero.pitch}
+          </p>
+          <a
+            href={linkOrcamento(t)}
+            target="_blank"
+            rel="noreferrer"
+            className="border-2 border-ink bg-red px-5 py-2.5 text-[13px] font-bold tracking-[0.08em] text-paper uppercase shadow-[4px_4px_0_#141414] transition-transform hover:translate-x-[2px] hover:translate-y-[2px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            {t.orcamento.botao} ↗
+          </a>
+        </div>
+        <div className="flex items-center gap-5">
           {t.hero.links.map((l) => (
             <a
               key={l.label}

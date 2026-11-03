@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Doodle, NetworkCable } from '@/components/collage'
+import { Doodle } from '@/components/collage'
 import { usePrefersReducedMotion } from '@/lib/usePrefersReducedMotion'
 import type { Content } from '@/content'
 
@@ -18,10 +18,6 @@ export function FlipRecord({ t, prefix }: Props) {
 
   return (
     <section className="tex-roxa relative overflow-hidden py-16 zine:py-24">
-      <NetworkCable
-        path=".9,-.02;.955,.3;.985,.62;.955,.88;.9,1.02"
-        pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
-      />
 
       <span data-fx-speed="0.4" className="absolute left-[4%] top-[12%]">
         <span className="fx-spin-slow block">

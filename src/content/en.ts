@@ -18,6 +18,7 @@ export const en: Content = {
     name: 'HERICK',
     sticker: '*HERICK HOELSCHER',
     descricao: "Herick Hoelscher's portfolio: IT, websites, systems and automation.",
+    pitch: "Custom websites, online stores, systems and automation for your business.",
     scroll: 'SCROLL ↓',
     links: [
       { label: 'Email', href: 'mailto:herickneumann4@gmail.com' },
@@ -27,6 +28,65 @@ export const en: Content = {
         href: 'https://www.linkedin.com/in/herick-henrick-neumann-hoelscher-822906318',
       },
     ],
+  },
+
+  orcamento: {
+    botao: 'GET A QUOTE',
+    mensagem: "Hi Herick! I saw your website and I'd like a quote",
+    assunto: 'Quote request from your website',
+  },
+
+  servicos: {
+    kicker: 'SERVICES // MADE TO MEASURE',
+    titulo: 'WHAT I DO FOR YOUR BUSINESS',
+    sub: 'From sketch to launch: I design, build and publish it. And you talk directly to the person doing the work.',
+    faixa: ['WEBSITES', 'LANDING PAGES', 'ONLINE STORES', 'SYSTEMS', 'DASHBOARDS', 'N8N AUTOMATION', 'AI AGENTS', 'WEST PARANÁ, BRAZIL'],
+    fundo: ['WEBSITES', 'STORES', 'SYSTEMS', 'AUTOMATION'],
+    exemplos: 'done for',
+    lista: [
+      {
+        titulo: 'Websites & landing pages',
+        texto: 'A fast page that looks like your brand, to present your business or bring in clients.',
+        itens: ['Original design, no ready-made template', 'Fast on mobile and ready for Google', 'WhatsApp, forms, Pixel and Analytics wired in'],
+        exemplos: ['ALPE Consultoria', 'Boss Finance', 'Dr. Adriano Tagarra'],
+        icone: 'site',
+      },
+      {
+        titulo: 'Online stores',
+        texto: 'Your own store, with payments and shipping, without depending on a marketplace.',
+        itens: ['Catalog, cart and checkout', 'Pix, card and boleto', 'Dashboard for orders and stock'],
+        exemplos: ['Begônia Ateliê', 'MaqCenter'],
+        icone: 'loja',
+      },
+      {
+        titulo: 'Systems & dashboards',
+        texto: 'A web system built around how your process works: records, dashboards and reports.',
+        itens: ['Admin panel with login', 'Reports and dashboards', 'Spreadsheet and API integrations'],
+        exemplos: ['Portal QTAL', 'RCO Reader'],
+        icone: 'sistema',
+      },
+      {
+        titulo: 'Automation & AI',
+        texto: 'Take repetitive work off your hands: automated workflows and AI agents.',
+        itens: ['n8n workflows connecting your tools', 'AI agents with Claude or local models', 'PDFs and spreadsheets processed on their own'],
+        exemplos: ['AgroVision AI', 'RCO Reader'],
+        icone: 'automacao',
+      },
+    ],
+  },
+
+  processo: {
+    kicker: 'HOW IT WORKS // 4 STEPS',
+    titulo: 'FROM THE FIRST HELLO TO LAUNCH',
+    sub: 'No runaround and no surprises along the way.',
+    passos: [
+      { titulo: 'Talk', texto: 'You reach out and tell me what you need. I ask what matters for your business.' },
+      { titulo: 'Proposal', texto: 'You get the scope, timeline and price in writing before anything starts.' },
+      { titulo: 'Build', texto: 'You follow a live preview and ask for changes along the way, not just at the end.' },
+      { titulo: 'Launch', texto: 'I publish it on your domain and show you how to take care of what is yours.' },
+    ],
+    ctaWhats: 'MESSAGE ME ON WHATSAPP',
+    nota: 'quotes are free, no strings attached',
   },
 
   quem: {
@@ -43,23 +103,13 @@ export const en: Content = {
       missi: "that's Missi. she rejects PRs.",
       mike: 'Mike approves everything',
     },
-    faixa: [
-      'FULL-STACK DEV',
-      'LANDING PAGES',
-      'ONLINE STORES',
-      'SYSTEMS',
-      'N8N AUTOMATION',
-      'AI AGENTS',
-      'LINUX · DOCKER · INTUNE',
-      'WESTERN PARANÁ, BRAZIL',
-    ],
     carimbos: { desde: 'SINCE 14', edicoes: '06 ISSUES', aoVivo: 'LIVE' },
   },
 
   issues: {
     tag: 'ZINE CATALOG // DISPATCHED WORKS',
     titulo: 'ISSUES',
-    sub: '6 issues with real projects. Open source on GitHub, in production and in the lab.',
+    sub: 'Real projects, live and in use. Click and see them working.',
     verMais: 'READ THE ISSUE →',
     verSite: 'VISIT THE SITE ↗',
     verCodigo: 'SEE THE CODE ↗',
@@ -75,6 +125,13 @@ export const en: Content = {
         { nome: 'Mais Mídias', href: 'https://www.agenciamaismidias.com.br/' },
       ],
     },
+    proxima: {
+      tag: 'ISSUE #007',
+      selo: 'OPEN SLOT',
+      titulo: 'The next issue could be your project',
+      sub: 'website, store, system or automation',
+    },
+    arraste: 'swipe →',
     lista: [
       {
         slug: 'leitor-rco',
@@ -397,7 +454,7 @@ export const en: Content = {
     tag: 'TRACK TRANSITION',
     titulo: 'THAT WAS SIDE A.',
     texto:
-      'Want to meet Herick after hours? Music, anime, games and the real managers of the house.',
+      'Want to know who is behind it? My story, music, anime, games and the real managers of the house.',
     botao: 'FLIP THE RECORD → SIDE B',
     capa: {
       lados: 'SIDE A / SIDE B',
@@ -606,10 +663,10 @@ export const en: Content = {
   },
 
   contato: {
+    whatsapp: '',
     titulo: "LET'S TALK",
-    sub: 'freelance, a job, or just to talk about Frieren',
+    sub: 'tell me what you need, quotes are free',
     email: 'SEND AN EMAIL',
-    cv: 'DOWNLOAD CV',
     ticket: 'ADMIT ONE · FREE ENTRY',
     emailAddr: 'herickneumann4@gmail.com',
     github: 'https://github.com/herickhoelscher',
@@ -620,7 +677,7 @@ export const en: Content = {
   footer: {
     left: 'made with code, coffee and Pink Floyd at full volume',
     right: '© 2026 Herick Hoelscher',
-    links: ['01 WHO', '02 ISSUES', '03 SETLIST', '04 CONTACT', 'SIDE B ↻'],
+    links: ['01 SERVICES', '02 ISSUES', '03 HOW IT WORKS', '04 CONTACT', 'SIDE B ↻'],
   },
 
   erro404: {

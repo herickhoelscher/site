@@ -1,5 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import { Faixas } from '@/components/sections/Faixas'
+import { About } from '@/components/sections/About'
+import { Setlist } from '@/components/sections/Setlist'
 import { Link } from 'react-router-dom'
 import { useContent } from '@/content'
 import { LangToggle } from '@/components/LangToggle'
@@ -68,6 +70,12 @@ export default function LadoB() {
               </div>
             </div>
           </section>
+
+          {/* quem sou eu e a trajetória: saíram do Lado A e moram aqui */}
+          <div className="-mx-4 mb-16 zine:-mx-6">
+            <About t={t} />
+            <Setlist t={t} />
+          </div>
 
           <div className="-mx-4 mb-14 zine:-mx-6">
             <Faixas

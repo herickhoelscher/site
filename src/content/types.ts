@@ -137,6 +137,16 @@ export type Poster = {
 /** Uma foto livre do bloco do Edgerunners: onde foi tirada e de quem é. */
 export type FotoLugar = { src: string; lugar: string; autor: string }
 
+/** Um serviço vendido no Lado A. */
+export type Servico = {
+  titulo: string
+  texto: string
+  itens: string[]
+  /** Clientes e projetos onde ele já fez isso. */
+  exemplos: string[]
+  icone: 'site' | 'loja' | 'sistema' | 'automacao'
+}
+
 export type Content = {
   lang: 'pt' | 'en'
   htmlLang: string
@@ -153,8 +163,31 @@ export type Content = {
     sticker: string
     /** Descrição do site: só para buscadores e leitores de tela, não aparece na página. */
     descricao: string
+    /** Frase de venda no rodapé da primeira tela. */
+    pitch: string
     scroll: string
     links: { label: string; href: string }[]
+  }
+  /** Botão de orçamento e a mensagem que já vai escrita. */
+  orcamento: { botao: string; mensagem: string; assunto: string }
+  servicos: {
+    kicker: string
+    titulo: string
+    sub: string
+    /** Fita preta logo abaixo do hero. */
+    faixa: string[]
+    /** Palavras gigantes do fundo, em parallax. */
+    fundo: string[]
+    exemplos: string
+    lista: Servico[]
+  }
+  processo: {
+    kicker: string
+    titulo: string
+    sub: string
+    passos: { titulo: string; texto: string }[]
+    ctaWhats: string
+    nota: string
   }
   quem: {
     titulo: string
@@ -162,8 +195,6 @@ export type Content = {
     stack: string[]
     infra: string
     notas: { comecei: string; missi: string; mike: string }
-    /** Fita preta que corre embaixo do hero: o que o Herick faz. */
-    faixa: string[]
     /** Carimbos espalhados pelo Lado A. */
     carimbos: { desde: string; edicoes: string; aoVivo: string }
   }
@@ -180,6 +211,9 @@ export type Content = {
     /** A faixa vermelha do 006. */
     lineup: { tag: string; titulo: string; frase: string }
     parceiros: { titulo: string; lista: Partner[] }
+    /** O sexto lugar da grade: pedido de orçamento. */
+    proxima: { tag: string; selo: string; titulo: string; sub: string }
+    arraste: string
     lista: Issue[]
   }
   projeto: {
@@ -300,10 +334,11 @@ export type Content = {
     rodape: { marca: string; sub: string; texto: string }
   }
   contato: {
+    /** WhatsApp só com dígitos, com DDI e DDD (ex.: 5545999999999). Vazio: o botão usa o e-mail. */
+    whatsapp: string
     titulo: string
     sub: string
     email: string
-    cv: string
     ticket: string
     emailAddr: string
     github: string

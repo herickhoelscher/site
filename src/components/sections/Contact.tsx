@@ -1,13 +1,10 @@
-import { Barcode, Doodle, NetworkCable, Splat, StickerImg } from '@/components/collage'
+import { Barcode, Doodle, Splat, StickerImg } from '@/components/collage'
 import type { Content } from '@/content'
+import { linkOrcamento, temWhatsapp } from '@/lib/orcamento'
 
 export function Contact({ t }: { t: Content }) {
   return (
     <section id="contato" className="tex-creme relative overflow-hidden px-5 pb-24 pt-32 zine:px-10 zine:pb-36 zine:pt-40">
-      <NetworkCable
-        path=".9,-.02;.95,.22;.975,.52;.94,.82;.9,1.02"
-        pathMobile=".9,-.02;.985,.25;.985,.7;.92,1.02"
-      />
       <span data-fx="pop" className="absolute left-[30%] top-6 block h-40 w-60">
         <Splat seed="contact-splat" className="h-full w-full opacity-85" />
       </span>
@@ -88,18 +85,20 @@ export function Contact({ t }: { t: Content }) {
 
       <div data-fx="stagger" data-fx-child="pop" className="relative z-[6] mx-auto mt-14 flex max-w-[760px] flex-col justify-center gap-4 zine:flex-row zine:gap-6">
         <a
+          href={linkOrcamento(t)}
+          target="_blank"
+          rel="noreferrer"
+          className="fx-jelly bg-red px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-paper shadow-[6px_7px_0_#141414] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
+          style={{ fontFamily: 'var(--font-display)' }}
+        >
+          {temWhatsapp(t) ? t.processo.ctaWhats : t.orcamento.botao} ↗
+        </a>
+        <a
           href={`mailto:${t.contato.emailAddr}`}
-          className="fx-jelly -rotate-2 bg-ink px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-paper shadow-[6px_7px_0_#E8432E] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
+          className="fx-jelly bg-ink px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-paper shadow-[6px_7px_0_#E8432E] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
           style={{ fontFamily: 'var(--font-display)' }}
         >
           {t.contato.email}
-        </a>
-        <a
-          href="/cv-herick-pt.pdf"
-          className="fx-jelly rotate-1 bg-red px-6 py-4 text-center text-[clamp(1.35rem,2.5vw,1.8rem)] text-ink shadow-[6px_7px_0_#141414] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
-          {t.contato.cv}
         </a>
       </div>
       <div className="relative z-[6] mt-8 flex justify-center gap-7 text-sm" style={{ fontFamily: 'var(--font-mono)' }}>
