@@ -14,6 +14,7 @@ import { FotoCard } from '@/components/sections/FotoCard'
 import { TeamBadges } from '@/components/sections/TeamBadges'
 import { Adesivo } from '@/components/sections/Adesivo'
 import { VideoFundo } from '@/components/sections/VideoFundo'
+import { MascotePerto } from '@/components/mascote/MascotePerto'
 
 export default function LadoB() {
   const { t, prefix } = useContent()
@@ -131,6 +132,12 @@ export default function LadoB() {
             </div>
           </section>
 
+          <div className="relative mx-auto max-w-3xl">
+          {/* mascote do lado do cartão final, fora dele porque o cartão corta o que vaza */}
+          <MascotePerto
+            giro={-0.5}
+            className="pointer-events-none absolute right-full bottom-0 z-[5] mr-2 hidden h-[380px] w-[280px] zine:block"
+          />
           <section data-fx="drop" className="relative mx-auto max-w-3xl overflow-hidden rounded-xl border-4 border-ink bg-ink p-7 text-center text-paper shadow-zine zine:p-12">
             <VideoFundo src="/assets/ladob/opart.mp4" webm="/assets/ladob/opart.webm" poster="/assets/ladob/opart.webp" className="absolute inset-0 h-full w-full opacity-45" />
             <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(ellipse at center, rgba(20,20,20,.88) 30%, rgba(20,20,20,.55) 75%, rgba(20,20,20,.35) 100%)' }} />
@@ -143,6 +150,7 @@ export default function LadoB() {
               <a href={`mailto:${t.contato.emailAddr}`} className="inline-block text-base text-paper underline decoration-2 underline-offset-4 hover:text-red" style={{ fontFamily: 'var(--font-marker)' }}>{ladob.fim.conversar}</a>
             </div>
           </section>
+          </div>
         </main>
 
         <footer className="border-t-4 border-ink bg-ink px-4 py-8 text-paper/70 zine:px-6">

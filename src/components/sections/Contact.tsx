@@ -1,6 +1,7 @@
 import { Barcode, Doodle, Splat, StickerImg } from '@/components/collage'
 import type { Content } from '@/content'
 import { linkOrcamento, temWhatsapp } from '@/lib/orcamento'
+import { MascotePerto } from '@/components/mascote/MascotePerto'
 
 export function Contact({ t }: { t: Content }) {
   return (
@@ -82,6 +83,13 @@ export function Contact({ t }: { t: Content }) {
           </div>
         </div>
       </div>
+
+      {/* mascote dando tchau ao lado dos botões */}
+      <MascotePerto
+        pose="aceno"
+        giro={0.35}
+        className="pointer-events-none absolute bottom-6 left-[2%] z-[5] hidden h-[400px] w-[300px] zine:block"
+      />
 
       <div data-fx="stagger" data-fx-child="pop" className="relative z-[6] mx-auto mt-14 flex max-w-[760px] flex-col justify-center gap-4 zine:flex-row zine:gap-6">
         <a

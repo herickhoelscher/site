@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMeasure } from '@/lib/useMeasure'
 import { useIsMobile } from '@/lib/useIsMobile'
@@ -10,6 +10,9 @@ import { LangToggle } from '@/components/LangToggle'
 import { linkOrcamento } from '@/lib/orcamento'
 
 type Props = { t: Content }
+
+// three.js fica num chunk próprio e só baixa depois da entrada do hero
+const Mascote = lazy(() => import('@/components/mascote/Mascote'))
 
 /**
  * Hero no espírito da abertura do dotconor.com: a primeira tela é só o nome
@@ -44,6 +47,15 @@ export function Hero({ t }: Props) {
           reduced={reduced}
           onEntradaFim={() => setPronto(true)}
         />
+      )}
+
+      {(pronto || reduced) && (
+        <Suspense fallback={null}>
+          <Mascote
+            reduced={reduced}
+            className="pointer-events-none absolute right-[2vw] bottom-[150px] z-[5] h-[34svh] w-[26svh] zine:right-[5vw] zine:bottom-[70px] zine:h-[46svh] zine:w-[34svh]"
+          />
+        </Suspense>
       )}
 
       <h1 className="sr-only">Herick Hoelscher · {t.hero.descricao}</h1>
